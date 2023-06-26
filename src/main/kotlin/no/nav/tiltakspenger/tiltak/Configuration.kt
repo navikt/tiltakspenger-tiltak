@@ -35,13 +35,13 @@ object Configuration {
         mapOf(
             "application.profile" to Profile.DEV.toString(),
             "logback.configurationFile" to "logback.xml",
-            ),
+        ),
     )
     private val prodProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.PROD.toString(),
             "logback.configurationFile" to "logback.xml",
-            ),
+        ),
     )
 
     private fun config() = when (System.getenv("NAIS_CLUSTER_NAME") ?: System.getProperty("NAIS_CLUSTER_NAME")) {
