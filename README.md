@@ -1,7 +1,6 @@
 tiltakspenger
 ================
-
-Håndterer...
+Dette er en tiltaks-tjeneste som sammenstiller alle kilder til tiltak (komet, valp, team tiltak og arena)
 
 En del av satsningen ["Flere i arbeid – P4"](https://memu.no/artikler/stor-satsing-skal-fornye-navs-utdaterte-it-losninger-og-digitale-verktoy/)
 

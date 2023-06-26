@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "1.8.22"
     id("io.gitlab.arturbosch.detekt") version "1.23.0"
     id("ca.cutterslade.analyze") version "1.9.1"
+    id("com.diffplug.spotless") version "6.17.0"
 }
 
 repositories {
@@ -38,7 +39,7 @@ configurations.all {
 }
 
 application {
-    mainClass.set("no.nav.tiltakspenger.ApplicationKt")
+    mainClass.set("no.nav.tiltakspenger.tiltak.ApplicationKt")
 }
 
 java {
@@ -46,10 +47,10 @@ java {
     targetCompatibility = javaVersion
 }
 
-detekt {
-    buildUponDefaultConfig = true
-    allRules = false
-    config = files("$projectDir/config/detekt.yml")
+spotless {
+    kotlin {
+        ktlint("0.48.2")
+    }
 }
 
 tasks {
