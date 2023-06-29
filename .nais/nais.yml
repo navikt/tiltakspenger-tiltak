@@ -1,16 +1,15 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: {{ name }}
+  name: tiltakspenger-tiltak
   namespace: tpts
   labels:
     team: tpts
 spec:
   image: {{ image }}
   port: 8080
-# Hvis det trengs en ingress så må den lages så den er ulik for dev og prod
-#  ingresses:
-#    - https://{{ name }}.intern.dev.nav.no
+  ingresses:
+    - {{ ingress.url }}
   azure:
     application:
       enabled: true
@@ -22,8 +21,8 @@ spec:
     enabled: true
     path: /metrics
   replicas:
-    min: 1
-    max: 1
+    min: 2
+    max: 2
   kafka:
     pool: {{ kafka.pool }}
   secureLogs:
