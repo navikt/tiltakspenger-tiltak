@@ -1,6 +1,7 @@
 val javaVersion = JavaVersion.VERSION_17
 val mockkVersion = "1.13.5"
 val ktorVersion = "2.3.2"
+val jacksonVersion = "2.15.0"
 
 plugins {
     application
@@ -33,6 +34,19 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
     implementation("io.ktor:ktor-server-forwarded-header:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
+
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-client-logging:$ktorVersion")
+    implementation("io.ktor:ktor-http:$ktorVersion")
+    implementation("io.ktor:ktor-serialization:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-utils:$ktorVersion")
+
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     testImplementation(platform("org.junit:junit-bom:5.9.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")

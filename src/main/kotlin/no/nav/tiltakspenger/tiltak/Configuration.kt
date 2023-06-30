@@ -6,6 +6,7 @@ import com.natpryce.konfig.EnvironmentVariables
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
+import no.nav.tiltakspenger.tiltak.auth.AzureTokenProvider
 
 enum class Profile {
     LOCAL, DEV, PROD
@@ -17,9 +18,9 @@ object Configuration {
         "application.httpPort" to 8080.toString(),
 //        "SERVICEUSER_TPTS_USERNAME" to System.getenv("SERVICEUSER_TPTS_USERNAME"),
 //        "SERVICEUSER_TPTS_PASSWORD" to System.getenv("SERVICEUSER_TPTS_PASSWORD"),
-//        "AZURE_APP_CLIENT_ID" to System.getenv("AZURE_APP_CLIENT_ID"),
-//        "AZURE_APP_CLIENT_SECRET" to System.getenv("AZURE_APP_CLIENT_SECRET"),
-//        "AZURE_APP_WELL_KNOWN_URL" to System.getenv("AZURE_APP_WELL_KNOWN_URL"),
+        "AZURE_APP_CLIENT_ID" to System.getenv("AZURE_APP_CLIENT_ID"),
+        "AZURE_APP_CLIENT_SECRET" to System.getenv("AZURE_APP_CLIENT_SECRET"),
+        "AZURE_APP_WELL_KNOWN_URL" to System.getenv("AZURE_APP_WELL_KNOWN_URL"),
         "logback.configurationFile" to "logback.xml",
     )
 
@@ -29,18 +30,26 @@ object Configuration {
         mapOf(
             "application.profile" to Profile.LOCAL.toString(),
             "logback.configurationFile" to "logback.local.xml",
+            "KOMET_URL" to "vi kan ikke kalle lokalt", // TODO her kan vi legge inn stubbing?
+            "KOMET_SCOPE" to "vi kan ikke kalle lokalt", // TODO her kan vi legge inn stubbing?
         ),
     )
     private val devProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.DEV.toString(),
             "logback.configurationFile" to "logback.xml",
+            "KOMET_URL" to "https://komet.intern.dev.nav.no",
+            "KOMET_SCOPE" to "api://dev-gcp.team-komet.komet-app/.default",
+            "VALP_URL" to "https://valp.intern.dev.nav.no",
+            "VALP_SCOPE" to "api://dev-gcp.team-valp.valp-app/.default",
         ),
     )
     private val prodProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.PROD.toString(),
             "logback.configurationFile" to "logback.xml",
+            "KOMET_URL" to "todo", // TODO Vi må finne den riktige.
+            "KOMET_SCOPE" to "todo", // TODO Vi må finne den riktige
         ),
     )
 
@@ -63,6 +72,37 @@ object Configuration {
     }
 
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
+
+    fun kometClientConfig(baseUrl: String = config()[Key("KOMET_URL", stringType)]) =
+        KometClientConfig(baseUrl = baseUrl)
+
+    data class KometClientConfig(
+        val baseUrl: String,
+    )
+
+    fun oauthConfigKomet(
+        scope: String = config()[Key("KOMET_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun oauthConfigValp(
+        scope: String = config()[Key("VALP_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
 
 //    data class TokenVerificationConfig(
 //        val jwksUri: String = config()[Key("AZURE_OPENID_CONFIG_JWKS_URI", stringType)],
