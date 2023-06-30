@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.tiltak.clients.komet
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
@@ -9,6 +10,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.preparePost
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import no.nav.tiltakspenger.tiltak.Configuration
 import no.nav.tiltakspenger.tiltak.defaultHttpClient
@@ -38,7 +40,12 @@ class KometClientImpl(
                 parameter("personIdent", fnr)
             }.execute()
 
-        println(httpResponse)
-        return KometResponse(emptyList())
+        return when (httpResponse.status) {
+            HttpStatusCode.OK -> httpResponse.call.response.body()
+//            HttpStatusCode.NotFound -> KometResponse(
+//                deltakelser = emptyList()
+//            ) // TODO sjekk om vi trenger denne
+            else -> throw RuntimeException("error (responseCode=${httpResponse.status.value}) fra Komet")
+        }
     }
 }
