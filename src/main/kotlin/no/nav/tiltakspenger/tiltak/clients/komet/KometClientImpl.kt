@@ -7,14 +7,21 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.header
-import io.ktor.client.request.parameter
 import io.ktor.client.request.preparePost
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.Configuration
 import no.nav.tiltakspenger.tiltak.defaultHttpClient
 import no.nav.tiltakspenger.tiltak.defaultObjectMapper
+
+val securelog = KotlinLogging.logger("tjenestekall")
+
+data class KometReqBody(
+    val personIdent: String,
+)
 
 class KometClientImpl(
     private val config: Configuration.KometClientConfig = Configuration.kometClientConfig(),
@@ -37,7 +44,11 @@ class KometClientImpl(
                 bearerAuth(getToken())
                 accept(ContentType.Application.Json)
                 contentType(ContentType.Application.Json)
-                parameter("personIdent", fnr)
+                setBody(
+                    KometReqBody(
+                        personIdent = fnr,
+                    ),
+                )
             }.execute()
 
         return when (httpResponse.status) {

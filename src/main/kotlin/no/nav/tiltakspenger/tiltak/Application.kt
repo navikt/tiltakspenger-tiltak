@@ -6,8 +6,12 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.Configuration.kjøreMiljø
+import no.nav.tiltakspenger.tiltak.auth.AzureTokenProvider
+import no.nav.tiltakspenger.tiltak.clients.komet.KometClientImpl
 import no.nav.tiltakspenger.tiltak.routes.healthRoutes
 import no.nav.tiltakspenger.tiltak.routes.routes
+import no.nav.tiltakspenger.tiltak.services.RouteServiceImpl
+import no.nav.tiltakspenger.tiltak.services.RoutesService
 
 fun main() {
     System.setProperty("logback.configurationFile", Configuration.logbackConfigurationFile())
@@ -21,7 +25,6 @@ fun main() {
     }
 
     log.info { "starting server" }
-    securelog.info { "testing securelog" }
 
     embeddedServer(
         factory = Netty,
@@ -30,15 +33,25 @@ fun main() {
     ).start(true)
 }
 
-fun Application.tiltak() {
-    setupRouting()
+fun Application.tiltak(
+    tokenProvider: AzureTokenProvider = AzureTokenProvider(),
+    kometClient: KometClientImpl = KometClientImpl(
+        getToken = tokenProvider::getToken,
+    ),
+    routesService: RoutesService = RouteServiceImpl(
+        kometClient,
+    ),
+) {
+    setupRouting(routesService)
 }
 
-fun Application.setupRouting() {
+fun Application.setupRouting(
+    routesService: RoutesService,
+) {
     routing {
         healthRoutes()
         if (kjøreMiljø() != Profile.PROD) {
-            routes()
+            routes(routesService)
         }
     }
 }
