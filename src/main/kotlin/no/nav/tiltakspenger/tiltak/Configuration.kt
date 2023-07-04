@@ -32,14 +32,17 @@ object Configuration {
             "logback.configurationFile" to "logback.local.xml",
             "KOMET_URL" to "vi kan ikke kalle lokalt", // TODO her kan vi legge inn stubbing?
             "KOMET_SCOPE" to "vi kan ikke kalle lokalt", // TODO her kan vi legge inn stubbing?
+            "AZURE_APP_CLIENT_ID" to "xxx",
+            "AZURE_APP_CLIENT_SECRET" to "YYY",
+            "AZURE_APP_WELL_KNOWN_URL" to "ZZZ",
         ),
     )
     private val devProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.DEV.toString(),
             "logback.configurationFile" to "logback.xml",
-            "KOMET_URL" to "https://komet.intern.dev.nav.no",
-            "KOMET_SCOPE" to "api://dev-gcp.team-komet.komet-app/.default",
+            "KOMET_URL" to "https://amt-tiltak.intern.dev.nav.no",
+            "KOMET_SCOPE" to "api://dev-gcp.amt.amt-tiltak/.default",
             "VALP_URL" to "https://valp.intern.dev.nav.no",
             "VALP_SCOPE" to "api://dev-gcp.team-valp.valp-app/.default",
         ),
