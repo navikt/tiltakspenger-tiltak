@@ -41,7 +41,7 @@ object Configuration {
         mapOf(
             "application.profile" to Profile.DEV.toString(),
             "logback.configurationFile" to "logback.xml",
-            "KOMET_URL" to "https://amt-tiltak.intern.dev.nav.no",
+            "KOMET_URL" to "http://amt-tiltak",
             "KOMET_SCOPE" to "api://dev-gcp.amt.amt-tiltak/.default",
             "VALP_URL" to "https://valp.intern.dev.nav.no",
             "VALP_SCOPE" to "api://dev-gcp.team-valp.valp-app/.default",
