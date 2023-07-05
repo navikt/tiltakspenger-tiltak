@@ -2,6 +2,7 @@ val javaVersion = JavaVersion.VERSION_17
 val mockkVersion = "1.13.5"
 val ktorVersion = "2.3.2"
 val jacksonVersion = "2.15.2"
+val kotestVersion = "5.5.5"
 
 plugins {
     application
@@ -51,8 +52,12 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
     testImplementation("io.mockk:mockk-dsl-jvm:$mockkVersion")
     testImplementation("org.skyscreamer:jsonassert:1.5.1")
+    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
+    testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
+    testImplementation("io.kotest:kotest-extensions:$kotestVersion")
 }
 
 configurations.all {

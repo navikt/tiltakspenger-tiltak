@@ -30,8 +30,8 @@ object Configuration {
         mapOf(
             "application.profile" to Profile.LOCAL.toString(),
             "logback.configurationFile" to "logback.local.xml",
-            "KOMET_URL" to "vi kan ikke kalle lokalt", // TODO her kan vi legge inn stubbing?
-            "KOMET_SCOPE" to "vi kan ikke kalle lokalt", // TODO her kan vi legge inn stubbing?
+            "KOMET_URL" to "http://localhost", // TODO her kan vi legge inn stubbing?
+            "KOMET_SCOPE" to "api://localhost/.default", // TODO her kan vi legge inn stubbing?
             "AZURE_APP_CLIENT_ID" to "xxx",
             "AZURE_APP_CLIENT_SECRET" to "YYY",
             "AZURE_APP_WELL_KNOWN_URL" to "ZZZ",
