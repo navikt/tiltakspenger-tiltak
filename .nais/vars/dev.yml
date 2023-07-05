@@ -2,3 +2,4 @@ kafka:
   pool: nav-dev
 ingress:
   url: https://tiltakspenger-tiltak.intern.dev.nav.no
+cluster: dev-gcp

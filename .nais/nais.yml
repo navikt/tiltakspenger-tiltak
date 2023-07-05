@@ -27,3 +27,9 @@ spec:
     pool: {{ kafka.pool }}
   secureLogs:
     enabled: true
+  accessPolicy:
+    outbound:
+      rules:
+        - application: amt-tiltak
+          namespace: amt
+          cluster: {{ cluster }}
