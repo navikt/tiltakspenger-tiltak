@@ -2,4 +2,3 @@ kafka:
   pool: nav-dev
 ingress:
   url: https://tiltakspenger-tiltak.intern.dev.nav.no
-urlKomet: https://amt-tiltak.intern.dev.nav.no
