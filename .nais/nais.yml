@@ -29,7 +29,5 @@ spec:
     enabled: true
   accessPolicy:
     outbound:
-      rules:
-        - application: amt-tiltak
-          namespace: amt
-          cluster: {{ cluster }}
+      external:
+        - host: {{ urlKomet }}
