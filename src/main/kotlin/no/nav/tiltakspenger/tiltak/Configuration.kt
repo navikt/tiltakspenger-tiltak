@@ -45,7 +45,7 @@ object Configuration {
             "logback.configurationFile" to "logback.xml",
             "KOMET_URL" to "http://amt-tiltak.amt",
             "KOMET_SCOPE" to "api://dev-gcp.amt.amt-tiltak/.default",
-            "VALP_URL" to "https://mulighetsrommet-api.team-mulighetsrommet",
+            "VALP_URL" to "http://mulighetsrommet-api.team-mulighetsrommet",
             "VALP_SCOPE" to "api://dev-gcp.team-mulighetsrommet.mulighetsrommet-api/.default",
         ),
     )
