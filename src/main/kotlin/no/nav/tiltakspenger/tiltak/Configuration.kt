@@ -32,6 +32,8 @@ object Configuration {
             "logback.configurationFile" to "logback.local.xml",
             "KOMET_URL" to "http://localhost", // TODO her kan vi legge inn stubbing?
             "KOMET_SCOPE" to "api://localhost/.default", // TODO her kan vi legge inn stubbing?
+            "VALP_URL" to "http://localhost", // TODO her kan vi legge inn stubbing?
+            "VALP_SCOPE" to "api://localhost/.default", // TODO her kan vi legge inn stubbing?
             "AZURE_APP_CLIENT_ID" to "xxx",
             "AZURE_APP_CLIENT_SECRET" to "YYY",
             "AZURE_APP_WELL_KNOWN_URL" to "ZZZ",
@@ -43,16 +45,18 @@ object Configuration {
             "logback.configurationFile" to "logback.xml",
             "KOMET_URL" to "http://amt-tiltak.amt",
             "KOMET_SCOPE" to "api://dev-gcp.amt.amt-tiltak/.default",
-            "VALP_URL" to "https://valp.intern.dev.nav.no",
-            "VALP_SCOPE" to "api://dev-gcp.team-valp.valp-app/.default",
+            "VALP_URL" to "https://mulighetsrommet-api.team-mulighetsrommet",
+            "VALP_SCOPE" to "api://dev-gcp.team-mulighetsrommet.mulighetsrommet-api/.default",
         ),
     )
     private val prodProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.PROD.toString(),
             "logback.configurationFile" to "logback.xml",
-            "KOMET_URL" to "todo", // TODO Vi må finne den riktige.
-            "KOMET_SCOPE" to "todo", // TODO Vi må finne den riktige
+            "KOMET_URL" to "http://amt-tiltak.amt",
+            "KOMET_SCOPE" to "api://prod-gcp.amt.amt-tiltak/.default",
+            "VALP_URL" to "https://mulighetsrommet-api.team-mulighetsrommet",
+            "VALP_SCOPE" to "api://prod-gcp.team-mulighetsrommet.mulighetsrommet-api/.default",
         ),
     )
 
@@ -77,9 +81,12 @@ object Configuration {
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
 
     fun kometClientConfig(baseUrl: String = config()[Key("KOMET_URL", stringType)]) =
-        KometClientConfig(baseUrl = baseUrl)
+        ClientConfig(baseUrl = baseUrl)
 
-    data class KometClientConfig(
+    fun valpClientConfig(baseUrl: String = config()[Key("VALP_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
+
+    data class ClientConfig(
         val baseUrl: String,
     )
 

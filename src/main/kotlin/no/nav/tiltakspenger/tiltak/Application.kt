@@ -6,8 +6,12 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.Configuration.kjøreMiljø
+import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigKomet
+import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigValp
 import no.nav.tiltakspenger.tiltak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClientImpl
+import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
+import no.nav.tiltakspenger.tiltak.clients.valp.ValpClientImpl
 import no.nav.tiltakspenger.tiltak.routes.healthRoutes
 import no.nav.tiltakspenger.tiltak.routes.routes
 import no.nav.tiltakspenger.tiltak.services.RouteServiceImpl
@@ -34,12 +38,17 @@ fun main() {
 }
 
 fun Application.tiltak(
-    tokenProvider: AzureTokenProvider = AzureTokenProvider(),
+    tokenProviderKomet: AzureTokenProvider = AzureTokenProvider(config = oauthConfigKomet()),
+    tokenProviderValp: AzureTokenProvider = AzureTokenProvider(config = oauthConfigValp()),
     kometClient: KometClientImpl = KometClientImpl(
-        getToken = tokenProvider::getToken,
+        getToken = tokenProviderKomet::getToken,
+    ),
+    valpClient: ValpClient = ValpClientImpl(
+        getToken = tokenProviderValp::getToken,
     ),
     routesService: RoutesService = RouteServiceImpl(
-        kometClient,
+        kometClient = kometClient,
+        valpClient = valpClient,
     ),
 ) {
     setupRouting(routesService)

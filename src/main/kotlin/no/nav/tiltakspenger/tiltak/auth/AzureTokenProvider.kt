@@ -11,7 +11,6 @@ import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.http.Parameters
 import mu.KotlinLogging
-import no.nav.tiltakspenger.tiltak.Configuration
 import no.nav.tiltakspenger.tiltak.defaultHttpClient
 import no.nav.tiltakspenger.tiltak.defaultObjectMapper
 
@@ -24,7 +23,7 @@ fun interface TokenProvider {
 class AzureTokenProvider(
     objectMapper: ObjectMapper = defaultObjectMapper(),
     engine: HttpClientEngine? = null,
-    private val config: OauthConfig = Configuration.oauthConfigKomet(),
+    private val config: OauthConfig,
 ) : TokenProvider {
     private val azureHttpClient = defaultHttpClient(objectMapper = objectMapper, engine = engine) {
         System.getenv("HTTP_PROXY")?.let {

@@ -1,5 +1,5 @@
 package no.nav.tiltakspenger.tiltak.clients.valp
 
 interface ValpClient {
-    fun hentTiltakGjennomføring(tiltakId: String)
+    suspend fun hentTiltakGjennomføring(tiltakId: String): ValpResponse?
 }
