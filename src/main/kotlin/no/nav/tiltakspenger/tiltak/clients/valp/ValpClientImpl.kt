@@ -36,7 +36,7 @@ class ValpClientImpl(
     override suspend fun hentTiltakGjennomføring(tiltakId: String): ValpResponse? {
         println("${config.baseUrl}/api/external/deltakelser")
         val httpResponse =
-            httpClient.get("${config.baseUrl}/api/v1") {
+            httpClient.get("${config.baseUrl}/api/v1/tiltaksgjennomforinger") {
                 header(navCallIdHeader, "tiltakspenger-tiltak") // TODO hva skal vi bruke her?
                 bearerAuth(getToken())
                 accept(ContentType.Application.Json)
