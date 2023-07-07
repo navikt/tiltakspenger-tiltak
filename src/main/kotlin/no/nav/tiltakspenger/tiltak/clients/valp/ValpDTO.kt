@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.tiltak.clients.valp
 import java.time.LocalDate
 import java.util.*
 
-data class ValpResponse(
+data class ValpDTO(
     val id: UUID,
     val tiltakstype: Tiltakstype,
     val navn: String,

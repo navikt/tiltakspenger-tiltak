@@ -32,7 +32,7 @@ class ValpClientImpl(
         const val navCallIdHeader = "Nav-Call-Id"
     }
 
-    override suspend fun hentTiltakGjennomføring(tiltakId: String): ValpResponse? {
+    override suspend fun hentTiltakGjennomføring(tiltakId: String): ValpDTO? {
         val httpResponse =
             httpClient.get("${config.baseUrl}/api/v1/tiltaksgjennomforinger/$tiltakId") {
                 header(navCallIdHeader, "tiltakspenger-tiltak") // TODO hva skal vi bruke her?
