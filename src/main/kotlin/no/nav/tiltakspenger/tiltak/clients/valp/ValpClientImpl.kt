@@ -8,7 +8,6 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.header
-import io.ktor.client.request.parameter
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
@@ -34,14 +33,12 @@ class ValpClientImpl(
     }
 
     override suspend fun hentTiltakGjennomføring(tiltakId: String): ValpResponse? {
-        println("${config.baseUrl}/api/external/deltakelser")
         val httpResponse =
-            httpClient.get("${config.baseUrl}/api/v1/tiltaksgjennomforinger") {
+            httpClient.get("${config.baseUrl}/api/v1/tiltaksgjennomforinger/$tiltakId") {
                 header(navCallIdHeader, "tiltakspenger-tiltak") // TODO hva skal vi bruke her?
                 bearerAuth(getToken())
                 accept(ContentType.Application.Json)
                 contentType(ContentType.Application.Json)
-                parameter("id", tiltakId)
             }
 
         return when (httpResponse.status) {
