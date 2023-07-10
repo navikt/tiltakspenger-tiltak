@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
 
 val securelog = KotlinLogging.logger("tjenestekall")
 
+// TODO Denne kalles fra en route som bare finnes i dev nå for test
 class RouteServiceImpl(
     private val kometClient: KometClient,
     private val valpClient: ValpClient,

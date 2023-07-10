@@ -43,6 +43,7 @@ fun main() {
     ).start(true)
 }
 
+// TODO Vi lager nå kun system token. Vi må sannsynligvis legge inn mulighet til å kalle med On Behalf Of Token
 fun Application.tiltak(
     tokenProviderKomet: AzureTokenProvider = AzureTokenProvider(config = oauthConfigKomet()),
     tokenProviderValp: AzureTokenProvider = AzureTokenProvider(config = oauthConfigValp()),
@@ -64,8 +65,10 @@ fun Application.setupRouting(
     routesService: RoutesService,
 ) {
     jacksonSerialization()
+    // TODO vi må også finne ut om vi skal kalle denne både med route og R&R, eller om vi bare skal støtte Route
     routing {
         healthRoutes()
+        // TODO Vi må få på plass autentisering av denne routen før vi fjerner sjekken på at vi ikke er i prod
         if (kjøreMiljø() != Profile.PROD) {
             routes(routesService)
         }

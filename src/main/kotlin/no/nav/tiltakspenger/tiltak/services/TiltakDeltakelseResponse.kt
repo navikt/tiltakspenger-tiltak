@@ -4,6 +4,10 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
+// TODO Dette er svaret vi leverer ut igjen fra denne appen.
+//      Denne returnerer alle data vi får tilbake fra Komet + alle data vi får tilbake fra valp slik den er nå
+//      Her må vi finne ut hvilke data vi trenger og endre denne til et format vi er happy med
+//      I tillegg må data fra Tiltak som vi ikke kaller ende med i denne
 data class TiltakDeltakelseResponse(
     val id: UUID,
     val gjennomforing: GjennomforingResponseDTO,
