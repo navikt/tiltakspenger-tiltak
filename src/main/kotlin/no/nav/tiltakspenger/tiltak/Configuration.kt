@@ -57,6 +57,8 @@ object Configuration {
             "KOMET_SCOPE" to "api://prod-gcp.amt.amt-tiltak/.default",
             "VALP_URL" to "http://mulighetsrommet-api.team-mulighetsrommet",
             "VALP_SCOPE" to "api://prod-gcp.team-mulighetsrommet.mulighetsrommet-api/.default",
+            "ARENA_URL" to "http://tiltakspenger-arena", // TODO finn riktig verdi
+            "ARENA_SCOPE" to "api://prod-gcp.team-tpts.tiltakspenger-api/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
         ),
     )
 
@@ -86,6 +88,12 @@ object Configuration {
     fun valpClientConfig(baseUrl: String = config()[Key("VALP_URL", stringType)]) =
         ClientConfig(baseUrl = baseUrl)
 
+    fun arenaClientConfig(baseUrl: String = config()[Key("ARENA_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
+
+    fun tiltakClientConfig(baseUrl: String = config()[Key("TILTAK_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
+
     data class ClientConfig(
         val baseUrl: String,
     )
@@ -104,6 +112,30 @@ object Configuration {
 
     fun oauthConfigValp(
         scope: String = config()[Key("VALP_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun oauthConfigArena(
+        scope: String = config()[Key("ARENA_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun oauthConfigTiltak(
+        scope: String = config()[Key("TILTAK_SCOPE", stringType)],
         clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
         clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
         wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],

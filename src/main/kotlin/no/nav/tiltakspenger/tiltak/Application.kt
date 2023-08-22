@@ -12,10 +12,16 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.Configuration.kjøreMiljø
+import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigArena
 import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigKomet
+import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigTiltak
 import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigValp
 import no.nav.tiltakspenger.tiltak.auth.AzureTokenProvider
+import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
+import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClientImpl
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClientImpl
+import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClient
+import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClientImpl
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClientImpl
 import no.nav.tiltakspenger.tiltak.routes.healthRoutes
@@ -47,15 +53,25 @@ fun main() {
 fun Application.tiltak(
     tokenProviderKomet: AzureTokenProvider = AzureTokenProvider(config = oauthConfigKomet()),
     tokenProviderValp: AzureTokenProvider = AzureTokenProvider(config = oauthConfigValp()),
+    tokenProviderTiltak: AzureTokenProvider = AzureTokenProvider(config = oauthConfigTiltak()),
+    tokenProviderArena: AzureTokenProvider = AzureTokenProvider(config = oauthConfigArena()),
     kometClient: KometClientImpl = KometClientImpl(
         getToken = tokenProviderKomet::getToken,
     ),
     valpClient: ValpClient = ValpClientImpl(
         getToken = tokenProviderValp::getToken,
     ),
+    arenaClient: ArenaClient = ArenaClientImpl(
+        getToken = tokenProviderArena::getToken,
+    ),
+    tiltakClient: TiltakClient = TiltakClientImpl(
+        getToken = tokenProviderTiltak::getToken,
+    ),
     routesService: RoutesService = RouteServiceImpl(
         kometClient = kometClient,
         valpClient = valpClient,
+        tiltakClient = tiltakClient,
+        arenaClient = arenaClient,
     ),
 ) {
     setupRouting(routesService)

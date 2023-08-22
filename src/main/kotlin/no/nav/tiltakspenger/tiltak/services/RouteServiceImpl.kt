@@ -2,8 +2,10 @@ package no.nav.tiltakspenger.tiltak.services
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
+import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClient
 import no.nav.tiltakspenger.tiltak.clients.valp.TiltaksgjennomforingOppstartstype
 import no.nav.tiltakspenger.tiltak.clients.valp.Tiltaksgjennomforingsstatus
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
@@ -14,6 +16,8 @@ val securelog = KotlinLogging.logger("tjenestekall")
 class RouteServiceImpl(
     private val kometClient: KometClient,
     private val valpClient: ValpClient,
+    private val tiltakClient: TiltakClient,
+    private val arenaClient: ArenaClient,
 ) : RoutesService {
     override fun hentTiltak(fnr: String): List<TiltakDeltakelseResponse> {
         val tiltakdeltakelser = runBlocking {
