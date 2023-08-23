@@ -52,7 +52,7 @@ object Configuration {
             "VALP_URL" to "http://mulighetsrommet-api.team-mulighetsrommet",
             "VALP_SCOPE" to "api://dev-gcp.team-mulighetsrommet.mulighetsrommet-api/.default",
             "ARENA_URL" to "https://tiltakspenger-arena.dev-fss-pub.nais.io", // TODO finn riktig verdi
-            "ARENA_SCOPE" to "api://dev-ffs-pub.tpts.tiltakspenger-arena/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
+            "ARENA_SCOPE" to "api://dev-fss.tpts.tiltakspenger-arena/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
             "TILTAK_URL" to "http://team-tiltak", // TODO finn riktig verdi
             "TILTAK_SCOPE" to "api://dev-gcp.team-tiltak.todo/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
         ),
@@ -66,7 +66,7 @@ object Configuration {
             "VALP_URL" to "http://mulighetsrommet-api.team-mulighetsrommet",
             "VALP_SCOPE" to "api://prod-gcp.team-mulighetsrommet.mulighetsrommet-api/.default",
             "ARENA_URL" to "https://tiltakspenger-arena.prod-fss-pub.nais.io", // TODO finn riktig verdi
-            "ARENA_SCOPE" to "api://prod-ffs-pub.tpts.tiltakspenger-arena/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
+            "ARENA_SCOPE" to "api://prod-fss.tpts.tiltakspenger-arena/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
             "TILTAK_URL" to "http://team-tiltak", // TODO finn riktig verdi
             "TILTAK_SCOPE" to "api://prod-gcp.team-tiltak.todo/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
         ),
