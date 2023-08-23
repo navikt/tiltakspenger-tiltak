@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.tiltak.services
 
+import no.nav.tiltakspenger.tiltak.clients.arena.ArenaDTO
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -25,6 +26,7 @@ data class GjennomforingResponseDTO(
     val type: String, // Arena type
     val arrangor: ArrangorResponseDTO,
     val valp: ValpResponse?,
+    val arenatiltak: ArenaDTO?,
 )
 
 data class ArrangorResponseDTO(

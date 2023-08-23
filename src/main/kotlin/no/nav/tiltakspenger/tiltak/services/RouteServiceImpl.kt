@@ -65,6 +65,7 @@ class RouteServiceImpl(
                                 },
                             )
                         },
+                        arenatiltak = arenaClient.hentTiltakArena(fnr),
                     ),
                     status = when (deltakelse.status) {
                         DeltakerStatusDTO.VENTER_PA_OPPSTART -> DeltakerStatusResponseDTO.VENTER_PA_OPPSTART
