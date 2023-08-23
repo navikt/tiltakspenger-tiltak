@@ -34,6 +34,10 @@ object Configuration {
             "KOMET_SCOPE" to "api://localhost/.default", // TODO her kan vi legge inn stubbing?
             "VALP_URL" to "http://localhost", // TODO her kan vi legge inn stubbing?
             "VALP_SCOPE" to "api://localhost/.default", // TODO her kan vi legge inn stubbing?
+            "ARENA_URL" to "http://localhost", // TODO her kan vi legge inn stubbing?
+            "ARENA_SCOPE" to "api://localhost/.default", // TODO her kan vi legge inn stubbing?
+            "TILTAK_URL" to "http://localhost", // TODO her kan vi legge inn stubbing?
+            "TILTAK_SCOPE" to "api://localhost/.default", // TODO her kan vi legge inn stubbing?
             "AZURE_APP_CLIENT_ID" to "xxx",
             "AZURE_APP_CLIENT_SECRET" to "YYY",
             "AZURE_APP_WELL_KNOWN_URL" to "ZZZ",
@@ -47,6 +51,10 @@ object Configuration {
             "KOMET_SCOPE" to "api://dev-gcp.amt.amt-tiltak/.default",
             "VALP_URL" to "http://mulighetsrommet-api.team-mulighetsrommet",
             "VALP_SCOPE" to "api://dev-gcp.team-mulighetsrommet.mulighetsrommet-api/.default",
+            "ARENA_URL" to "https://tiltakspenger-arena.dev-fss-pub.nais.io", // TODO finn riktig verdi
+            "ARENA_SCOPE" to "api://dev-ffs-pub.tpts.tiltakspenger-arena/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
+            "TILTAK_URL" to "http://team-tiltak", // TODO finn riktig verdi
+            "TILTAK_SCOPE" to "api://dev-gcp.team-tiltak.todo/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
         ),
     )
     private val prodProperties = ConfigurationMap(
@@ -57,8 +65,10 @@ object Configuration {
             "KOMET_SCOPE" to "api://prod-gcp.amt.amt-tiltak/.default",
             "VALP_URL" to "http://mulighetsrommet-api.team-mulighetsrommet",
             "VALP_SCOPE" to "api://prod-gcp.team-mulighetsrommet.mulighetsrommet-api/.default",
-            "ARENA_URL" to "http://tiltakspenger-arena", // TODO finn riktig verdi
-            "ARENA_SCOPE" to "api://prod-gcp.team-tpts.tiltakspenger-api/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
+            "ARENA_URL" to "https://tiltakspenger-arena.prod-fss-pub.nais.io", // TODO finn riktig verdi
+            "ARENA_SCOPE" to "api://prod-ffs-pub.tpts.tiltakspenger-arena/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
+            "TILTAK_URL" to "http://team-tiltak", // TODO finn riktig verdi
+            "TILTAK_SCOPE" to "api://prod-gcp.team-tiltak.todo/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
         ),
     )
 

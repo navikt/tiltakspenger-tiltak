@@ -31,7 +31,7 @@ class ArenaClientImpl(
 
     override suspend fun hentTiltakArena(fnr: String): ArenaDTO? {
         val httpResponse =
-            httpClient.get("${config.baseUrl}/todo") {
+            httpClient.get("${config.baseUrl}/tiltak") {
                 header(navCallIdHeader, "tiltakspenger-tiltak") // TODO hva skal vi bruke her?
                 bearerAuth(getToken())
                 accept(ContentType.Application.Json)
