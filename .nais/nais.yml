@@ -34,5 +34,5 @@ spec:
           namespace: amt
         - application: mulighetsrommet-api
           namespace: team-mulighetsrommet
-        - application: tiltakspenger-arena
-          namespace: tpts
+      external:
+        - host: {{outboundExternalUrls.tiltakspengerarena}}

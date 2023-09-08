@@ -2,3 +2,5 @@ kafka:
   pool: nav-dev
 ingress:
   url: https://tiltakspenger-tiltak.intern.dev.nav.no
+outboundExternalUrls:
+  tiltakspengerarena: tiltakspenger-arena.dev-fss-pub.nais.io
