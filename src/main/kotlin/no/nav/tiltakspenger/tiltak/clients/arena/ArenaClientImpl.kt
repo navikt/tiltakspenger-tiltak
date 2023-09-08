@@ -12,6 +12,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
 import no.nav.tiltakspenger.tiltak.Configuration
 import no.nav.tiltakspenger.tiltak.defaultHttpClient
 import no.nav.tiltakspenger.tiltak.defaultObjectMapper
@@ -34,7 +35,7 @@ class ArenaClientImpl(
         const val navCallIdHeader = "Nav-Call-Id"
     }
 
-    override suspend fun hentTiltakArena(fnr: String): ArenaDTO? {
+    override suspend fun hentTiltakArena(fnr: String): ArenaTiltaksaktivitetResponsDTO? {
         val httpResponse =
             httpClient.post("${config.baseUrl}/tiltakAzure") {
                 header(navCallIdHeader, "tiltakspenger-tiltak") // TODO hva skal vi bruke her?
