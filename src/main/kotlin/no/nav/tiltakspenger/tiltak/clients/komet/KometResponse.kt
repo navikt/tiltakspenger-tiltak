@@ -10,7 +10,7 @@ data class KometResponse(
 )
 
 data class DeltakerDTO(
-    val id: UUID,
+    val id: String,
     val gjennomforing: GjennomforingDTO,
     val startDato: LocalDate?,
     val sluttDato: LocalDate?,
@@ -26,12 +26,22 @@ data class ArrangorDTO(
 )
 
 data class GjennomforingDTO(
-    val id: UUID,
+    val id: String,
     val navn: String,
     val type: String, // Arena type
     val arrangor: ArrangorDTO,
 )
 
 enum class DeltakerStatusDTO {
-    VENTER_PA_OPPSTART, DELTAR, HAR_SLUTTET, IKKE_AKTUELL, VURDERES, AVBRUTT
+    VENTER_PA_OPPSTART,
+    DELTAR,
+    HAR_SLUTTET,
+    IKKE_AKTUELL,
+    VURDERES,
+    AVBRUTT,
+    FULLFORT,
+    FEILREGISTRERT,
+    PABEGYNT_REGISTRERING,
+    SOKT_INN,
+    VENTELISTE,
 }

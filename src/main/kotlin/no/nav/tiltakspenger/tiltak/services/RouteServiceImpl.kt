@@ -2,13 +2,13 @@ package no.nav.tiltakspenger.tiltak.services
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
 import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClient
-import no.nav.tiltakspenger.tiltak.clients.valp.TiltaksgjennomforingOppstartstype
-import no.nav.tiltakspenger.tiltak.clients.valp.Tiltaksgjennomforingsstatus
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
+import java.time.LocalDateTime
 
 val securelog = KotlinLogging.logger("tjenestekall")
 
@@ -21,62 +21,79 @@ class RouteServiceImpl(
 ) : RoutesService {
     override fun hentTiltak(fnr: String): List<TiltakDeltakelseResponse> {
         val tiltakdeltakelser = runBlocking {
-            kometClient.hentTiltakDeltagelser(fnr).map { deltakelse ->
-                securelog.info { deltakelse }
-//                val gjennomføring = valpClient.hentTiltakGjennomføring(deltakelse.gjennomforing.id.toString())
-                TiltakDeltakelseResponse(
-                    id = deltakelse.id,
-                    startDato = deltakelse.startDato,
-                    sluttDato = deltakelse.sluttDato,
-                    dagerPerUke = deltakelse.dagerPerUke,
-                    prosentStilling = deltakelse.prosentStilling,
-                    registrertDato = deltakelse.registrertDato,
-                    gjennomforing = GjennomforingResponseDTO(
-                        id = deltakelse.gjennomforing.id,
-                        navn = deltakelse.gjennomforing.navn,
-                        type = deltakelse.gjennomforing.type,
-                        arrangor = ArrangorResponseDTO(
-                            virksomhetsnummer = deltakelse.gjennomforing.arrangor.virksomhetsnummer,
-                            navn = deltakelse.gjennomforing.arrangor.navn,
+            val kometOgValp = kometClient.hentTiltakDeltagelser(fnr)
+                .filter { it.status in kometStatusViVilHa }
+                .filter { it.gjennomforing.type in tiltakViVilHaFraKomet }
+                .map { deltakelse ->
+                    securelog.info { deltakelse }
+                    val gjennomføring = valpClient.hentTiltakGjennomføring(deltakelse.gjennomforing.id)
+                        ?: throw IllegalStateException("Fant ikke gjennomføring i Valp")
+                    TiltakDeltakelseResponse(
+                        id = deltakelse.id,
+                        startDato = deltakelse.startDato,
+                        sluttDato = deltakelse.sluttDato,
+                        dagerPerUke = deltakelse.dagerPerUke,
+                        prosentStilling = deltakelse.prosentStilling,
+                        registrertDato = deltakelse.registrertDato,
+                        gjennomforing = GjennomforingResponseDTO(
+                            id = deltakelse.gjennomforing.id,
+                            arrangornavn = deltakelse.gjennomforing.arrangor.navn,
+                            typeNavn = gjennomføring.tiltakstype.navn,
+                            arenaKode = gjennomføring.tiltakstype.arenaKode,
+                            startDato = gjennomføring.startDato,
+                            sluttDato = gjennomføring.sluttDato,
                         ),
-                        valp = valpClient.hentTiltakGjennomføring(deltakelse.gjennomforing.id.toString())?.let {
-                            securelog.info { it }
-                            ValpResponse(
-                                id = it.id,
-                                tiltakstype = TiltakstypeResponse(
-                                    id = it.tiltakstype.id,
-                                    navn = it.tiltakstype.navn,
-                                    arenaKode = it.tiltakstype.arenaKode,
-                                ),
-                                navn = it.navn,
-                                startDato = it.startDato,
-                                sluttDato = it.sluttDato,
-                                status = when (it.status) {
-                                    Tiltaksgjennomforingsstatus.GJENNOMFORES -> TiltaksgjennomforingsstatusResponse.GJENNOMFORES
-                                    Tiltaksgjennomforingsstatus.AVBRUTT -> TiltaksgjennomforingsstatusResponse.AVBRUTT
-                                    Tiltaksgjennomforingsstatus.AVLYST -> TiltaksgjennomforingsstatusResponse.AVLYST
-                                    Tiltaksgjennomforingsstatus.AVSLUTTET -> TiltaksgjennomforingsstatusResponse.AVSLUTTET
-                                    Tiltaksgjennomforingsstatus.APENT_FOR_INNSOK -> TiltaksgjennomforingsstatusResponse.APENT_FOR_INNSOK
-                                },
-                                virksomhetsnummer = it.virksomhetsnummer,
-                                oppstart = when (it.oppstart) {
-                                    TiltaksgjennomforingOppstartstype.LOPENDE -> TiltaksgjennomforingOppstartstypeResponse.LOPENDE
-                                    TiltaksgjennomforingOppstartstype.FELLES -> TiltaksgjennomforingOppstartstypeResponse.FELLES
-                                },
-                            )
+                        status = when (deltakelse.status) {
+                            DeltakerStatusDTO.AVBRUTT -> DeltakerStatusResponseDTO.AVBRUTT
+                            DeltakerStatusDTO.FULLFORT -> DeltakerStatusResponseDTO.FULLFORT
+                            DeltakerStatusDTO.DELTAR -> DeltakerStatusResponseDTO.DELTAR
+                            DeltakerStatusDTO.IKKE_AKTUELL -> DeltakerStatusResponseDTO.IKKE_AKTUELL
+                            DeltakerStatusDTO.VENTER_PA_OPPSTART -> DeltakerStatusResponseDTO.VENTER_PA_OPPSTART
+                            DeltakerStatusDTO.HAR_SLUTTET -> DeltakerStatusResponseDTO.HAR_SLUTTET
+
+                            // Disse er vi ikke interresert i...
+                            DeltakerStatusDTO.VURDERES -> DeltakerStatusResponseDTO.VURDERES
+                            DeltakerStatusDTO.FEILREGISTRERT -> DeltakerStatusResponseDTO.FEILREGISTRERT
+                            DeltakerStatusDTO.PABEGYNT_REGISTRERING -> DeltakerStatusResponseDTO.PABEGYNT_REGISTRERING
+                            DeltakerStatusDTO.SOKT_INN -> DeltakerStatusResponseDTO.SOKT_INN
+                            DeltakerStatusDTO.VENTELISTE -> DeltakerStatusResponseDTO.VENTELISTE
                         },
-                        arenatiltak = arenaClient.hentTiltakArena(fnr),
-                    ),
-                    status = when (deltakelse.status) {
-                        DeltakerStatusDTO.VENTER_PA_OPPSTART -> DeltakerStatusResponseDTO.VENTER_PA_OPPSTART
-                        DeltakerStatusDTO.DELTAR -> DeltakerStatusResponseDTO.DELTAR
-                        DeltakerStatusDTO.HAR_SLUTTET -> DeltakerStatusResponseDTO.HAR_SLUTTET
-                        DeltakerStatusDTO.IKKE_AKTUELL -> DeltakerStatusResponseDTO.IKKE_AKTUELL
-                        DeltakerStatusDTO.VURDERES -> DeltakerStatusResponseDTO.VURDERES
-                        DeltakerStatusDTO.AVBRUTT -> DeltakerStatusResponseDTO.AVBRUTT
-                    },
-                )
-            }
+                    )
+                }
+
+            val arena = arenaClient.hentTiltakArena(fnr)
+                .filter { it.deltakerStatusType in arenaStatusViVilHa }
+                .filter { it.tiltakType.name in tiltakViVilHaFraArena }
+                .map {
+                    TiltakDeltakelseResponse(
+                        id = it.aktivitetId,
+                        gjennomforing = GjennomforingResponseDTO(
+                            id = "",
+                            arrangornavn = it.arrangoer ?: "Ukjent",
+                            typeNavn = it.tiltakType.navn,
+                            arenaKode = it.tiltakType.name,
+                            startDato = null,
+                            sluttDato = null,
+                        ),
+                        startDato = it.deltakelsePeriode?.fom,
+                        sluttDato = it.deltakelsePeriode?.tom,
+                        status = when (val status = it.deltakerStatusType) {
+                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.DELAVB -> DeltakerStatusResponseDTO.AVBRUTT
+                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.FULLF -> DeltakerStatusResponseDTO.FULLFORT
+                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.GJENN -> DeltakerStatusResponseDTO.DELTAR
+                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.GJENN_AVB -> DeltakerStatusResponseDTO.AVBRUTT
+                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.IKKEM -> DeltakerStatusResponseDTO.IKKE_AKTUELL
+                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.JATAKK -> DeltakerStatusResponseDTO.DELTAR
+                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.TILBUD -> DeltakerStatusResponseDTO.VENTER_PA_OPPSTART
+                            else -> throw IllegalStateException("Fikk en staus fra Arena vi ikke vil ha $status")
+                        },
+                        dagerPerUke = it.antallDagerPerUke,
+                        prosentStilling = it.deltakelseProsent,
+                        registrertDato = LocalDateTime.from(it.statusSistEndret),
+                    )
+                }
+
+            arena + kometOgValp
         }
 
         return tiltakdeltakelser
