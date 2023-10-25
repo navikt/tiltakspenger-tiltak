@@ -44,36 +44,6 @@ enum class DeltakerStatusResponseDTO {
     FULLFORT,
 }
 
-// data class ValpResponse(
-//    val id: UUID,
-//    val tiltakstype: TiltakstypeResponse,
-//    val navn: String,
-//    val startDato: LocalDate,
-//    val sluttDato: LocalDate?,
-//    val status: TiltaksgjennomforingsstatusResponse,
-//    val virksomhetsnummer: String,
-//    val oppstart: TiltaksgjennomforingOppstartstypeResponse,
-// )
-//
-// data class TiltakstypeResponse(
-//    val id: UUID,
-//    val navn: String,
-//    val arenaKode: String,
-// )
-
-// enum class TiltaksgjennomforingsstatusResponse {
-//    GJENNOMFORES,
-//    AVBRUTT,
-//    AVLYST,
-//    AVSLUTTET,
-//    APENT_FOR_INNSOK,
-// }
-//
-// enum class TiltaksgjennomforingOppstartstypeResponse {
-//    LOPENDE,
-//    FELLES,
-// }
-
 val kometStatusViVilHa = listOf(
     DeltakerStatusDTO.AVBRUTT,
     DeltakerStatusDTO.FULLFORT,

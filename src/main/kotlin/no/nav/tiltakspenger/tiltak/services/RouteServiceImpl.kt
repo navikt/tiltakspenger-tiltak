@@ -2,12 +2,23 @@ package no.nav.tiltakspenger.tiltak.services
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
+import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
 import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClient
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
+import no.nav.tiltakspenger.tiltak.services.DeltakerStatusResponseDTO.AVBRUTT
+import no.nav.tiltakspenger.tiltak.services.DeltakerStatusResponseDTO.DELTAR
+import no.nav.tiltakspenger.tiltak.services.DeltakerStatusResponseDTO.FEILREGISTRERT
+import no.nav.tiltakspenger.tiltak.services.DeltakerStatusResponseDTO.FULLFORT
+import no.nav.tiltakspenger.tiltak.services.DeltakerStatusResponseDTO.HAR_SLUTTET
+import no.nav.tiltakspenger.tiltak.services.DeltakerStatusResponseDTO.IKKE_AKTUELL
+import no.nav.tiltakspenger.tiltak.services.DeltakerStatusResponseDTO.PABEGYNT_REGISTRERING
+import no.nav.tiltakspenger.tiltak.services.DeltakerStatusResponseDTO.SOKT_INN
+import no.nav.tiltakspenger.tiltak.services.DeltakerStatusResponseDTO.VENTELISTE
+import no.nav.tiltakspenger.tiltak.services.DeltakerStatusResponseDTO.VENTER_PA_OPPSTART
+import no.nav.tiltakspenger.tiltak.services.DeltakerStatusResponseDTO.VURDERES
 import java.time.LocalDateTime
 
 val securelog = KotlinLogging.logger("tjenestekall")
@@ -44,19 +55,19 @@ class RouteServiceImpl(
                             sluttDato = gjennomføring.sluttDato,
                         ),
                         status = when (deltakelse.status) {
-                            DeltakerStatusDTO.AVBRUTT -> DeltakerStatusResponseDTO.AVBRUTT
-                            DeltakerStatusDTO.FULLFORT -> DeltakerStatusResponseDTO.FULLFORT
-                            DeltakerStatusDTO.DELTAR -> DeltakerStatusResponseDTO.DELTAR
-                            DeltakerStatusDTO.IKKE_AKTUELL -> DeltakerStatusResponseDTO.IKKE_AKTUELL
-                            DeltakerStatusDTO.VENTER_PA_OPPSTART -> DeltakerStatusResponseDTO.VENTER_PA_OPPSTART
-                            DeltakerStatusDTO.HAR_SLUTTET -> DeltakerStatusResponseDTO.HAR_SLUTTET
+                            DeltakerStatusDTO.AVBRUTT -> AVBRUTT
+                            DeltakerStatusDTO.FULLFORT -> FULLFORT
+                            DeltakerStatusDTO.DELTAR -> DELTAR
+                            DeltakerStatusDTO.IKKE_AKTUELL -> IKKE_AKTUELL
+                            DeltakerStatusDTO.VENTER_PA_OPPSTART -> VENTER_PA_OPPSTART
+                            DeltakerStatusDTO.HAR_SLUTTET -> HAR_SLUTTET
 
-                            // Disse er vi ikke interresert i...
-                            DeltakerStatusDTO.VURDERES -> DeltakerStatusResponseDTO.VURDERES
-                            DeltakerStatusDTO.FEILREGISTRERT -> DeltakerStatusResponseDTO.FEILREGISTRERT
-                            DeltakerStatusDTO.PABEGYNT_REGISTRERING -> DeltakerStatusResponseDTO.PABEGYNT_REGISTRERING
-                            DeltakerStatusDTO.SOKT_INN -> DeltakerStatusResponseDTO.SOKT_INN
-                            DeltakerStatusDTO.VENTELISTE -> DeltakerStatusResponseDTO.VENTELISTE
+                            // Disse er vi ikke interresert i, de blir filtrer bort i tiltakViVilHaFraKomet...
+                            DeltakerStatusDTO.VURDERES -> VURDERES
+                            DeltakerStatusDTO.FEILREGISTRERT -> FEILREGISTRERT
+                            DeltakerStatusDTO.PABEGYNT_REGISTRERING -> PABEGYNT_REGISTRERING
+                            DeltakerStatusDTO.SOKT_INN -> SOKT_INN
+                            DeltakerStatusDTO.VENTELISTE -> VENTELISTE
                         },
                     )
                 }
@@ -78,13 +89,13 @@ class RouteServiceImpl(
                         startDato = it.deltakelsePeriode?.fom,
                         sluttDato = it.deltakelsePeriode?.tom,
                         status = when (val status = it.deltakerStatusType) {
-                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.DELAVB -> DeltakerStatusResponseDTO.AVBRUTT
-                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.FULLF -> DeltakerStatusResponseDTO.FULLFORT
-                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.GJENN -> DeltakerStatusResponseDTO.DELTAR
-                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.GJENN_AVB -> DeltakerStatusResponseDTO.AVBRUTT
-                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.IKKEM -> DeltakerStatusResponseDTO.IKKE_AKTUELL
-                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.JATAKK -> DeltakerStatusResponseDTO.DELTAR
-                            ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType.TILBUD -> DeltakerStatusResponseDTO.VENTER_PA_OPPSTART
+                            DeltakerStatusType.DELAVB -> AVBRUTT
+                            DeltakerStatusType.FULLF -> FULLFORT
+                            DeltakerStatusType.GJENN -> DELTAR
+                            DeltakerStatusType.GJENN_AVB -> AVBRUTT
+                            DeltakerStatusType.IKKEM -> IKKE_AKTUELL
+                            DeltakerStatusType.JATAKK -> DELTAR
+                            DeltakerStatusType.TILBUD -> VENTER_PA_OPPSTART
                             else -> throw IllegalStateException("Fikk en staus fra Arena vi ikke vil ha $status")
                         },
                         dagerPerUke = it.antallDagerPerUke,
