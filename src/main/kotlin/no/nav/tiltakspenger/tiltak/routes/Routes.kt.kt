@@ -18,7 +18,7 @@ data class Response(
 fun Route.routes(
     routesService: RoutesService,
 ) {
-    get("/test/") {
+    get("/test") {
         val ident = call.request.queryParameters["ident"] ?: "09015607561"
         val response = Response(
             deltakelser = routesService.hentTiltak(ident),

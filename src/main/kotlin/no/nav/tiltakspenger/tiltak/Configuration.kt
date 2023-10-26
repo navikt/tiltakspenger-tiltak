@@ -45,6 +45,12 @@ object Configuration {
             "AZURE_APP_CLIENT_ID" to "xxx",
             "AZURE_APP_CLIENT_SECRET" to "YYY",
             "AZURE_APP_WELL_KNOWN_URL" to "ZZZ",
+            "TOKEN_X_CLIENT_ID" to "TOKEN_X_CLIENT_ID",
+            "TOKEN_X_WELL_KNOWN_URL" to "TOKEN_X_WELL_KNOWN_URL",
+            "TOKEN_X_ISSUER" to "default",
+            "TOKEN_X_JWKS_URI" to "TOKEN_X_JWKS_URI",
+            "AZURE_OPENID_CONFIG_ISSUER" to "AZURE_OPENID_CONFIG_ISSUER",
+            "AZURE_OPENID_CONFIG_JWKS_URI" to "AZURE_OPENID_CONFIG_JWKS_URI",
         ),
     )
     private val devProperties = ConfigurationMap(

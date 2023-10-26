@@ -64,12 +64,16 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
+
+    testImplementation("no.nav.security:mock-oauth2-server:1.0.0")
+    testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.4")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.10")
 }
 
-configurations.all {
+/*configurations.all {
     // exclude JUnit 4
     exclude(group = "junit", module = "junit")
-}
+}*/
 
 application {
     mainClass.set("no.nav.tiltakspenger.tiltak.ApplicationKt")

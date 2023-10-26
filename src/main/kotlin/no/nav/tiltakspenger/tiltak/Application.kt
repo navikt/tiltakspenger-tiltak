@@ -94,11 +94,11 @@ fun Application.setupRouting(
     routing {
         healthRoutes()
         // TODO Vi må få på plass autentisering av denne routen før vi fjerner sjekken på at vi ikke er i prod
-        authenticate("azure") {
+        /*authenticate("azure") {
             if (kjøreMiljø() != Profile.PROD) {
                 routes(routesService)
             }
-        }
+        }*/
         authenticate("tokenx") {
             if (kjøreMiljø() != Profile.PROD) {
                 routes(routesService)
