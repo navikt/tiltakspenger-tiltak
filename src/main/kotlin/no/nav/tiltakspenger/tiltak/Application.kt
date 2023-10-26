@@ -1,21 +1,28 @@
 package no.nav.tiltakspenger.tiltak
 
+import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
+import no.nav.tiltakspenger.tiltak.Configuration.azureValidationConfig
 import no.nav.tiltakspenger.tiltak.Configuration.kjøreMiljø
 import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigArena
 import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigKomet
 import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigTiltak
 import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigValp
+import no.nav.tiltakspenger.tiltak.Configuration.tokenxValidationConfig
 import no.nav.tiltakspenger.tiltak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClientImpl
@@ -28,6 +35,7 @@ import no.nav.tiltakspenger.tiltak.routes.healthRoutes
 import no.nav.tiltakspenger.tiltak.routes.routes
 import no.nav.tiltakspenger.tiltak.services.RouteServiceImpl
 import no.nav.tiltakspenger.tiltak.services.RoutesService
+import java.util.concurrent.TimeUnit
 
 fun main() {
     System.setProperty("logback.configurationFile", Configuration.logbackConfigurationFile())
@@ -81,12 +89,59 @@ fun Application.setupRouting(
     routesService: RoutesService,
 ) {
     jacksonSerialization()
+    installAuthentication()
     // TODO vi må også finne ut om vi skal kalle denne både med route og R&R, eller om vi bare skal støtte Route
     routing {
         healthRoutes()
         // TODO Vi må få på plass autentisering av denne routen før vi fjerner sjekken på at vi ikke er i prod
-        if (kjøreMiljø() != Profile.PROD) {
-            routes(routesService)
+        authenticate("azure") {
+            if (kjøreMiljø() != Profile.PROD) {
+                routes(routesService)
+            }
+        }
+        authenticate("tokenx") {
+            if (kjøreMiljø() != Profile.PROD) {
+                routes(routesService)
+            }
+        }
+    }
+}
+
+fun Application.installAuthentication() {
+    val tokenxValidationConfig = tokenxValidationConfig()
+    val azureValidationConfig = azureValidationConfig()
+
+    val azureTokenProvider = JwkProviderBuilder(tokenxValidationConfig.jwksUri)
+        .cached(10, 24, TimeUnit.HOURS)
+        .rateLimited(10, 1, TimeUnit.MINUTES)
+        .build()
+    val tokenxTokenProvider = JwkProviderBuilder(azureValidationConfig.jwksUri)
+        .cached(10, 24, TimeUnit.HOURS)
+        .rateLimited(10, 1, TimeUnit.MINUTES)
+        .build()
+
+    install(Authentication) {
+        jwt("azure") {
+            verifier(azureTokenProvider, azureValidationConfig.issuer)
+            validate { credential ->
+                if (credential.audience.contains(azureValidationConfig.clientId)) {
+                    JWTPrincipal(credential.payload)
+                } else {
+                    null
+                }
+            }
+        }
+        jwt("tokenx") {
+            verifier(tokenxTokenProvider, tokenxValidationConfig.issuer)
+            validate { credential ->
+                if (credential.audience.contains(tokenxValidationConfig.clientId) && credential.payload.getClaim("pid")
+                        .asString() != ""
+                ) {
+                    JWTPrincipal(credential.payload)
+                } else {
+                    null
+                }
+            }
         }
     }
 }

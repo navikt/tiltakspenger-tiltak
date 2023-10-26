@@ -21,6 +21,10 @@ object Configuration {
         "AZURE_APP_CLIENT_ID" to System.getenv("AZURE_APP_CLIENT_ID"),
         "AZURE_APP_CLIENT_SECRET" to System.getenv("AZURE_APP_CLIENT_SECRET"),
         "AZURE_APP_WELL_KNOWN_URL" to System.getenv("AZURE_APP_WELL_KNOWN_URL"),
+        "TOKEN_X_CLIENT_ID" to System.getenv("TOKEN_X_CLIENT_ID"),
+        "TOKEN_X_WELL_KNOWN_URL" to System.getenv("TOKEN_X_WELL_KNOWN_URL"),
+        "TOKEN_X_ISSUER" to System.getenv("TOKEN_X_ISSUER"),
+        "TOKEN_X_JWKS_URI" to System.getenv("TOKEN_X_JWKS_URI"),
         "logback.configurationFile" to "logback.xml",
     )
 
@@ -103,6 +107,37 @@ object Configuration {
 
     fun tiltakClientConfig(baseUrl: String = config()[Key("TILTAK_URL", stringType)]) =
         ClientConfig(baseUrl = baseUrl)
+
+    fun tokenxValidationConfig(
+        clientId: String = config()[Key("TOKEN_X_CLIENT_ID", stringType)],
+        wellKnownUrl: String = config()[Key("TOKEN_X_WELL_KNOWN_URL", stringType)],
+        issuer: String = config()[Key("TOKEN_X_ISSUER", stringType)],
+        jwksUri: String = config()[Key("TOKEN_X_JWKS_URI", stringType)],
+    ) = TokenValidationConfig(
+        clientId = clientId,
+        wellKnownUrl = wellKnownUrl,
+        issuer = issuer,
+        jwksUri = jwksUri,
+    )
+
+    fun azureValidationConfig(
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        wellKnownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+        issuer: String = config()[Key("AZURE_OPENID_CONFIG_ISSUER", stringType)],
+        jwksUri: String = config()[Key("AZURE_OPENID_CONFIG_JWKS_URI", stringType)],
+    ) = TokenValidationConfig(
+        clientId = clientId,
+        wellKnownUrl = wellKnownUrl,
+        issuer = issuer,
+        jwksUri = jwksUri,
+    )
+
+    data class TokenValidationConfig(
+        val clientId: String,
+        val wellKnownUrl: String,
+        val issuer: String,
+        val jwksUri: String,
+    )
 
     data class ClientConfig(
         val baseUrl: String,
