@@ -17,7 +17,6 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.Configuration.azureValidationConfig
-import no.nav.tiltakspenger.tiltak.Configuration.kjøreMiljø
 import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigArena
 import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigKomet
 import no.nav.tiltakspenger.tiltak.Configuration.oauthConfigTiltak
@@ -31,8 +30,9 @@ import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClient
 import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClientImpl
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClientImpl
+import no.nav.tiltakspenger.tiltak.routes.azureRoutes
 import no.nav.tiltakspenger.tiltak.routes.healthRoutes
-import no.nav.tiltakspenger.tiltak.routes.routes
+import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
 import no.nav.tiltakspenger.tiltak.services.RouteServiceImpl
 import no.nav.tiltakspenger.tiltak.services.RoutesService
 import java.util.concurrent.TimeUnit
@@ -90,19 +90,13 @@ fun Application.setupRouting(
 ) {
     jacksonSerialization()
     installAuthentication()
-    // TODO vi må også finne ut om vi skal kalle denne både med route og R&R, eller om vi bare skal støtte Route
     routing {
         healthRoutes()
-        // TODO Vi må få på plass autentisering av denne routen før vi fjerner sjekken på at vi ikke er i prod
-        /*authenticate("azure") {
-            if (kjøreMiljø() != Profile.PROD) {
-                routes(routesService)
-            }
-        }*/
         authenticate("tokenx") {
-            if (kjøreMiljø() != Profile.PROD) {
-                routes(routesService)
-            }
+            tokenxRoutes(routesService)
+        }
+        authenticate("azure") {
+            azureRoutes(routesService)
         }
     }
 }
@@ -111,11 +105,11 @@ fun Application.installAuthentication() {
     val tokenxValidationConfig = tokenxValidationConfig()
     val azureValidationConfig = azureValidationConfig()
 
-    val azureTokenProvider = JwkProviderBuilder(tokenxValidationConfig.jwksUri)
+    val azureTokenProvider = JwkProviderBuilder(azureValidationConfig.jwksUri)
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()
-    val tokenxTokenProvider = JwkProviderBuilder(azureValidationConfig.jwksUri)
+    val tokenxTokenProvider = JwkProviderBuilder(tokenxValidationConfig.jwksUri)
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()
