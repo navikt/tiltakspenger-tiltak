@@ -42,6 +42,7 @@ import no.nav.tiltakspenger.tiltak.routes.healthRoutes
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
 import no.nav.tiltakspenger.tiltak.services.RouteServiceImpl
 import no.nav.tiltakspenger.tiltak.services.RoutesService
+import java.net.URL
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -116,11 +117,11 @@ fun Application.installAuthentication() {
     val tokenxValidationConfig = tokenxValidationConfig()
     val azureValidationConfig = azureValidationConfig()
 
-    val azureTokenProvider = JwkProviderBuilder(azureValidationConfig.jwksUri)
+    val azureTokenProvider = JwkProviderBuilder(URL(azureValidationConfig.jwksUri))
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()
-    val tokenxTokenProvider = JwkProviderBuilder(tokenxValidationConfig.jwksUri)
+    val tokenxTokenProvider = JwkProviderBuilder(URL(tokenxValidationConfig.jwksUri))
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()
