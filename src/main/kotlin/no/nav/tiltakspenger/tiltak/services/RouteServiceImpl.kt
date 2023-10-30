@@ -103,7 +103,7 @@ class RouteServiceImpl(
                         },
                         dagerPerUke = it.antallDagerPerUke,
                         prosentStilling = it.deltakelseProsent,
-                        registrertDato = LocalDateTime.from(it.statusSistEndret),
+                        registrertDato = LocalDateTime.from(it.statusSistEndret?.atStartOfDay()) ?: LocalDateTime.now(),
                     )
                 }
 
