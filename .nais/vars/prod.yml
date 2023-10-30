@@ -1,5 +1,6 @@
 kafka:
   pool: nav-prod
+cluster: prod-gcp
 ingress:
   url: https://tiltakspenger-tiltak.intern.nav.no
 outboundExternalUrls:
