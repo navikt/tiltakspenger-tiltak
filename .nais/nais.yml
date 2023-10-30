@@ -28,6 +28,11 @@ spec:
   secureLogs:
     enabled: true
   accessPolicy:
+    inbound:
+      rules:
+        - application: tiltakspenger-soknad-api
+          namespace: tpts
+          cluster: {{ cluster }}
     outbound:
       rules:
         - application: amt-tiltak
