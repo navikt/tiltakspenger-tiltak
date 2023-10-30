@@ -13,6 +13,9 @@ import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.callid.CallId
+import io.ktor.server.plugins.callid.callIdMdc
+import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
@@ -35,6 +38,7 @@ import no.nav.tiltakspenger.tiltak.routes.healthRoutes
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
 import no.nav.tiltakspenger.tiltak.services.RouteServiceImpl
 import no.nav.tiltakspenger.tiltak.services.RoutesService
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 fun main() {
@@ -82,6 +86,7 @@ fun Application.tiltak(
         arenaClient = arenaClient,
     ),
 ) {
+    installCallLogging()
     setupRouting(routesService)
 }
 
@@ -147,5 +152,15 @@ fun Application.jacksonSerialization() {
             registerModule(JavaTimeModule())
             registerModule(KotlinModule.Builder().build())
         }
+    }
+}
+
+internal fun Application.installCallLogging() {
+    install(CallId) {
+        generate { UUID.randomUUID().toString() }
+    }
+    install(CallLogging) {
+        callIdMdc("call-id")
+        disableDefaultColors()
     }
 }
