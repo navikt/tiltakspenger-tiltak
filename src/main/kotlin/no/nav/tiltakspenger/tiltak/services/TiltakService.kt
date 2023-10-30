@@ -5,6 +5,7 @@ import mu.withLoggingContext
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
+import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 
@@ -53,6 +54,14 @@ class TiltakService(
         }.onFailure {
             loggVedFeil(it, packet)
         }.getOrThrow()
+    }
+
+    override fun onSevere(error: MessageProblems.MessageException, context: MessageContext) {
+        SECURELOG.error("feil ${error.message} ved behandling av tiltak-behov", error)
+    }
+
+    override fun onError(problems: MessageProblems, context: MessageContext) {
+        LOG.info { "meldingen validerte ikke: $problems" }
     }
 
     private fun loggVedInngang(packet: JsonMessage) {
