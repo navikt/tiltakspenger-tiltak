@@ -38,7 +38,6 @@ class KometClientImpl(
     }
 
     override suspend fun hentTiltakDeltagelser(fnr: String): List<DeltakerDTO> {
-        println("${config.baseUrl}/api/external/deltakelser")
         val httpResponse =
             httpClient.post("${config.baseUrl}/api/external/deltakelser") {
                 header(navCallIdHeader, "tiltakspenger-tiltak") // TODO hva skal vi bruke her?

@@ -33,10 +33,11 @@ class RouteServiceImpl(
     override fun hentTiltak(fnr: String): List<TiltakDeltakelseResponse> {
         val tiltakdeltakelser = runBlocking {
             val kometOgValp = kometClient.hentTiltakDeltagelser(fnr)
+                .also { securelog.info { "Hele svaret fra komet $it" } }
                 .filter { it.status in kometStatusViVilHa }
                 .filter { it.gjennomforing.type in tiltakViVilHaFraKomet }
                 .map { deltakelse ->
-                    securelog.info { deltakelse }
+                    securelog.info { "Deltakelsene vi mapper tilbake $deltakelse" }
                     val gjennomføring = valpClient.hentTiltakGjennomføring(deltakelse.gjennomforing.id)
                         ?: throw IllegalStateException("Fant ikke gjennomføring i Valp")
                     TiltakDeltakelseResponse(
@@ -73,9 +74,11 @@ class RouteServiceImpl(
                 }
 
             val arena = arenaClient.hentTiltakArena(fnr)
+                .also { securelog.info { "Hele svaret fra arena $it" } }
                 .filter { it.deltakerStatusType in arenaStatusViVilHa }
                 .filter { it.tiltakType.name in tiltakViVilHaFraArena }
                 .map {
+                    securelog.info { "Deltakelsene fra Arena vi mapper tilbake $it" }
                     TiltakDeltakelseResponse(
                         id = it.aktivitetId,
                         gjennomforing = GjennomforingResponseDTO(
