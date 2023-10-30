@@ -4,6 +4,7 @@ import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -17,6 +18,9 @@ import io.ktor.server.plugins.callid.CallId
 import io.ktor.server.plugins.callid.callIdMdc
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.request.httpMethod
+import io.ktor.server.request.path
+import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.Configuration.azureValidationConfig
@@ -107,6 +111,8 @@ fun Application.setupRouting(
 }
 
 fun Application.installAuthentication() {
+    val securelog = KotlinLogging.logger("tjenestekall")
+
     val tokenxValidationConfig = tokenxValidationConfig()
     val azureValidationConfig = azureValidationConfig()
 
@@ -132,7 +138,12 @@ fun Application.installAuthentication() {
         }
         jwt("tokenx") {
             verifier(tokenxTokenProvider, tokenxValidationConfig.issuer)
+            challenge { _, _ ->
+                securelog.info { "verifier feilet" }
+                call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang! Issuer: ${tokenxValidationConfig.issuer}")
+            }
             validate { credential ->
+                securelog.info("Credentials: $credential")
                 if (credential.audience.contains(tokenxValidationConfig.clientId) && credential.payload.getClaim("pid")
                         .asString() != ""
                 ) {
@@ -156,11 +167,25 @@ fun Application.jacksonSerialization() {
 }
 
 internal fun Application.installCallLogging() {
+    val securelog = KotlinLogging.logger("tjenestekall")
     install(CallId) {
         generate { UUID.randomUUID().toString() }
     }
     install(CallLogging) {
         callIdMdc("call-id")
         disableDefaultColors()
+        filter { call ->
+            !call.request.path().contains("/isalive") &&
+            !call.request.path().contains("/isready")
+        }
+        format { call ->
+            val status = call.response.status()
+            val httpMethod = call.request.httpMethod.value
+            val req = call.request
+            val userAgent = call.request.headers["User-Agent"]
+            val auth = call.request.headers["Authorization"]
+            securelog.info { "Authentication: $auth" }
+            "Status: $status, HTTP method: $httpMethod, User agent: $userAgent req: $req"
+        }
     }
 }
