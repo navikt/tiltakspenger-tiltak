@@ -176,7 +176,8 @@ internal fun Application.installCallLogging() {
         disableDefaultColors()
         filter { call ->
             !call.request.path().contains("/isalive") &&
-                !call.request.path().contains("/isready")
+                !call.request.path().contains("/isready") &&
+                !call.request.path().contains("/metrics")
         }
         format { call ->
             val status = call.response.status()
