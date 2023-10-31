@@ -57,11 +57,11 @@ class TiltakService(
     }
 
     override fun onSevere(error: MessageProblems.MessageException, context: MessageContext) {
-        SECURELOG.error("feil ${error.message} ved behandling av tiltak-behov", error)
+        SECURELOG.error { "on severe ${error.message} ved behandling av tiltak-behov med context $context" }
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {
-        LOG.info { "meldingen validerte ikke: $problems" }
+        SECURELOG.error { "on error ${problems.toExtendedReport()} ved behandling av tiltak-behov med context $context" }
     }
 
     private fun loggVedInngang(packet: JsonMessage) {
