@@ -23,7 +23,7 @@ fun Route.tokenxRoutes(
 
     get("/tokenx/tiltak") {
         val ident = requireNotNull(call.principal<JWTPrincipal>()?.getClaim("pid", String::class)) { "pid er null i token" }
-        val response = routesService.hentTiltak(ident)
+        val response = routesService.hentTiltakForSøknad(ident)
         securelog.info { response }
         call.respond(message = response, status = HttpStatusCode.OK)
     }
@@ -31,7 +31,7 @@ fun Route.tokenxRoutes(
     post("/tokenx/tiltak") {
         val ident = call.receive<RequestBody>().ident
 
-        val response = routesService.hentTiltak(ident)
+        val response = routesService.hentTiltakForSøknad(ident)
         securelog.info { response }
         call.respond(message = response, status = HttpStatusCode.OK)
     }

@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.clients.komet
+package no.nav.tiltakspenger.tiltak.clients.komet
 
 import io.kotest.matchers.collections.shouldContainAll
 import io.ktor.client.engine.mock.MockEngine
@@ -8,14 +8,8 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
-import no.nav.tiltakspenger.tiltak.clients.komet.ArrangorDTO
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerDTO
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO
-import no.nav.tiltakspenger.tiltak.clients.komet.GjennomforingDTO
-import no.nav.tiltakspenger.tiltak.clients.komet.KometClientImpl
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
-import java.util.*
 
 internal class KometClientImplTest {
 

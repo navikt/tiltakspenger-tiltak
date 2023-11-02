@@ -24,7 +24,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.routes.azureRoutes
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
 import no.nav.tiltakspenger.tiltak.services.RoutesService
-import java.net.URL
+import java.net.URI
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -56,11 +56,11 @@ fun Application.installAuthentication() {
     val tokenxValidationConfig = Configuration.tokenxValidationConfig()
     val azureValidationConfig = Configuration.azureValidationConfig()
 
-    val azureTokenProvider = JwkProviderBuilder(URL(azureValidationConfig.jwksUri))
+    val azureTokenProvider = JwkProviderBuilder(URI(azureValidationConfig.jwksUri).toURL())
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()
-    val tokenxTokenProvider = JwkProviderBuilder(URL(tokenxValidationConfig.jwksUri))
+    val tokenxTokenProvider = JwkProviderBuilder(URI(tokenxValidationConfig.jwksUri).toURL())
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()

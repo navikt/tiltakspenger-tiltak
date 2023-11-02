@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.clients.valp
+package no.nav.tiltakspenger.tiltak.clients.valp
 
 import io.kotest.matchers.shouldBe
 import io.ktor.client.engine.mock.MockEngine
@@ -8,11 +8,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
-import no.nav.tiltakspenger.tiltak.clients.valp.TiltaksgjennomforingOppstartstype
-import no.nav.tiltakspenger.tiltak.clients.valp.Tiltaksgjennomforingsstatus
-import no.nav.tiltakspenger.tiltak.clients.valp.Tiltakstype
-import no.nav.tiltakspenger.tiltak.clients.valp.ValpClientImpl
-import no.nav.tiltakspenger.tiltak.clients.valp.ValpDTO
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.util.*

@@ -24,7 +24,8 @@ fun Route.azureRoutes(
     get("/azure/tiltak") {
         val ident = requireNotNull(call.principal<JWTPrincipal>()?.getClaim("ident", String::class)) { "ident er null i token" }
 
-        val response = routesService.hentTiltak(ident)
+        val response = routesService.hentAlleTiltak(ident)
+
         securelog.info { response }
         call.respond(message = response, status = HttpStatusCode.OK)
     }
@@ -32,7 +33,7 @@ fun Route.azureRoutes(
     post("/azure/tiltak") {
         val ident = call.receive<RequestBody>().ident
 
-        val response = routesService.hentTiltak(ident)
+        val response = routesService.hentAlleTiltak(ident)
         securelog.info { response }
         call.respond(message = response, status = HttpStatusCode.OK)
     }

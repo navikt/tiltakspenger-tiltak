@@ -5,9 +5,9 @@ import mu.withLoggingContext
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
-import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 private val LOG = KotlinLogging.logger {}
@@ -43,7 +43,11 @@ class TiltakService(
                 "behovId" to packet["@behovId"].asText(),
             ) {
                 val ident = packet["ident"].asText()
-                val respons = routesService.hentTiltak(ident)
+
+                val respons = TiltakResponsDTO(
+                    tiltak = routesService.hentAlleTiltak(ident),
+                    feil = null,
+                )
 
                 packet["@løsning"] = mapOf(
                     BEHOV.TILTAK to respons,
@@ -54,14 +58,6 @@ class TiltakService(
         }.onFailure {
             loggVedFeil(it, packet)
         }.getOrThrow()
-    }
-
-    override fun onSevere(error: MessageProblems.MessageException, context: MessageContext) {
-        SECURELOG.error { "on severe ${error.message} ved behandling av tiltak-behov med context $context" }
-    }
-
-    override fun onError(problems: MessageProblems, context: MessageContext) {
-        SECURELOG.error { "on error ${problems.toExtendedReport()} ved behandling av tiltak-behov med context $context" }
     }
 
     private fun loggVedInngang(packet: JsonMessage) {

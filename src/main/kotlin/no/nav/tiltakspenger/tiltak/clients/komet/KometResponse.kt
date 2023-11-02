@@ -3,11 +3,6 @@ package no.nav.tiltakspenger.tiltak.clients.komet
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
-import kotlin.collections.List
-
-data class KometResponse(
-    val deltakelser: List<DeltakerDTO>,
-)
 
 data class DeltakerDTO(
     val id: String,
