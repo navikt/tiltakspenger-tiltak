@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
 import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClient
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpDTO
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 val securelog = KotlinLogging.logger("tjenestekall")
@@ -102,8 +103,8 @@ private fun mapArenaTiltak(tiltak: ArenaTiltaksaktivitetResponsDTO.Tiltaksaktivi
             startDato = null,
             sluttDato = null,
         ),
-        startDato = tiltak.deltakelsePeriode?.fom,
-        sluttDato = tiltak.deltakelsePeriode?.tom,
+        startDato = earliest(tiltak.deltakelsePeriode?.fom, tiltak.deltakelsePeriode?.tom),
+        sluttDato = latest(tiltak.deltakelsePeriode?.fom, tiltak.deltakelsePeriode?.tom),
         status = when (tiltak.deltakerStatusType) {
             DeltakerStatusType.DELAVB -> DeltakerStatusResponseDTO.AVBRUTT
             DeltakerStatusType.FULLF -> DeltakerStatusResponseDTO.FULLFORT
@@ -127,6 +128,25 @@ private fun mapArenaTiltak(tiltak: ArenaTiltaksaktivitetResponsDTO.Tiltaksaktivi
         registrertDato = LocalDateTime.from(tiltak.statusSistEndret?.atStartOfDay()) ?: LocalDateTime.now(),
     )
 }
+
+// Fordi Arena noen ganger bytter om på fom og tom, må vi bytte tilbake hvis det skjer...
+private fun earliest(fom: LocalDate?, tom: LocalDate?) =
+    when {
+        fom != null && tom != null -> if (tom.isBefore(fom)) {
+            securelog.warn { "fom er etter tom, så vi bytter om de to datoene på tiltaket" }
+            tom
+        } else {
+            fom
+        }
+
+        else -> fom
+    }
+
+private fun latest(fom: LocalDate?, tom: LocalDate?) =
+    when {
+        fom != null && tom != null -> if (fom.isAfter(tom)) fom else tom
+        else -> tom
+    }
 
 val tiltakViFårFraKomet = setOf(
     "INDOPPFAG",
