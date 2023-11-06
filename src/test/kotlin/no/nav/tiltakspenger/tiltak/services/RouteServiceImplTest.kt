@@ -8,8 +8,7 @@ import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.KURS
-import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusResponseDTO
-import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.komet.ArrangorDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerDTO
@@ -104,15 +103,15 @@ internal class RouteServiceImplTest {
 
         tiltakListe.size shouldBe 12
         tiltakListe.map {
-            println(it.status)
-            it.status
+            println(it.deltakelseStatus)
+            it.deltakelseStatus
         } shouldNotContain listOf(
-            DeltakerStatusResponseDTO.IKKE_AKTUELL,
-            DeltakerStatusResponseDTO.FEILREGISTRERT,
-            DeltakerStatusResponseDTO.PABEGYNT_REGISTRERING,
-            DeltakerStatusResponseDTO.SOKT_INN,
-            DeltakerStatusResponseDTO.VENTELISTE,
-            DeltakerStatusResponseDTO.VURDERES,
+            TiltakResponsDTO.DeltakerStatusDTO.IKKE_AKTUELL,
+            TiltakResponsDTO.DeltakerStatusDTO.FEILREGISTRERT,
+            TiltakResponsDTO.DeltakerStatusDTO.PABEGYNT_REGISTRERING,
+            TiltakResponsDTO.DeltakerStatusDTO.SOKT_INN,
+            TiltakResponsDTO.DeltakerStatusDTO.VENTELISTE,
+            TiltakResponsDTO.DeltakerStatusDTO.VURDERES,
         )
     }
 
@@ -136,8 +135,8 @@ internal class RouteServiceImplTest {
         val tiltakListe = routesService.hentAlleTiltak("123")
 
         tiltakListe.size shouldBe 2
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakType.ARBFORB }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakType.AMO }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.ARBFORB }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.AMO }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
     }
 
     @Test
@@ -160,8 +159,8 @@ internal class RouteServiceImplTest {
         val tiltakListe = routesService.hentAlleTiltak("123")
 
         tiltakListe.size shouldBe 2
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakType.VASV }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakType.KURS }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.VASV }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.KURS }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
     }
 
     @Test
@@ -194,7 +193,7 @@ internal class RouteServiceImplTest {
         val tiltakListe = routesService.hentAlleTiltak("123")
 
         tiltakListe.size shouldBe 12
-        tiltakListe.all { it.status.girRettTilÅASøke }
+        tiltakListe.all { it.deltakelseStatus.rettTilÅSøke }
     }
 
     @Test
@@ -228,7 +227,7 @@ internal class RouteServiceImplTest {
         val tiltakListe = routesService.hentAlleTiltak("123")
 
         tiltakListe.size shouldBe 13
-        tiltakListe.all { !it.status.girRettTilÅASøke }
+        tiltakListe.all { !it.deltakelseStatus.rettTilÅSøke }
     }
 }
 

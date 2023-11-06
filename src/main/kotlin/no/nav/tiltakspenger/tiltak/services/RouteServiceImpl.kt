@@ -4,13 +4,23 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType
-import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusResponseDTO
-import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.GjennomforingResponseDTO
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerDTO
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.AVBRUTT
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.DELTAR
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.FEILREGISTRERT
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.FULLFORT
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.HAR_SLUTTET
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.IKKE_AKTUELL
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.PABEGYNT_REGISTRERING
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.SOKT_INN
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.VENTELISTE
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.VENTER_PA_OPPSTART
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.VURDERES
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
 import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClient
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
@@ -53,7 +63,7 @@ class RouteServiceImpl(
 
     override fun hentTiltakForSøknad(fnr: String): List<TiltakDTO> {
         return hentAlleTiltak(fnr)
-            .filter { it.status.girRettTilÅASøke }
+            .filter { it.deltakelseStatus.rettTilÅSøke }
             .filter { it.gjennomforing.arenaKode.rettPåTiltakspenger }
     }
 }
@@ -61,33 +71,34 @@ class RouteServiceImpl(
 private fun mapKometTiltak(deltakelse: DeltakerDTO, gjennomføring: ValpDTO): TiltakDTO {
     return TiltakDTO(
         id = deltakelse.id,
-        startDato = deltakelse.startDato,
-        sluttDato = deltakelse.sluttDato,
-        dagerPerUke = deltakelse.dagerPerUke,
-        prosentStilling = deltakelse.prosentStilling,
+        deltakelseFom = deltakelse.startDato,
+        deltakelseTom = deltakelse.sluttDato,
+        deltakelseDagerUke = deltakelse.dagerPerUke,
+        deltakelseProsent = deltakelse.prosentStilling,
         registrertDato = deltakelse.registrertDato,
-        gjennomforing = GjennomforingResponseDTO(
+        gjennomforing = TiltakResponsDTO.GjennomføringDTO(
             id = deltakelse.gjennomforing.id,
-            arrangornavn = deltakelse.gjennomforing.arrangor.navn,
+            arrangørnavn = deltakelse.gjennomforing.arrangor.navn,
             typeNavn = gjennomføring.tiltakstype.navn,
             arenaKode = TiltakType.valueOf(gjennomføring.tiltakstype.arenaKode),
-            startDato = gjennomføring.startDato,
-            sluttDato = gjennomføring.sluttDato,
+            fom = gjennomføring.startDato,
+            tom = gjennomføring.sluttDato,
         ),
-        status = when (deltakelse.status) {
-            DeltakerStatusDTO.AVBRUTT -> DeltakerStatusResponseDTO.AVBRUTT
-            DeltakerStatusDTO.FULLFORT -> DeltakerStatusResponseDTO.FULLFORT
-            DeltakerStatusDTO.DELTAR -> DeltakerStatusResponseDTO.DELTAR
-            DeltakerStatusDTO.IKKE_AKTUELL -> DeltakerStatusResponseDTO.IKKE_AKTUELL
-            DeltakerStatusDTO.VENTER_PA_OPPSTART -> DeltakerStatusResponseDTO.VENTER_PA_OPPSTART
-            DeltakerStatusDTO.HAR_SLUTTET -> DeltakerStatusResponseDTO.HAR_SLUTTET
+        kilde = "Komet",
+        deltakelseStatus = when (deltakelse.status) {
+            AVBRUTT -> DeltakerStatusDTO.AVBRUTT
+            FULLFORT -> DeltakerStatusDTO.FULLFORT
+            DELTAR -> DeltakerStatusDTO.DELTAR
+            IKKE_AKTUELL -> DeltakerStatusDTO.IKKE_AKTUELL
+            VENTER_PA_OPPSTART -> DeltakerStatusDTO.VENTER_PA_OPPSTART
+            HAR_SLUTTET -> DeltakerStatusDTO.HAR_SLUTTET
 
             // Disse er ikke med i søknaden
-            DeltakerStatusDTO.VURDERES -> DeltakerStatusResponseDTO.VURDERES
-            DeltakerStatusDTO.FEILREGISTRERT -> DeltakerStatusResponseDTO.FEILREGISTRERT
-            DeltakerStatusDTO.PABEGYNT_REGISTRERING -> DeltakerStatusResponseDTO.PABEGYNT_REGISTRERING
-            DeltakerStatusDTO.SOKT_INN -> DeltakerStatusResponseDTO.SOKT_INN
-            DeltakerStatusDTO.VENTELISTE -> DeltakerStatusResponseDTO.VENTELISTE
+            VURDERES -> DeltakerStatusDTO.VURDERES
+            FEILREGISTRERT -> DeltakerStatusDTO.FEILREGISTRERT
+            PABEGYNT_REGISTRERING -> DeltakerStatusDTO.PABEGYNT_REGISTRERING
+            SOKT_INN -> DeltakerStatusDTO.SOKT_INN
+            VENTELISTE -> DeltakerStatusDTO.VENTELISTE
         },
     )
 }
@@ -95,36 +106,37 @@ private fun mapKometTiltak(deltakelse: DeltakerDTO, gjennomføring: ValpDTO): Ti
 private fun mapArenaTiltak(tiltak: ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO): TiltakDTO {
     return TiltakDTO(
         id = tiltak.aktivitetId,
-        gjennomforing = GjennomforingResponseDTO(
+        gjennomforing = TiltakResponsDTO.GjennomføringDTO(
             id = "",
-            arrangornavn = tiltak.arrangoer ?: "Ukjent",
+            arrangørnavn = tiltak.arrangoer ?: "Ukjent",
             typeNavn = tiltak.tiltakType.navn,
             arenaKode = TiltakType.valueOf(tiltak.tiltakType.name),
-            startDato = null,
-            sluttDato = null,
+            fom = null,
+            tom = null,
         ),
-        startDato = earliest(tiltak.deltakelsePeriode?.fom, tiltak.deltakelsePeriode?.tom),
-        sluttDato = latest(tiltak.deltakelsePeriode?.fom, tiltak.deltakelsePeriode?.tom),
-        status = when (tiltak.deltakerStatusType) {
-            DeltakerStatusType.DELAVB -> DeltakerStatusResponseDTO.AVBRUTT
-            DeltakerStatusType.FULLF -> DeltakerStatusResponseDTO.FULLFORT
-            DeltakerStatusType.GJENN -> DeltakerStatusResponseDTO.DELTAR
-            DeltakerStatusType.GJENN_AVB -> DeltakerStatusResponseDTO.AVBRUTT
-            DeltakerStatusType.IKKEM -> DeltakerStatusResponseDTO.AVBRUTT
-            DeltakerStatusType.JATAKK -> DeltakerStatusResponseDTO.DELTAR
-            DeltakerStatusType.TILBUD -> DeltakerStatusResponseDTO.VENTER_PA_OPPSTART
+        deltakelseFom = earliest(tiltak.deltakelsePeriode?.fom, tiltak.deltakelsePeriode?.tom),
+        deltakelseTom = latest(tiltak.deltakelsePeriode?.fom, tiltak.deltakelsePeriode?.tom),
+        deltakelseStatus = when (tiltak.deltakerStatusType) {
+            DeltakerStatusType.DELAVB -> DeltakerStatusDTO.AVBRUTT
+            DeltakerStatusType.FULLF -> DeltakerStatusDTO.FULLFORT
+            DeltakerStatusType.GJENN -> DeltakerStatusDTO.DELTAR
+            DeltakerStatusType.GJENN_AVB -> DeltakerStatusDTO.AVBRUTT
+            DeltakerStatusType.IKKEM -> DeltakerStatusDTO.AVBRUTT
+            DeltakerStatusType.JATAKK -> DeltakerStatusDTO.DELTAR
+            DeltakerStatusType.TILBUD -> DeltakerStatusDTO.VENTER_PA_OPPSTART
 
             // Disse er ikke med i søknaden
-            DeltakerStatusType.AKTUELL -> DeltakerStatusResponseDTO.SOKT_INN
-            DeltakerStatusType.AVSLAG -> DeltakerStatusResponseDTO.IKKE_AKTUELL
-            DeltakerStatusType.GJENN_AVL -> DeltakerStatusResponseDTO.IKKE_AKTUELL
-            DeltakerStatusType.IKKAKTUELL -> DeltakerStatusResponseDTO.IKKE_AKTUELL
-            DeltakerStatusType.INFOMOETE -> DeltakerStatusResponseDTO.VENTELISTE
-            DeltakerStatusType.NEITAKK -> DeltakerStatusResponseDTO.IKKE_AKTUELL
-            DeltakerStatusType.VENTELISTE -> DeltakerStatusResponseDTO.VENTELISTE
+            DeltakerStatusType.AKTUELL -> DeltakerStatusDTO.SOKT_INN
+            DeltakerStatusType.AVSLAG -> DeltakerStatusDTO.IKKE_AKTUELL
+            DeltakerStatusType.GJENN_AVL -> DeltakerStatusDTO.IKKE_AKTUELL
+            DeltakerStatusType.IKKAKTUELL -> DeltakerStatusDTO.IKKE_AKTUELL
+            DeltakerStatusType.INFOMOETE -> DeltakerStatusDTO.VENTELISTE
+            DeltakerStatusType.NEITAKK -> DeltakerStatusDTO.IKKE_AKTUELL
+            DeltakerStatusType.VENTELISTE -> DeltakerStatusDTO.VENTELISTE
         },
-        dagerPerUke = tiltak.antallDagerPerUke,
-        prosentStilling = tiltak.deltakelseProsent,
+        deltakelseDagerUke = tiltak.antallDagerPerUke,
+        deltakelseProsent = tiltak.deltakelseProsent,
+        kilde = "Arena",
         registrertDato = LocalDateTime.from(tiltak.statusSistEndret?.atStartOfDay()) ?: LocalDateTime.now(),
     )
 }
