@@ -25,7 +25,7 @@ enum class Tiltaksgjennomforingsstatus {
     AVBRUTT,
     AVLYST,
     AVSLUTTET,
-    APENT_FOR_INNSOK,
+    PLANLAGT,
 }
 
 enum class TiltaksgjennomforingOppstartstype {
