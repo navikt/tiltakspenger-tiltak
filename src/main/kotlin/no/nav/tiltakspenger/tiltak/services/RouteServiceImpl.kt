@@ -104,6 +104,8 @@ private fun mapKometTiltak(deltakelse: DeltakerDTO, gjennomføring: ValpDTO): Ti
 }
 
 private fun mapArenaTiltak(tiltak: ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO): TiltakDTO {
+    val fom = earliest(tiltak.deltakelsePeriode?.fom, tiltak.deltakelsePeriode?.tom) ?: LocalDate.MAX
+    val startDatoErFremITid = (fom.isAfter(LocalDate.now()))
     return TiltakDTO(
         id = tiltak.aktivitetId,
         gjennomforing = TiltakResponsDTO.GjennomføringDTO(
@@ -119,11 +121,11 @@ private fun mapArenaTiltak(tiltak: ArenaTiltaksaktivitetResponsDTO.Tiltaksaktivi
         deltakelseStatus = when (tiltak.deltakerStatusType) {
             DeltakerStatusType.DELAVB -> DeltakerStatusDTO.AVBRUTT
             DeltakerStatusType.FULLF -> DeltakerStatusDTO.FULLFORT
-            DeltakerStatusType.GJENN -> DeltakerStatusDTO.DELTAR
+            DeltakerStatusType.GJENN -> if (startDatoErFremITid) DeltakerStatusDTO.VENTER_PA_OPPSTART else DeltakerStatusDTO.DELTAR
             DeltakerStatusType.GJENN_AVB -> DeltakerStatusDTO.AVBRUTT
             DeltakerStatusType.IKKEM -> DeltakerStatusDTO.AVBRUTT
             DeltakerStatusType.JATAKK -> DeltakerStatusDTO.DELTAR
-            DeltakerStatusType.TILBUD -> DeltakerStatusDTO.VENTER_PA_OPPSTART
+            DeltakerStatusType.TILBUD -> if (startDatoErFremITid) DeltakerStatusDTO.VENTER_PA_OPPSTART else DeltakerStatusDTO.DELTAR
 
             // Disse er ikke med i søknaden
             DeltakerStatusType.AKTUELL -> DeltakerStatusDTO.SOKT_INN
