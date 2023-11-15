@@ -7,6 +7,9 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO
+import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMOB
+import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMOE
+import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMOY
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.KURS
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
@@ -113,6 +116,33 @@ internal class RouteServiceImplTest {
             TiltakResponsDTO.DeltakerStatusDTO.VENTELISTE,
             TiltakResponsDTO.DeltakerStatusDTO.VURDERES,
         )
+    }
+
+    @Test
+    fun `tiltak fra arena med status GJENN gir DELTAR hvis startdato har passert og VENTER_PÅ_OPPSTART hvis ikke`() {
+        val routesService = RouteServiceImpl(
+            kometClient = kometClient,
+            valpClient = valpClient,
+            tiltakClient = tiltakClient,
+            arenaClient = arenaClient,
+        )
+
+        coEvery { kometClient.hentTiltakDeltagelser(any()) } returns emptyList()
+        coEvery { valpClient.hentTiltakGjennomføring(any()) } returns valpGjennomføring("ARBFORB")
+        coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
+            arenaTiltak(tiltak = AMO, status = DeltakerStatusType.GJENN, LocalDate.now().plusDays(10), LocalDate.now().plusDays(20)),
+            arenaTiltak(tiltak = AMOE, status = DeltakerStatusType.TILBUD, LocalDate.now().plusDays(10), LocalDate.now().plusDays(20)),
+            arenaTiltak(tiltak = AMOB, status = DeltakerStatusType.GJENN, LocalDate.now().minusDays(20), LocalDate.now().minusDays(10)),
+            arenaTiltak(tiltak = AMOY, status = DeltakerStatusType.TILBUD, LocalDate.now().minusDays(20), LocalDate.now().minusDays(10)),
+        )
+
+        val tiltakListe = routesService.hentAlleTiltak("123")
+
+        tiltakListe.size shouldBe 4
+        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.AMO }.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
+        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.AMOE }.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
+        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.AMOB }.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.DELTAR
+        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.AMOY }.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.DELTAR
     }
 
     @Test
@@ -231,7 +261,12 @@ internal class RouteServiceImplTest {
     }
 }
 
-private fun arenaTiltak(tiltak: ArenaTiltaksaktivitetResponsDTO.TiltakType, status: DeltakerStatusType): ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO {
+private fun arenaTiltak(
+    tiltak: ArenaTiltaksaktivitetResponsDTO.TiltakType,
+    status: DeltakerStatusType,
+    fom: LocalDate = LocalDate.of(2023, 1, 1),
+    tom: LocalDate = LocalDate.of(2023, 3, 31),
+): ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO {
     return ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO(
         tiltakType = tiltak,
         aktivitetId = "solet",
@@ -239,8 +274,8 @@ private fun arenaTiltak(tiltak: ArenaTiltaksaktivitetResponsDTO.TiltakType, stat
         arrangoer = "arrangoerNavn",
         bedriftsnummer = "123",
         deltakelsePeriode = ArenaTiltaksaktivitetResponsDTO.DeltakelsesPeriodeDTO(
-            LocalDate.of(2023, 1, 1),
-            LocalDate.of(2023, 3, 31),
+            fom,
+            tom,
         ),
         deltakelseProsent = 100F,
         deltakerStatusType = status,
