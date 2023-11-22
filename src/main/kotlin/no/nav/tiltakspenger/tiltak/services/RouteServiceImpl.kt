@@ -139,7 +139,7 @@ private fun mapArenaTiltak(tiltak: ArenaTiltaksaktivitetResponsDTO.Tiltaksaktivi
         deltakelseDagerUke = tiltak.antallDagerPerUke,
         deltakelseProsent = tiltak.deltakelseProsent,
         kilde = "Arena",
-        registrertDato = LocalDateTime.from(tiltak.statusSistEndret?.atStartOfDay()) ?: LocalDateTime.now(),
+        registrertDato = tiltak.statusSistEndret?.let { LocalDateTime.from(it) } ?: LocalDateTime.now(),
     )
 }
 
