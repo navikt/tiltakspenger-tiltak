@@ -6,7 +6,7 @@ val kotestVersion = "5.8.0"
 
 plugins {
     application
-    kotlin("jvm") version "1.9.20"
+    kotlin("jvm") version "1.9.21"
     // id("ca.cutterslade.analyze") version "1.9.1"
     id("com.diffplug.spotless") version "6.23.1"
 }
