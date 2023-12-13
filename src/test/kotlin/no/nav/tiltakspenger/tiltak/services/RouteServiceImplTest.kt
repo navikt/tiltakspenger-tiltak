@@ -19,11 +19,7 @@ import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.GjennomforingDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
 import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClient
-import no.nav.tiltakspenger.tiltak.clients.valp.TiltaksgjennomforingOppstartstype
-import no.nav.tiltakspenger.tiltak.clients.valp.Tiltaksgjennomforingsstatus
-import no.nav.tiltakspenger.tiltak.clients.valp.Tiltakstype
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
-import no.nav.tiltakspenger.tiltak.clients.valp.ValpDTO
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -47,7 +43,6 @@ internal class RouteServiceImplTest {
         coEvery { kometClient.hentTiltakDeltagelser(any()) } returns listOf(
             kometDeltaker("VASV", DeltakerStatusDTO.AVBRUTT),
         )
-        coEvery { valpClient.hentTiltakGjennomføring(any()) } returns valpGjennomføring("VASV")
         coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
             arenaTiltak(KURS, DeltakerStatusType.DELAVB),
         )
@@ -81,7 +76,6 @@ internal class RouteServiceImplTest {
             kometDeltaker("ARBFORB", DeltakerStatusDTO.SOKT_INN),
             kometDeltaker("ARBFORB", DeltakerStatusDTO.VENTELISTE),
         )
-        coEvery { valpClient.hentTiltakGjennomføring(any()) } returns valpGjennomføring("ARBFORB")
         coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
             // Disse skal være med
             arenaTiltak(AMO, DeltakerStatusType.DELAVB),
@@ -128,7 +122,6 @@ internal class RouteServiceImplTest {
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any()) } returns emptyList()
-        coEvery { valpClient.hentTiltakGjennomføring(any()) } returns valpGjennomføring("ARBFORB")
         coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
             arenaTiltak(tiltak = AMO, status = DeltakerStatusType.GJENN, LocalDate.now().plusDays(10), LocalDate.now().plusDays(20)),
             arenaTiltak(tiltak = AMOE, status = DeltakerStatusType.TILBUD, LocalDate.now().plusDays(10), LocalDate.now().plusDays(20)),
@@ -157,7 +150,6 @@ internal class RouteServiceImplTest {
         coEvery { kometClient.hentTiltakDeltagelser(any()) } returns listOf(
             kometDeltaker("ARBFORB", DeltakerStatusDTO.DELTAR),
         )
-        coEvery { valpClient.hentTiltakGjennomføring(any()) } returns valpGjennomføring("ARBFORB")
         coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
             arenaTiltak(AMO, DeltakerStatusType.JATAKK),
         )
@@ -181,7 +173,6 @@ internal class RouteServiceImplTest {
         coEvery { kometClient.hentTiltakDeltagelser(any()) } returns listOf(
             kometDeltaker("VASV", DeltakerStatusDTO.DELTAR),
         )
-        coEvery { valpClient.hentTiltakGjennomføring(any()) } returns valpGjennomføring("VASV")
         coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
             arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.KURS, DeltakerStatusType.JATAKK),
         )
@@ -209,7 +200,6 @@ internal class RouteServiceImplTest {
             kometDeltaker("ARBFORB", DeltakerStatusDTO.VENTER_PA_OPPSTART),
             kometDeltaker("ARBFORB", DeltakerStatusDTO.HAR_SLUTTET),
         )
-        coEvery { valpClient.hentTiltakGjennomføring(any()) } returns valpGjennomføring("ARBFORB")
         coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
             arenaTiltak(AMO, DeltakerStatusType.DELAVB),
             arenaTiltak(AMO, DeltakerStatusType.FULLF),
@@ -243,7 +233,6 @@ internal class RouteServiceImplTest {
             kometDeltaker("ARBFORB", DeltakerStatusDTO.SOKT_INN),
             kometDeltaker("ARBFORB", DeltakerStatusDTO.VENTELISTE),
         )
-        coEvery { valpClient.hentTiltakGjennomføring(any()) } returns valpGjennomføring("ARBFORB")
         coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
             arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.AKTUELL),
             arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.AVSLAG),
@@ -284,22 +273,6 @@ private fun arenaTiltak(
         antallDagerPerUke = 2F,
     )
 }
-private fun valpGjennomføring(arenakode: String): ValpDTO {
-    return ValpDTO(
-        id = UUID.randomUUID(),
-        tiltakstype = Tiltakstype(
-            id = UUID.randomUUID(),
-            navn = "navn",
-            arenaKode = arenakode,
-        ),
-        navn = "navn",
-        startDato = LocalDate.of(2023, 1, 1),
-        sluttDato = LocalDate.of(2023, 3, 31),
-        status = Tiltaksgjennomforingsstatus.AVBRUTT,
-        virksomhetsnummer = "123",
-        oppstart = TiltaksgjennomforingOppstartstype.FELLES,
-    )
-}
 
 private fun kometDeltaker(type: String, status: DeltakerStatusDTO): DeltakerDTO {
     return DeltakerDTO(
@@ -308,6 +281,7 @@ private fun kometDeltaker(type: String, status: DeltakerStatusDTO): DeltakerDTO 
             id = "id",
             navn = "navn",
             type = type,
+            tiltakstypeNavn = "tiltakstypeNavn",
             arrangor = ArrangorDTO(virksomhetsnummer = "123", navn = "arrangor"),
         ),
         startDato = LocalDate.of(2023, 1, 1),

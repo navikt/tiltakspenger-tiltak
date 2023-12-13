@@ -53,6 +53,7 @@ internal class KometClientImplTest {
                         id = "bc4a05a5-56ed-47ac-8176-b685b0731751",
                         navn = "Testing Linn 1",
                         type = "INDOPPFAG",
+                        tiltakstypeNavn = "Oppfølging",
                         arrangor = ArrangorDTO(
                             virksomhetsnummer = "974548283",
                             navn = "TINN KOMMUNE KOMMUNEDIREKTØRENS STAB",
@@ -70,6 +71,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "bc4a05a5-56ed-47ac-8176-b685b0731751",
               "navn": "Testing Linn 1",
+              "tiltakstypeNavn": "Oppfølging",
               "type": "INDOPPFAG",
               "arrangor": {
                 "virksomhetsnummer": "974548283",
@@ -88,6 +90,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "e0036a1f-ba82-4a45-95d0-8d5008d8881c",
               "navn": "Astronomisk testtiltak - oppfølging",
+              "tiltakstypeNavn": "Oppfølging",
               "type": "INDOPPFAG",
               "arrangor": {
                 "virksomhetsnummer": "974750449",
@@ -106,6 +109,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "e700a519-b41a-4407-9dac-6d2375cd4c50",
               "navn": "oppfølgingstiltak linn,alex,lars",
+              "tiltakstypeNavn": "Oppfølging",
               "type": "INDOPPFAG",
               "arrangor": {
                 "virksomhetsnummer": "974750449",
@@ -124,6 +128,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "c0656b88-39a6-4d96-b3e0-6271ecb48698",
               "navn": "testtiltak oppfølging 20.01.2022",
+              "tiltakstypeNavn": "Oppfølging",
               "type": "INDOPPFAG",
               "arrangor": {
                 "virksomhetsnummer": "974750449",
@@ -142,6 +147,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "eae379be-306b-4f09-b473-f01483975eb4",
               "navn": "Izis testgjennomføring",
+              "tiltakstypeNavn": "Oppfølging",
               "type": "INDOPPFAG",
               "arrangor": {
                 "virksomhetsnummer": "974750449",
@@ -160,6 +166,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "c4212ab6-1b48-4ff7-bb4f-bbc086e6a2d2",
               "navn": "Avklaring teste at ikke dukker opp hos Komet",
+              "tiltakstypeNavn": "Oppfølging",
               "type": "AVKLARAG",
               "arrangor": {
                 "virksomhetsnummer": "974750449",
@@ -178,6 +185,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "f34644e1-3216-4251-85fc-6114ff0ab420",
               "navn": "test AFT Tinn bhg - Lars",
+              "tiltakstypeNavn": "Oppfølging",
               "type": "ARBFORB",
               "arrangor": {
                 "virksomhetsnummer": "914016444",
@@ -196,6 +204,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "c3e72527-5447-48f1-b51d-2ddea382850e",
               "navn": "oppfølging Tinn avd. 1 - Lars",
+              "tiltakstypeNavn": "Oppfølging",
               "type": "INDOPPFAG",
               "arrangor": {
                 "virksomhetsnummer": "974548283",
@@ -214,6 +223,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "8c42c8cd-f832-41fe-b2a7-67eda83c1705",
               "navn": "ARR - Tinn harnehage - Lars",
+              "tiltakstypeNavn": "Arbeidsrettet rehabilitering (dag)",
               "type": "ARBRRHDAG",
               "arrangor": {
                 "virksomhetsnummer": "914016444",
@@ -232,6 +242,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "ed7a3161-495c-4409-b08e-128a6f0d03ce",
               "navn": "Oppfølging Tinn bhg - test Lars",
+              "tiltakstypeNavn": "Oppfølging",
               "type": "INDOPPFAG",
               "arrangor": {
                 "virksomhetsnummer": "914016444",
@@ -250,6 +261,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "a972d2c1-7fb4-4207-af5d-4fea5561ea60",
               "navn": "Modist vg 2 - Lars fra Mars",
+              "tiltakstypeNavn": "Gruppe AMO",
               "type": "GRUPPEAMO",
               "arrangor": {
                 "virksomhetsnummer": "974548283",
@@ -268,6 +280,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "cff08d1e-62f7-4f85-9faf-aef8e21c4021",
               "navn": "Fagkurs - Astronomisk hattemakeri",
+              "tiltakstypeNavn": "Gruppe Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning",
               "type": "GRUFAGYRKE",
               "arrangor": {
                 "virksomhetsnummer": "974750449",
@@ -286,6 +299,7 @@ internal class KometClientImplTest {
             "gjennomforing": {
               "id": "825ed2fa-6506-4fe1-a6c1-2120cf6c9abb",
               "navn": "Lars - gruppe-AMO test",
+              "tiltakstypeNavn": "Gruppe AMO",
               "type": "GRUPPEAMO",
               "arrangor": {
                 "virksomhetsnummer": "974548283",
