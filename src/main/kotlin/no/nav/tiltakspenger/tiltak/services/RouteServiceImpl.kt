@@ -24,7 +24,6 @@ import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.VURDERES
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
 import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClient
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
-import no.nav.tiltakspenger.tiltak.clients.valp.ValpDTO
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -38,24 +37,19 @@ class RouteServiceImpl(
 ) : RoutesService {
     override fun hentAlleTiltak(fnr: String): List<TiltakDTO> {
         val tiltakdeltakelser = runBlocking {
-            val kometOgValp = kometClient.hentTiltakDeltagelser(fnr)
-                .also { securelog.info { "Hele svaret fra komet $it" } }
+            val komet = kometClient.hentTiltakDeltagelser(fnr)
                 .map { deltakelse ->
-                    val gjennomføring = valpClient.hentTiltakGjennomføring(deltakelse.gjennomforing.id)
-                        ?: throw IllegalStateException("Fant ikke gjennomføring i Valp")
-                    securelog.info { "Deltakelsene vi mapper tilbake $deltakelse" }
-                    mapKometTiltak(deltakelse, gjennomføring)
+                    mapKometTiltak(deltakelse)
                 }
 
             val arena = arenaClient.hentTiltakArena(fnr)
-                .also { securelog.info { "Hele svaret fra arena $it" } }
                 .filterNot { it.tiltakType.name in tiltakViFårFraKomet }
                 .map {
                     securelog.info { "Deltakelsene fra Arena vi mapper tilbake $it" }
                     mapArenaTiltak(it)
                 }
 
-            arena + kometOgValp
+            arena + komet
         }
 
         return tiltakdeltakelser
@@ -68,7 +62,7 @@ class RouteServiceImpl(
     }
 }
 
-private fun mapKometTiltak(deltakelse: DeltakerDTO, gjennomføring: ValpDTO): TiltakDTO {
+private fun mapKometTiltak(deltakelse: DeltakerDTO): TiltakDTO {
     return TiltakDTO(
         id = deltakelse.id,
         deltakelseFom = deltakelse.startDato,
@@ -79,10 +73,10 @@ private fun mapKometTiltak(deltakelse: DeltakerDTO, gjennomføring: ValpDTO): Ti
         gjennomforing = TiltakResponsDTO.GjennomføringDTO(
             id = deltakelse.gjennomforing.id,
             arrangørnavn = deltakelse.gjennomforing.arrangor.navn,
-            typeNavn = gjennomføring.tiltakstype.navn,
-            arenaKode = TiltakType.valueOf(gjennomføring.tiltakstype.arenaKode),
-            fom = gjennomføring.startDato,
-            tom = gjennomføring.sluttDato,
+            typeNavn = deltakelse.gjennomforing.tiltakstypeNavn,
+            arenaKode = TiltakType.valueOf(deltakelse.gjennomforing.type),
+            fom = null,
+            tom = null,
         ),
         kilde = "Komet",
         deltakelseStatus = when (deltakelse.status) {

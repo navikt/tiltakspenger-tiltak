@@ -24,6 +24,7 @@ data class GjennomforingDTO(
     val id: String,
     val navn: String,
     val type: String, // Arena type
+    val tiltakstypeNavn: String,
     val arrangor: ArrangorDTO,
 )
 
