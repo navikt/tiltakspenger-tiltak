@@ -37,22 +37,19 @@ class RouteServiceImpl(
 ) : RoutesService {
     override fun hentAlleTiltak(fnr: String): List<TiltakDTO> {
         val tiltakdeltakelser = runBlocking {
-            val kometOgValp = kometClient.hentTiltakDeltagelser(fnr)
-                .also { securelog.info { "Hele svaret fra komet $it" } }
+            val komet = kometClient.hentTiltakDeltagelser(fnr)
                 .map { deltakelse ->
-                    securelog.info { "Deltakelsene vi mapper tilbake $deltakelse" }
                     mapKometTiltak(deltakelse)
                 }
 
             val arena = arenaClient.hentTiltakArena(fnr)
-                .also { securelog.info { "Hele svaret fra arena $it" } }
                 .filterNot { it.tiltakType.name in tiltakViFårFraKomet }
                 .map {
                     securelog.info { "Deltakelsene fra Arena vi mapper tilbake $it" }
                     mapArenaTiltak(it)
                 }
 
-            arena + kometOgValp
+            arena + komet
         }
 
         return tiltakdeltakelser
