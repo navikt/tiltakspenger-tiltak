@@ -68,7 +68,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
 
-    testImplementation("no.nav.security:mock-oauth2-server:2.1.1")
+    testImplementation("no.nav.security:mock-oauth2-server:2.1.2")
     testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.8")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.22")
 }
