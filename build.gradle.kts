@@ -31,7 +31,7 @@ dependencies {
     // implementation("com.github.navikt:rapids-and-rivers:2022112407251669271100.df879df951cf")
     implementation("com.natpryce:konfig:1.6.10.0")
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:0.0.85")
-    implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:0.0.85")
+    implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:0.0.87")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
