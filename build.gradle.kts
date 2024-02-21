@@ -1,6 +1,6 @@
 val javaVersion = JavaVersion.VERSION_21
 val mockkVersion = "1.13.9"
-val ktorVersion = "2.3.7"
+val ktorVersion = "2.3.8"
 val jacksonVersion = "2.16.1"
 val kotestVersion = "5.8.0"
 val libsVersjon = "0.0.87"
@@ -24,11 +24,12 @@ dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
-    implementation("ch.qos.logback:logback-classic:1.4.14")
+    implementation("ch.qos.logback:logback-classic:1.5.0")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("org.jetbrains:annotations:24.1.0")
-    implementation("com.github.navikt:rapids-and-rivers:2023101613431697456627.0cdd93eb696f")
+    
+    implementation("com.github.navikt:rapids-and-rivers:2024020507581707116327.1c34df474331")
     implementation("com.natpryce:konfig:1.6.10.0")
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$libsVersjon")
     implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:$libsVersjon")
@@ -58,7 +59,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
-    testImplementation(platform("org.junit:junit-bom:5.10.1"))
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
@@ -68,8 +69,8 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
 
-    testImplementation("no.nav.security:mock-oauth2-server:2.1.1")
-    testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.7")
+    testImplementation("no.nav.security:mock-oauth2-server:2.1.2")
+    testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.8")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.22")
 }
 
