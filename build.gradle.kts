@@ -3,6 +3,7 @@ val mockkVersion = "1.13.9"
 val ktorVersion = "2.3.8"
 val jacksonVersion = "2.16.1"
 val kotestVersion = "5.8.0"
+val libsVersjon = "0.0.87"
 
 plugins {
     application
@@ -27,11 +28,11 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("org.jetbrains:annotations:24.1.0")
+    
     implementation("com.github.navikt:rapids-and-rivers:2024020507581707116327.1c34df474331")
-    // implementation("com.github.navikt:rapids-and-rivers:2022112407251669271100.df879df951cf")
     implementation("com.natpryce:konfig:1.6.10.0")
-    implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:0.0.85")
-    implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:0.0.87")
+    implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$libsVersjon")
+    implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:$libsVersjon")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
@@ -73,11 +74,6 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.22")
 }
 
-/*configurations.all {
-    // exclude JUnit 4
-    exclude(group = "junit", module = "junit")
-}*/
-
 application {
     mainClass.set("no.nav.tiltakspenger.tiltak.ApplicationKt")
 }
@@ -107,16 +103,6 @@ tasks {
         // https://phauer.com/2018/best-practices-unit-testing-kotlin/
         systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
     }
-    /*
-    analyzeClassesDependencies {
-        warnUsedUndeclared = true
-        warnUnusedDeclared = true
-    }
-    analyzeTestClassesDependencies {
-        warnUsedUndeclared = true
-        warnUnusedDeclared = true
-    }
-     */
 }
 
 task("addPreCommitGitHookOnBuild") {

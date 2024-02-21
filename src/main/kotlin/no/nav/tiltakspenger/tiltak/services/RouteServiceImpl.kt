@@ -75,8 +75,6 @@ private fun mapKometTiltak(deltakelse: DeltakerDTO): TiltakDTO {
             arrangørnavn = deltakelse.gjennomforing.arrangor.navn,
             typeNavn = deltakelse.gjennomforing.tiltakstypeNavn,
             arenaKode = TiltakType.valueOf(deltakelse.gjennomforing.type),
-            fom = null,
-            tom = null,
         ),
         kilde = "Komet",
         deltakelseStatus = when (deltakelse.status) {
@@ -107,8 +105,6 @@ private fun mapArenaTiltak(tiltak: ArenaTiltaksaktivitetResponsDTO.Tiltaksaktivi
             arrangørnavn = tiltak.arrangoer ?: "Ukjent",
             typeNavn = tiltak.tiltakType.navn,
             arenaKode = TiltakType.valueOf(tiltak.tiltakType.name),
-            fom = null,
-            tom = null,
         ),
         deltakelseFom = earliest(tiltak.deltakelsePeriode?.fom, tiltak.deltakelsePeriode?.tom),
         deltakelseTom = latest(tiltak.deltakelsePeriode?.fom, tiltak.deltakelsePeriode?.tom),
