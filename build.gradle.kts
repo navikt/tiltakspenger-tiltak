@@ -29,7 +29,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("org.jetbrains:annotations:24.1.0")
     
-    implementation("com.github.navikt:rapids-and-rivers:2024020507581707116327.1c34df474331")
+    implementation("com.github.navikt:rapids-and-rivers:2024022311041708682651.01821651ed22")
     implementation("com.natpryce:konfig:1.6.10.0")
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$libsVersjon")
     implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:$libsVersjon")
