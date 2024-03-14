@@ -7,7 +7,7 @@ val libsVersjon = "0.0.89"
 
 plugins {
     application
-    kotlin("jvm") version "1.9.22"
+    kotlin("jvm") version "1.9.23"
     // id("ca.cutterslade.analyze") version "1.9.1"
     id("com.diffplug.spotless") version "6.25.0"
 }
