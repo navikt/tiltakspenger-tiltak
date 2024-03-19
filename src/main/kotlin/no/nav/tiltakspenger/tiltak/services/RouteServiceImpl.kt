@@ -65,8 +65,8 @@ class RouteServiceImpl(
 private fun mapKometTiltak(deltakelse: DeltakerDTO): TiltakDTO {
     return TiltakDTO(
         id = deltakelse.id,
-        deltakelseFom = deltakelse.startDato,
-        deltakelseTom = deltakelse.sluttDato,
+        deltakelseFom = earliest(deltakelse.startDato, deltakelse.sluttDato) ?: LocalDate.of(1970, 1, 1),
+        deltakelseTom = latest(deltakelse.startDato, deltakelse.sluttDato) ?: LocalDate.of(9999, 12, 31),
         deltakelseDagerUke = deltakelse.dagerPerUke,
         deltakelseProsent = deltakelse.prosentStilling,
         registrertDato = deltakelse.registrertDato,
