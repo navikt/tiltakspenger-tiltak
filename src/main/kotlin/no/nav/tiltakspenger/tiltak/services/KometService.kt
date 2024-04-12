@@ -105,13 +105,17 @@ class KometService(
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {
-        LOG.error { "onError" }
-        LOG.error { problems.toExtendedReport() }
+        if (context.rapidName() == "amt-deltaker-v1") {
+            LOG.error { "onError" }
+            LOG.error { problems.toExtendedReport() }
+        }
     }
 
     override fun onSevere(error: MessageProblems.MessageException, context: MessageContext) {
-        LOG.error { "onSevere" }
-        LOG.error { error.problems.toExtendedReport() }
+        if (context.rapidName() == "amt-deltaker-v1") {
+            LOG.error { "onSevere" }
+            LOG.error { error.problems.toExtendedReport() }
+        }
     }
 
     private fun loggVedInngang(packet: JsonMessage) {
