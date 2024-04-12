@@ -21,6 +21,7 @@ object Configuration {
         "KAFKA_TRUSTSTORE_PATH" to System.getenv("KAFKA_TRUSTSTORE_PATH"),
         "KAFKA_KEYSTORE_PATH" to System.getenv("KAFKA_KEYSTORE_PATH"),
         "KAFKA_RAPID_TOPIC" to "tpts.rapid.v1",
+        "KAFKA_EXTRA_TOPIC" to "amt.deltaker-v1",
         "KAFKA_RESET_POLICY" to "latest",
         "KAFKA_CONSUMER_GROUP_ID" to "tiltakspenger-tiltak-v1",
     )

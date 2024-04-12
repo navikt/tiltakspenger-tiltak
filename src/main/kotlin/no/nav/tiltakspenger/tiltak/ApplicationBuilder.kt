@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClient
 import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClientImpl
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
 import no.nav.tiltakspenger.tiltak.clients.valp.ValpClientImpl
+import no.nav.tiltakspenger.tiltak.services.KometService
 import no.nav.tiltakspenger.tiltak.services.RouteServiceImpl
 import no.nav.tiltakspenger.tiltak.services.RoutesService
 import no.nav.tiltakspenger.tiltak.services.TiltakService
@@ -52,6 +53,10 @@ internal class ApplicationBuilder(
             TiltakService(
                 rapidsConnection = this,
                 routesService = routesService,
+            )
+
+            KometService(
+                rapidsConnection = this,
             )
         }
 
