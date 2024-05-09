@@ -71,7 +71,7 @@ dependencies {
 
     testImplementation("no.nav.security:mock-oauth2-server:2.1.5")
     testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.10")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.23")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.24")
 }
 
 application {
