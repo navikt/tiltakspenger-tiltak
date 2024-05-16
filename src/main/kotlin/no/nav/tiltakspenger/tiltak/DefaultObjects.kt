@@ -11,6 +11,7 @@ import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.engine.cio.CIOEngineConfig
+import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
@@ -42,6 +43,37 @@ fun defaultHttpClient(
     apply(configBlock)
     engine(engineConfigBlock)
 }
+
+fun httpClientWithRetry(
+    objectMapper: ObjectMapper,
+    engine: HttpClientEngine? = null,
+    configBlock: HttpClientConfig<*>.() -> Unit = {},
+    engineConfigBlock: CIOEngineConfig.() -> Unit = {},
+) =
+    defaultHttpClient(
+        objectMapper = objectMapper,
+        engine = engine,
+        configBlock = configBlock,
+        engineConfigBlock = engineConfigBlock,
+    )
+        .config {
+            install(HttpRequestRetry) {
+                maxRetries = 3
+                retryIf { request, response ->
+                    if (response.status.value.let { it in 500..599 }) {
+                        SECURELOG.warn("Http-kall feilet med ${response.status.value}. Kjører retry")
+                        true
+                    } else {
+                        false
+                    }
+                }
+                retryOnExceptionIf { request, throwable ->
+                    SECURELOG.warn("Kastet exception ved http-kall: ${throwable.message}")
+                    true
+                }
+                constantDelay(100, 0, false)
+            }
+        }
 
 private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> Unit = {
     install(ContentNegotiation) {

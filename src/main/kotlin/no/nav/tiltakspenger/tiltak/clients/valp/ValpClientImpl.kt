@@ -13,8 +13,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.Configuration
-import no.nav.tiltakspenger.tiltak.defaultHttpClient
 import no.nav.tiltakspenger.tiltak.defaultObjectMapper
+import no.nav.tiltakspenger.tiltak.httpClientWithRetry
 
 val securelog = KotlinLogging.logger("tjenestekall")
 
@@ -23,7 +23,7 @@ class ValpClientImpl(
     private val objectMapper: ObjectMapper = defaultObjectMapper(),
     private val getToken: suspend () -> String,
     engine: HttpClientEngine? = null,
-    private val httpClient: HttpClient = defaultHttpClient(
+    private val httpClient: HttpClient = httpClientWithRetry(
         objectMapper = objectMapper,
         engine = engine,
     ),
