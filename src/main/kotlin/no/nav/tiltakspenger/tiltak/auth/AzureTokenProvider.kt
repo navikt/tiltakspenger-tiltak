@@ -11,8 +11,8 @@ import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.http.Parameters
 import mu.KotlinLogging
-import no.nav.tiltakspenger.tiltak.defaultHttpClient
 import no.nav.tiltakspenger.tiltak.defaultObjectMapper
+import no.nav.tiltakspenger.tiltak.httpClientWithRetry
 
 private val LOG = KotlinLogging.logger {}
 
@@ -25,7 +25,7 @@ class AzureTokenProvider(
     engine: HttpClientEngine? = null,
     private val config: OauthConfig,
 ) : TokenProvider {
-    private val azureHttpClient = defaultHttpClient(objectMapper = objectMapper, engine = engine) {
+    private val azureHttpClient = httpClientWithRetry(objectMapper = objectMapper, engine = engine) {
         System.getenv("HTTP_PROXY")?.let {
             LOG.info("Setter opp proxy mot $it")
             this.proxy = ProxyBuilder.http(it)

@@ -15,8 +15,8 @@ import io.ktor.http.contentType
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO
 import no.nav.tiltakspenger.tiltak.Configuration
-import no.nav.tiltakspenger.tiltak.defaultHttpClient
 import no.nav.tiltakspenger.tiltak.defaultObjectMapper
+import no.nav.tiltakspenger.tiltak.httpClientWithRetry
 
 // {
 //    "id": "1c51c943-ce2d-4029-8c1e-18b3c59d3e2e",
@@ -64,7 +64,7 @@ class ArenaClientImpl(
     private val objectMapper: ObjectMapper = defaultObjectMapper(),
     private val getToken: suspend () -> String,
     engine: HttpClientEngine? = null,
-    private val httpClient: HttpClient = defaultHttpClient(
+    private val httpClient: HttpClient = httpClientWithRetry(
         objectMapper = objectMapper,
         engine = engine,
     ),
