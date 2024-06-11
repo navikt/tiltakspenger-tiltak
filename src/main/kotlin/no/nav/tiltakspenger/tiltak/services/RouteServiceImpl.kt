@@ -56,9 +56,13 @@ class RouteServiceImpl(
     }
 
     override fun hentTiltakForSøknad(fnr: String): List<TiltakDTO> {
-        return hentAlleTiltak(fnr)
+        val tiltak = hentAlleTiltak(fnr)
+        return tiltak
             .filter { it.deltakelseStatus.rettTilÅSøke }
             .filter { it.gjennomforing.arenaKode.rettPåTiltakspenger }
+        // return hentAlleTiltak(fnr)
+        //  .filter { it.deltakelseStatus.rettTilÅSøke }
+        // .filter { it.gjennomforing.arenaKode.rettPåTiltakspenger }
     }
 }
 

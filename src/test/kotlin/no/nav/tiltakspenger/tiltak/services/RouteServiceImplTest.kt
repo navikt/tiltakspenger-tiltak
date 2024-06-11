@@ -6,10 +6,12 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType
+import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMOB
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMOE
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMOY
+import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.ARBTREN
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.KURS
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
@@ -23,7 +25,6 @@ import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
 
 internal class RouteServiceImplTest {
     private val kometClient = mockk<KometClient>()
@@ -78,22 +79,22 @@ internal class RouteServiceImplTest {
         )
         coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
             // Disse skal være med
-            arenaTiltak(AMO, DeltakerStatusType.DELAVB),
-            arenaTiltak(AMO, DeltakerStatusType.FULLF),
-            arenaTiltak(AMO, DeltakerStatusType.GJENN),
-            arenaTiltak(AMO, DeltakerStatusType.GJENN_AVB),
-            arenaTiltak(AMO, DeltakerStatusType.IKKEM),
-            arenaTiltak(AMO, DeltakerStatusType.JATAKK),
-            arenaTiltak(AMO, DeltakerStatusType.TILBUD),
+            arenaTiltak(ARBTREN, DeltakerStatusType.DELAVB),
+            arenaTiltak(ARBTREN, DeltakerStatusType.FULLF),
+            arenaTiltak(ARBTREN, DeltakerStatusType.GJENN),
+            arenaTiltak(ARBTREN, DeltakerStatusType.GJENN_AVB),
+            arenaTiltak(ARBTREN, DeltakerStatusType.IKKEM),
+            arenaTiltak(ARBTREN, DeltakerStatusType.JATAKK),
+            arenaTiltak(ARBTREN, DeltakerStatusType.TILBUD),
 
             // Disse skal ikke være med
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.AKTUELL),
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.AVSLAG),
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.GJENN_AVL),
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.IKKAKTUELL),
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.INFOMOETE),
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.NEITAKK),
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.VENTELISTE),
+            arenaTiltak(ARBTREN, DeltakerStatusType.AKTUELL),
+            arenaTiltak(ARBTREN, DeltakerStatusType.AVSLAG),
+            arenaTiltak(ARBTREN, DeltakerStatusType.GJENN_AVL),
+            arenaTiltak(ARBTREN, DeltakerStatusType.IKKAKTUELL),
+            arenaTiltak(ARBTREN, DeltakerStatusType.INFOMOETE),
+            arenaTiltak(ARBTREN, DeltakerStatusType.NEITAKK),
+            arenaTiltak(ARBTREN, DeltakerStatusType.VENTELISTE),
         )
 
         val tiltakListe = routesService.hentTiltakForSøknad("123")
@@ -151,14 +152,14 @@ internal class RouteServiceImplTest {
             kometDeltaker("ARBFORB", DeltakerStatusDTO.DELTAR),
         )
         coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
-            arenaTiltak(AMO, DeltakerStatusType.JATAKK),
+            arenaTiltak(ARBTREN, DeltakerStatusType.JATAKK),
         )
 
         val tiltakListe = routesService.hentAlleTiltak("123")
 
         tiltakListe.size shouldBe 2
         tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.ARBFORB }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.AMO }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.ARBTREN }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
     }
 
     @Test
@@ -174,7 +175,7 @@ internal class RouteServiceImplTest {
             kometDeltaker("VASV", DeltakerStatusDTO.DELTAR),
         )
         coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.KURS, DeltakerStatusType.JATAKK),
+            arenaTiltak(KURS, DeltakerStatusType.JATAKK),
         )
 
         val tiltakListe = routesService.hentAlleTiltak("123")
@@ -234,13 +235,13 @@ internal class RouteServiceImplTest {
             kometDeltaker("ARBFORB", DeltakerStatusDTO.VENTELISTE),
         )
         coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.AKTUELL),
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.AVSLAG),
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.GJENN_AVL),
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.IKKAKTUELL),
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.INFOMOETE),
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.NEITAKK),
-            arenaTiltak(ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO, DeltakerStatusType.VENTELISTE),
+            arenaTiltak(AMO, DeltakerStatusType.AKTUELL),
+            arenaTiltak(AMO, DeltakerStatusType.AVSLAG),
+            arenaTiltak(AMO, DeltakerStatusType.GJENN_AVL),
+            arenaTiltak(AMO, DeltakerStatusType.IKKAKTUELL),
+            arenaTiltak(AMO, DeltakerStatusType.INFOMOETE),
+            arenaTiltak(AMO, DeltakerStatusType.NEITAKK),
+            arenaTiltak(AMO, DeltakerStatusType.VENTELISTE),
         )
 
         val tiltakListe = routesService.hentAlleTiltak("123")
@@ -251,7 +252,7 @@ internal class RouteServiceImplTest {
 }
 
 private fun arenaTiltak(
-    tiltak: ArenaTiltaksaktivitetResponsDTO.TiltakType,
+    tiltak: TiltakType,
     status: DeltakerStatusType,
     fom: LocalDate = LocalDate.of(2023, 1, 1),
     tom: LocalDate = LocalDate.of(2023, 3, 31),
