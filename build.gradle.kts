@@ -64,7 +64,7 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
     testImplementation("io.mockk:mockk-dsl-jvm:$mockkVersion")
-    testImplementation("org.skyscreamer:jsonassert:1.5.1")
+    testImplementation("org.skyscreamer:jsonassert:1.5.2")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
