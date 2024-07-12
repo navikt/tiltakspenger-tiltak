@@ -38,6 +38,9 @@ spec:
         - application: tiltakspenger-soknad-api
           namespace: tpts
           cluster: {{ cluster }}
+        - application: tiltakspenger-vedtak
+          namespace: tpts
+          cluster: {{ cluster }}
     outbound:
       rules:
         - application: amt-tiltak
