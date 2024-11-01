@@ -38,7 +38,7 @@ spec:
         - application: tiltakspenger-soknad-api
           namespace: tpts
           cluster: {{ cluster }}
-        - application: tiltakspenger-vedtak
+        - application: tiltakspenger-saksbehandling-api
           namespace: tpts
           cluster: {{ cluster }}
     outbound:
