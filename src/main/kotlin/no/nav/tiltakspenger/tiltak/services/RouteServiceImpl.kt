@@ -129,6 +129,7 @@ private fun mapArenaTiltak(tiltak: ArenaTiltaksaktivitetResponsDTO.Tiltaksaktivi
             DeltakerStatusType.INFOMOETE -> DeltakerStatusDTO.VENTELISTE
             DeltakerStatusType.NEITAKK -> DeltakerStatusDTO.IKKE_AKTUELL
             DeltakerStatusType.VENTELISTE -> DeltakerStatusDTO.VENTELISTE
+            DeltakerStatusType.FEILREG -> DeltakerStatusDTO.FEILREGISTRERT
         },
         deltakelseDagerUke = tiltak.antallDagerPerUke,
         deltakelseProsent = tiltak.deltakelseProsent,
