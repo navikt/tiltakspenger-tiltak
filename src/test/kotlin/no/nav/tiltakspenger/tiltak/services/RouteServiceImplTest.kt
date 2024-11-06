@@ -171,54 +171,58 @@ internal class RouteServiceImplTest {
         coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             arenaTiltak(ARBTREN, DeltakerStatusType.JATAKK),
         )
-
-        val tiltakListe = routesService.hentAlleTiltak("123")
-
-        tiltakListe.size shouldBe 2
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.ARBFORB }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.ARBTREN }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+        routesService.hentTiltakForSaksbehandling("123", "correlationId").also {
+            it.size shouldBe 2
+            it[0].typeKode.rettPåTiltakspenger shouldBe true
+            it[1].typeKode.rettPåTiltakspenger shouldBe true
+        }
+        routesService.hentTiltakForSøknad("123", "correlationId").also {
+            it.size shouldBe 2
+            it[0].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+            it[1].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+        }
     }
 
     @Test
     fun `tiltak fra komet og arena som ikke gir rett på tiltakspenger returnerer false`() {
         val routesService = RouteServiceImpl(
             kometClient = kometClient,
-            valpClient = valpClient,
-            tiltakClient = tiltakClient,
             arenaClient = arenaClient,
         )
 
-        coEvery { kometClient.hentTiltakDeltagelser(any()) } returns listOf(
+        coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
             kometDeltaker("VASV", DeltakerStatusDTO.DELTAR),
         )
-        coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
+        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             arenaTiltak(KURS, DeltakerStatusType.JATAKK),
         )
 
-        val tiltakListe = routesService.hentAlleTiltak("123")
+        routesService.hentTiltakForSaksbehandling("123", "correlationId").also {
+            it.size shouldBe 2
+            it.first { it.typeKode == TiltakResponsDTO.TiltakType.VASV }.typeKode.rettPåTiltakspenger shouldBe false
+            it.first { it.typeKode == TiltakResponsDTO.TiltakType.KURS }.typeKode.rettPåTiltakspenger shouldBe false
+        }
 
-        tiltakListe.size shouldBe 2
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.VASV }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.KURS }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+        routesService.hentTiltakForSøknad("123", "correlationId").also {
+            it.size shouldBe 0
+        }
     }
 
     @Test
     fun `tiltak med status som skal dukke opp i søknaden gir rett til å søke`() {
         val routesService = RouteServiceImpl(
             kometClient = kometClient,
-            valpClient = valpClient,
-            tiltakClient = tiltakClient,
             arenaClient = arenaClient,
         )
 
-        coEvery { kometClient.hentTiltakDeltagelser(any()) } returns listOf(
+        coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
             kometDeltaker("ARBFORB", DeltakerStatusDTO.AVBRUTT),
             kometDeltaker("ARBFORB", DeltakerStatusDTO.FULLFORT),
             kometDeltaker("ARBFORB", DeltakerStatusDTO.DELTAR),
             kometDeltaker("ARBFORB", DeltakerStatusDTO.VENTER_PA_OPPSTART),
             kometDeltaker("ARBFORB", DeltakerStatusDTO.HAR_SLUTTET),
         )
-        coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
+        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             arenaTiltak(AMO, DeltakerStatusType.DELAVB),
             arenaTiltak(AMO, DeltakerStatusType.FULLF),
             arenaTiltak(AMO, DeltakerStatusType.GJENN),
@@ -228,22 +232,25 @@ internal class RouteServiceImplTest {
             arenaTiltak(AMO, DeltakerStatusType.TILBUD),
         )
 
-        val tiltakListe = routesService.hentAlleTiltak("123")
+        routesService.hentTiltakForSaksbehandling("123", "correlationId").also {
+            it.size shouldBe 12
+            it.all { it.deltakelseStatus.rettTilÅSøke }
+        }
 
-        tiltakListe.size shouldBe 12
-        tiltakListe.all { it.deltakelseStatus.rettTilÅSøke }
+        routesService.hentTiltakForSøknad("123", "correlationId").also {
+            // TODO post-mvp jah: Her bør vi kanskje også bruke typer som faktisk gir rett til å søke?
+            it.size shouldBe 5
+        }
     }
 
     @Test
     fun `tiltak med status som ikke skal dukke opp i søknaden gir ikke rett til å søke`() {
         val routesService = RouteServiceImpl(
             kometClient = kometClient,
-            valpClient = valpClient,
-            tiltakClient = tiltakClient,
             arenaClient = arenaClient,
         )
 
-        coEvery { kometClient.hentTiltakDeltagelser(any()) } returns listOf(
+        coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
             kometDeltaker("ARBFORB", DeltakerStatusDTO.IKKE_AKTUELL),
             kometDeltaker("ARBFORB", DeltakerStatusDTO.VURDERES),
             kometDeltaker("ARBFORB", DeltakerStatusDTO.FEILREGISTRERT),
@@ -251,7 +258,7 @@ internal class RouteServiceImplTest {
             kometDeltaker("ARBFORB", DeltakerStatusDTO.SOKT_INN),
             kometDeltaker("ARBFORB", DeltakerStatusDTO.VENTELISTE),
         )
-        coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
+        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             arenaTiltak(AMO, DeltakerStatusType.AKTUELL),
             arenaTiltak(AMO, DeltakerStatusType.AVSLAG),
             arenaTiltak(AMO, DeltakerStatusType.GJENN_AVL),
@@ -261,10 +268,13 @@ internal class RouteServiceImplTest {
             arenaTiltak(AMO, DeltakerStatusType.VENTELISTE),
         )
 
-        val tiltakListe = routesService.hentAlleTiltak("123")
-
-        tiltakListe.size shouldBe 13
-        tiltakListe.all { !it.deltakelseStatus.rettTilÅSøke }
+        routesService.hentTiltakForSaksbehandling("123", "correlationId").also {
+            it.size shouldBe 13
+            it.all { !it.deltakelseStatus.rettTilÅSøke }
+        }
+        routesService.hentTiltakForSøknad("123", "correlationId").also {
+            it.size shouldBe 0
+        }
     }
 }
 
