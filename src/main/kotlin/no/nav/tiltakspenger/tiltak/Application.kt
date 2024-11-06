@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.tiltak
 
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import mu.KotlinLogging
 
 fun main() {
@@ -12,7 +14,13 @@ fun main() {
         log.error { e }
         securelog.error(e) { e.message }
     }
+    val appBuilder = ApplicationBuilder()
 
-    val applicationBuilder = ApplicationBuilder()
-    applicationBuilder.start()
+    embeddedServer(
+        factory = Netty,
+        port = 8080,
+        module = {
+            tiltakApi(appBuilder.routesService)
+        },
+    ).start(wait = true)
 }

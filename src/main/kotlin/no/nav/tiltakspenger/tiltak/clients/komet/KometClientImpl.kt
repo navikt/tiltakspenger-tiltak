@@ -37,10 +37,10 @@ class KometClientImpl(
         const val navCallIdHeader = "Nav-Call-Id"
     }
 
-    override suspend fun hentTiltakDeltagelser(fnr: String): List<DeltakerDTO> {
+    override suspend fun hentTiltakDeltagelser(fnr: String, correlationId: String?): List<DeltakerDTO> {
         val httpResponse =
             httpClient.post("${config.baseUrl}/api/external/deltakelser") {
-                header(navCallIdHeader, "tiltakspenger-tiltak") // TODO hva skal vi bruke her?
+                header(navCallIdHeader, correlationId)
                 bearerAuth(getToken())
                 accept(ContentType.Application.Json)
                 contentType(ContentType.Application.Json)
@@ -53,9 +53,6 @@ class KometClientImpl(
 
         return when (httpResponse.status) {
             HttpStatusCode.OK -> httpResponse.call.response.body()
-//            HttpStatusCode.NotFound -> KometResponse(
-//                deltakelser = emptyList()
-//            ) // TODO sjekk om vi trenger denne
             else -> throw RuntimeException("error (responseCode=${httpResponse.status.value}) fra Komet")
         }
     }

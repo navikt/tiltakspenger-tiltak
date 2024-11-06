@@ -3,7 +3,7 @@ val mockkVersion = "1.13.12"
 val ktorVersion = "2.3.12"
 val jacksonVersion = "2.17.2"
 val kotestVersion = "5.9.1"
-val libsVersjon = "0.0.202"
+val libsVersjon = "0.0.259"
 
 plugins {
     application
@@ -28,11 +28,11 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("org.jetbrains:annotations:24.1.0")
-    
-    implementation("com.github.navikt:rapids-and-rivers:2024082010411724143294.7221e391eba8")
+
     implementation("com.natpryce:konfig:1.6.10.0")
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$libsVersjon")
     implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:$libsVersjon")
+    implementation("com.github.navikt.tiltakspenger-libs:common:$libsVersjon")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
