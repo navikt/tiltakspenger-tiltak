@@ -20,35 +20,29 @@ import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.GjennomforingDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
-import no.nav.tiltakspenger.tiltak.clients.tiltak.TiltakClient
-import no.nav.tiltakspenger.tiltak.clients.valp.ValpClient
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 internal class RouteServiceImplTest {
     private val kometClient = mockk<KometClient>()
-    private val valpClient = mockk<ValpClient>()
-    private val tiltakClient = mockk<TiltakClient>()
     private val arenaClient = mockk<ArenaClient>()
 
     @Test
     fun `tiltak som ikke gir rett til Tiltakspenger er ikke med i søknaden selv om de har riktig status`() {
         val routesService = RouteServiceImpl(
             kometClient = kometClient,
-            valpClient = valpClient,
-            tiltakClient = tiltakClient,
             arenaClient = arenaClient,
         )
 
-        coEvery { kometClient.hentTiltakDeltagelser(any()) } returns listOf(
+        coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
             kometDeltaker("VASV", DeltakerStatusDTO.AVBRUTT),
         )
-        coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
+        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             arenaTiltak(KURS, DeltakerStatusType.DELAVB),
         )
 
-        val tiltakListe = routesService.hentTiltakForSøknad("123")
+        val tiltakListe = routesService.hentTiltakForSøknad("123", "correlationId")
 
         tiltakListe.size shouldBe 0
     }
@@ -57,12 +51,10 @@ internal class RouteServiceImplTest {
     fun `tiltak fra komet og arena som ikke gir rett til å søke er ikke med i listen`() {
         val routesService = RouteServiceImpl(
             kometClient = kometClient,
-            valpClient = valpClient,
-            tiltakClient = tiltakClient,
             arenaClient = arenaClient,
         )
 
-        coEvery { kometClient.hentTiltakDeltagelser(any()) } returns listOf(
+        coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
             // Disse skal være med...
             kometDeltaker("ARBFORB", DeltakerStatusDTO.AVBRUTT),
             kometDeltaker("ARBFORB", DeltakerStatusDTO.FULLFORT),
@@ -77,7 +69,7 @@ internal class RouteServiceImplTest {
             kometDeltaker("ARBFORB", DeltakerStatusDTO.SOKT_INN),
             kometDeltaker("ARBFORB", DeltakerStatusDTO.VENTELISTE),
         )
-        coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
+        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             // Disse skal være med
             arenaTiltak(ARBTREN, DeltakerStatusType.DELAVB),
             arenaTiltak(ARBTREN, DeltakerStatusType.FULLF),
@@ -97,7 +89,7 @@ internal class RouteServiceImplTest {
             arenaTiltak(ARBTREN, DeltakerStatusType.VENTELISTE),
         )
 
-        val tiltakListe = routesService.hentTiltakForSøknad("123")
+        val tiltakListe = routesService.hentTiltakForSøknad("123", "correlationId")
 
         tiltakListe.size shouldBe 12
         tiltakListe.map {
@@ -114,44 +106,69 @@ internal class RouteServiceImplTest {
     }
 
     @Test
-    fun `tiltak fra arena med status GJENN gir DELTAR hvis startdato har passert og VENTER_PÅ_OPPSTART hvis ikke`() {
+    fun `tiltak fra arena med status GJENN og TILBUD gir DELTAR hvis startdato har passert og VENTER_PÅ_OPPSTART hvis ikke`() {
         val routesService = RouteServiceImpl(
             kometClient = kometClient,
-            valpClient = valpClient,
-            tiltakClient = tiltakClient,
             arenaClient = arenaClient,
         )
 
-        coEvery { kometClient.hentTiltakDeltagelser(any()) } returns emptyList()
-        coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
-            arenaTiltak(tiltak = AMO, status = DeltakerStatusType.GJENN, LocalDate.now().plusDays(10), LocalDate.now().plusDays(20)),
-            arenaTiltak(tiltak = AMOE, status = DeltakerStatusType.TILBUD, LocalDate.now().plusDays(10), LocalDate.now().plusDays(20)),
-            arenaTiltak(tiltak = AMOB, status = DeltakerStatusType.GJENN, LocalDate.now().minusDays(20), LocalDate.now().minusDays(10)),
-            arenaTiltak(tiltak = AMOY, status = DeltakerStatusType.TILBUD, LocalDate.now().minusDays(20), LocalDate.now().minusDays(10)),
+        coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns emptyList()
+        val arenaTiltak1 = arenaTiltak(
+            tiltak = AMO,
+            status = DeltakerStatusType.GJENN,
+            LocalDate.now().plusDays(10),
+            LocalDate.now().plusDays(20),
         )
+        val arenaTiltak2 = arenaTiltak(
+            tiltak = AMOE,
+            status = DeltakerStatusType.TILBUD,
+            LocalDate.now().plusDays(10),
+            LocalDate.now().plusDays(20),
+        )
+        val arenaTiltak3 = arenaTiltak(
+            tiltak = AMOB,
+            status = DeltakerStatusType.GJENN,
+            LocalDate.now().minusDays(20),
+            LocalDate.now().minusDays(10),
+        )
+        val arenaTiltak4 = arenaTiltak(
+            tiltak = AMOY,
+            status = DeltakerStatusType.TILBUD,
+            LocalDate.now().minusDays(20),
+            LocalDate.now().minusDays(10),
+        )
+        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
+            arenaTiltak1,
+            arenaTiltak2,
+            arenaTiltak3,
+            arenaTiltak4,
+        )
+        routesService.hentTiltakForSaksbehandling("123", "correlationId").also { actual ->
+            actual.size shouldBe 4
+            actual[0].deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
+            actual[1].deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
+            actual[2].deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.DELTAR
+            actual[3].deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.DELTAR
+        }
 
-        val tiltakListe = routesService.hentAlleTiltak("123")
-
-        tiltakListe.size shouldBe 4
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.AMO }.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.AMOE }.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.AMOB }.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.DELTAR
-        tiltakListe.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.AMOY }.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.DELTAR
+        routesService.hentTiltakForSøknad("123", "correlationId").also { actual ->
+            // Vi filtrer ut AMO, AMOE;AMOB,AMOY
+            // TODO post-mvp jah: Kanskje vi burde bruke noen tiltak i denne testen som ikke filtreres ut?
+            actual.size shouldBe 0
+        }
     }
 
     @Test
     fun `tiltak fra komet og arena som gir rett på tiltakspenger returnerer true`() {
         val routesService = RouteServiceImpl(
             kometClient = kometClient,
-            valpClient = valpClient,
-            tiltakClient = tiltakClient,
             arenaClient = arenaClient,
         )
 
-        coEvery { kometClient.hentTiltakDeltagelser(any()) } returns listOf(
+        coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
             kometDeltaker("ARBFORB", DeltakerStatusDTO.DELTAR),
         )
-        coEvery { arenaClient.hentTiltakArena(any()) } returns listOf(
+        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             arenaTiltak(ARBTREN, DeltakerStatusType.JATAKK),
         )
 

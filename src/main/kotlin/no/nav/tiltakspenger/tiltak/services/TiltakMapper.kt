@@ -47,7 +47,7 @@ internal fun DeltakerDTO.toSaksbehandlingDTO(): TiltakTilSaksbehandlingDTO = Til
     },
     deltakelsePerUke = dagerPerUke,
     deltakelseProsent = prosentStilling,
-    kilde = "Arena",
+    kilde = "Komet",
 )
 
 internal fun DeltakerDTO.toSøknadTiltak(): TiltakDTO =
@@ -94,7 +94,7 @@ internal fun TiltaksaktivitetDTO.toSaksbehandlingDTO(): TiltakTilSaksbehandlingD
     deltakelseStatus = deltakerStatusType.toDTO(deltakelsePeriode),
     deltakelsePerUke = antallDagerPerUke,
     deltakelseProsent = deltakelseProsent,
-    kilde = "Komet",
+    kilde = "Arena",
 )
 
 internal fun TiltaksaktivitetDTO.toSøknadTiltak(): TiltakDTO =

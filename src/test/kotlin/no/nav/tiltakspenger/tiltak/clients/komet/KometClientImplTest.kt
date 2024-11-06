@@ -38,7 +38,7 @@ internal class KometClientImplTest {
         )
 
         runBlocking {
-            val deltakere = client.hentTiltakDeltagelser("123")
+            val deltakere = client.hentTiltakDeltagelser("123", "correlationId")
 
             deltakere shouldContainAll listOf(
                 DeltakerDTO(
