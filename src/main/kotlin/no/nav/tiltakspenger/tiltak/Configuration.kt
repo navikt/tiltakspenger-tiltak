@@ -14,18 +14,6 @@ enum class Profile {
 
 object Configuration {
 
-    val rapidsAndRivers = mapOf(
-        "RAPID_APP_NAME" to "tiltakspenger-tiltak",
-        "KAFKA_BROKERS" to System.getenv("KAFKA_BROKERS"),
-        "KAFKA_CREDSTORE_PASSWORD" to System.getenv("KAFKA_CREDSTORE_PASSWORD"),
-        "KAFKA_TRUSTSTORE_PATH" to System.getenv("KAFKA_TRUSTSTORE_PATH"),
-        "KAFKA_KEYSTORE_PATH" to System.getenv("KAFKA_KEYSTORE_PATH"),
-        "KAFKA_RAPID_TOPIC" to "tpts.rapid.v1",
-        "KAFKA_EXTRA_TOPIC" to "amt.deltaker-v1",
-        "KAFKA_RESET_POLICY" to "earliest",
-        "KAFKA_CONSUMER_GROUP_ID" to "tiltakspenger-tiltak-v2",
-    )
-
     private val otherDefaultProperties = mapOf(
         "application.httpPort" to 8080.toString(),
 //        "SERVICEUSER_TPTS_USERNAME" to System.getenv("SERVICEUSER_TPTS_USERNAME"),
@@ -40,20 +28,16 @@ object Configuration {
         "logback.configurationFile" to "logback.xml",
     )
 
-    private val defaultProperties = ConfigurationMap(rapidsAndRivers + otherDefaultProperties)
+    private val defaultProperties = ConfigurationMap(otherDefaultProperties)
 
     private val localProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.LOCAL.toString(),
             "logback.configurationFile" to "logback.local.xml",
-            "KOMET_URL" to "http://localhost", // TODO her kan vi legge inn stubbing?
-            "KOMET_SCOPE" to "api://localhost/.default", // TODO her kan vi legge inn stubbing?
-            "VALP_URL" to "http://localhost", // TODO her kan vi legge inn stubbing?
-            "VALP_SCOPE" to "api://localhost/.default", // TODO her kan vi legge inn stubbing?
-            "ARENA_URL" to "http://localhost", // TODO her kan vi legge inn stubbing?
-            "ARENA_SCOPE" to "api://localhost/.default", // TODO her kan vi legge inn stubbing?
-            "TILTAK_URL" to "http://localhost", // TODO her kan vi legge inn stubbing?
-            "TILTAK_SCOPE" to "api://localhost/.default", // TODO her kan vi legge inn stubbing?
+            "KOMET_URL" to "http://localhost",
+            "KOMET_SCOPE" to "api://localhost/.default",
+            "ARENA_URL" to "http://localhost",
+            "ARENA_SCOPE" to "api://localhost/.default",
             "AZURE_APP_CLIENT_ID" to "xxx",
             "AZURE_APP_CLIENT_SECRET" to "YYY",
             "AZURE_APP_WELL_KNOWN_URL" to "ZZZ",
@@ -71,12 +55,8 @@ object Configuration {
             "logback.configurationFile" to "logback.xml",
             "KOMET_URL" to "http://amt-tiltak.amt",
             "KOMET_SCOPE" to "api://dev-gcp.amt.amt-tiltak/.default",
-            "VALP_URL" to "http://mulighetsrommet-api.team-mulighetsrommet",
-            "VALP_SCOPE" to "api://dev-gcp.team-mulighetsrommet.mulighetsrommet-api/.default",
-            "ARENA_URL" to "https://tiltakspenger-arena.dev-fss-pub.nais.io", // TODO finn riktig verdi
-            "ARENA_SCOPE" to "api://dev-fss.tpts.tiltakspenger-arena/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
-            "TILTAK_URL" to "http://team-tiltak", // TODO finn riktig verdi
-            "TILTAK_SCOPE" to "api://dev-gcp.team-tiltak.todo/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
+            "ARENA_URL" to "https://tiltakspenger-arena.dev-fss-pub.nais.io",
+            "ARENA_SCOPE" to "api://dev-fss.tpts.tiltakspenger-arena/.default",
         ),
     )
     private val prodProperties = ConfigurationMap(
@@ -85,12 +65,8 @@ object Configuration {
             "logback.configurationFile" to "logback.xml",
             "KOMET_URL" to "http://amt-tiltak.amt",
             "KOMET_SCOPE" to "api://prod-gcp.amt.amt-tiltak/.default",
-            "VALP_URL" to "http://mulighetsrommet-api.team-mulighetsrommet",
-            "VALP_SCOPE" to "api://prod-gcp.team-mulighetsrommet.mulighetsrommet-api/.default",
-            "ARENA_URL" to "https://tiltakspenger-arena.prod-fss-pub.nais.io", // TODO finn riktig verdi
-            "ARENA_SCOPE" to "api://prod-fss.tpts.tiltakspenger-arena/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
-            "TILTAK_URL" to "http://team-tiltak", // TODO finn riktig verdi
-            "TILTAK_SCOPE" to "api://prod-gcp.team-tiltak.todo/.default", // TODO hvis vi trenger denne må vi finne riktig verdi
+            "ARENA_URL" to "https://tiltakspenger-arena.prod-fss-pub.nais.io",
+            "ARENA_SCOPE" to "api://prod-fss.tpts.tiltakspenger-arena/.default",
         ),
     )
 
@@ -117,13 +93,7 @@ object Configuration {
     fun kometClientConfig(baseUrl: String = config()[Key("KOMET_URL", stringType)]) =
         ClientConfig(baseUrl = baseUrl)
 
-    fun valpClientConfig(baseUrl: String = config()[Key("VALP_URL", stringType)]) =
-        ClientConfig(baseUrl = baseUrl)
-
     fun arenaClientConfig(baseUrl: String = config()[Key("ARENA_URL", stringType)]) =
-        ClientConfig(baseUrl = baseUrl)
-
-    fun tiltakClientConfig(baseUrl: String = config()[Key("TILTAK_URL", stringType)]) =
         ClientConfig(baseUrl = baseUrl)
 
     fun tokenxValidationConfig(
@@ -173,18 +143,6 @@ object Configuration {
         wellknownUrl = wellknownUrl,
     )
 
-    fun oauthConfigValp(
-        scope: String = config()[Key("VALP_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
-
     fun oauthConfigArena(
         scope: String = config()[Key("ARENA_SCOPE", stringType)],
         clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
@@ -196,23 +154,4 @@ object Configuration {
         clientSecret = clientSecret,
         wellknownUrl = wellknownUrl,
     )
-
-    fun oauthConfigTiltak(
-        scope: String = config()[Key("TILTAK_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
-
-//    data class TokenVerificationConfig(
-//        val jwksUri: String = config()[Key("AZURE_OPENID_CONFIG_JWKS_URI", stringType)],
-//        val issuer: String = config()[Key("AZURE_OPENID_CONFIG_ISSUER", stringType)],
-//        val clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-//        val leeway: Long = 1000,
-//    )
 }

@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.tiltak.clients.komet
 
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
 
 data class DeltakerDTO(
     val id: String,

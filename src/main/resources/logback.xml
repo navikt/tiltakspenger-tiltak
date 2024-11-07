@@ -2,6 +2,7 @@
 <configuration>
     <appender name="STDOUT_JSON" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>X-Correlation-ID</includeMdcKeyName>
             <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
                 <!--<value>(\b\d{11}\b)</value>-->
                 <value>(?&lt;!\d)\d{11}(?!\d)</value>
@@ -23,8 +24,6 @@
         </triggeringPolicy>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
-
-    <logger name="no.nav.helse.rapids_rivers" level="INFO"/>
 
     <logger name="tjenestekall" level="DEBUG" additivity="false">
         <appender-ref ref="secureLog"/>
