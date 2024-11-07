@@ -26,8 +26,6 @@ spec:
   replicas:
     min: 2
     max: 2
-  kafka:
-    pool: {{ kafka.pool }}
   secureLogs:
     enabled: true
   tokenx:

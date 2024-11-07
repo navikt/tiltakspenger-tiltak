@@ -42,11 +42,11 @@ object Configuration {
             "AZURE_APP_CLIENT_SECRET" to "YYY",
             "AZURE_APP_WELL_KNOWN_URL" to "ZZZ",
             "TOKEN_X_CLIENT_ID" to "xxx",
-            "TOKEN_X_WELL_KNOWN_URL" to "http://localhost:8080/default/.well-known/openid-configuration",
-            "TOKEN_X_ISSUER" to "http://localhost:8080/default",
-            "TOKEN_X_JWKS_URI" to "http://localhost:8080/default",
+            "TOKEN_X_WELL_KNOWN_URL" to "http://host.docker.internal:6969/tokendings/.well-known/openid-configuration",
+            "TOKEN_X_ISSUER" to "http://host.docker.internal:6969/default",
+            "TOKEN_X_JWKS_URI" to "http://host.docker.internal:6969/default",
             "AZURE_OPENID_CONFIG_ISSUER" to "azure",
-            "AZURE_OPENID_CONFIG_JWKS_URI" to "AZURE_OPENID_CONFIG_JWKS_URI",
+            "AZURE_OPENID_CONFIG_JWKS_URI" to "http://host.docker.internal:6969/azure/jwks",
         ),
     )
     private val devProperties = ConfigurationMap(

@@ -22,6 +22,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.routes.azureRoutes
+import no.nav.tiltakspenger.tiltak.routes.healthRoutes
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
 import no.nav.tiltakspenger.tiltak.services.RoutesService
 import java.net.URI
@@ -41,6 +42,7 @@ fun Application.setupRouting(
     jacksonSerialization()
     installAuthentication()
     routing {
+        healthRoutes()
         authenticate("tokenx") {
             tokenxRoutes(routesService)
         }
