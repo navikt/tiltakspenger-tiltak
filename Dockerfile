@@ -1,22 +1,13 @@
-FROM eclipse-temurin:21 AS jre-build
+FROM gcr.io/distroless/java21-debian12
 
-# Create a custom Java runtime
-RUN $JAVA_HOME/bin/jlink \
-         --add-modules ALL-MODULE-PATH \
-         --strip-debug \
-         --no-man-pages \
-         --no-header-files \
-         --compress=2 \
-         --output /javaruntime
+ENV TZ='Europe/Oslo'
+ENV LC_ALL='nb_NO.UTF-8'
+ENV LANG='nb_NO.UTF-8'
 
-# Runtime
-FROM debian:buster-slim
-ENV TZ="Europe/Oslo"
-ENV JAVA_HOME=/opt/java/openjdk
-ENV PATH "${JAVA_HOME}/bin:${PATH}"
-COPY --from=jre-build /javaruntime $JAVA_HOME
+WORKDIR /app
 
-COPY build/install/* /
+COPY build/install/tiltakspenger-tiltak/lib/*.jar .
 
 USER nobody
-CMD ["tiltakspenger-tiltak"]
+
+CMD ["tiltakspenger-tiltak.jar"]
