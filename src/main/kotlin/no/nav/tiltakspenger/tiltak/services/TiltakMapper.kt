@@ -85,6 +85,7 @@ internal fun DeltakerDTO.toSøknadTiltak(): TiltakDTO =
 // Vi får ikke gjennomføringId fra Arena
 // confluenseside for endepunktet vi kaller for å hente Arenatiltak: https://confluence.adeo.no/pages/viewpage.action?pageId=470748287
 internal fun TiltaksaktivitetDTO.toSaksbehandlingDTO(): TiltakTilSaksbehandlingDTO = TiltakTilSaksbehandlingDTO(
+    // TODO pre-mvp jah: Dette er tiltaksdeltakerId, jeg er litt usikker på om det er riktig nok at denne mappes til id.
     id = aktivitetId,
     gjennomføringId = null,
     deltakelseFom = earliest(deltakelsePeriode?.fom, deltakelsePeriode?.tom),
