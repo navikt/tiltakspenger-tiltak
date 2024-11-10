@@ -3,7 +3,7 @@ val mockkVersion = "1.13.13"
 val ktorVersion = "2.3.12"
 val jacksonVersion = "2.18.1"
 val kotestVersion = "5.9.1"
-val libsVersjon = "0.0.259"
+val felleslibVersion = "0.0.268"
 
 plugins {
     application
@@ -30,9 +30,9 @@ dependencies {
     implementation("org.jetbrains:annotations:24.1.0")
 
     implementation("com.natpryce:konfig:1.6.10.0")
-    implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$libsVersjon")
-    implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:$libsVersjon")
-    implementation("com.github.navikt.tiltakspenger-libs:common:$libsVersjon")
+    implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
