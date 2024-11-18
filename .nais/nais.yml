@@ -47,3 +47,7 @@ spec:
           namespace: team-mulighetsrommet
       external:
         - host: {{outboundExternalUrls.tiltakspengerarena}}
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
