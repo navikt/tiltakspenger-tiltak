@@ -1,58 +1,23 @@
-name: Auto Merge dependabot
-on: pull_request_target
+name: Dependabot auto-merge
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-    if: github.actor == 'dependabot[bot]'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: 21
-
-      - uses: gradle/gradle-build-action@v3.5.0
-        with:
-          arguments: build --info
-
-      - name: Notify Slack in case of build failure
-        if: failure()
-        run: |
-          curl -X POST --data-urlencode "payload={ \"attachments\": [{ \"pretext\": \"[${{ github.event.repository.name }}] Build failed :cry:\", \"color\": \"danger\", \"fields\": [ { \"title\": \"Author\", \"value\": \"$AUTHOR\", \"short\": false }, { \"title\": \"Branch\", \"value\": \"$BRANCH\", \"short\": false }, { \"title\": \"Commit\", \"value\": \"<https://github.com/${{ github.repository }}/commit/$PR_SHA|$PR_SHA>\", \"short\": false } ] }] }" $WEBHOOK_URL
-        env:
-          PR_SHA: ${{ github.event.pull_request.head.sha }}
-          BRANCH: ${{ github.head_ref }}
-          AUTHOR: ${{ github.actor }}
-          WEBHOOK_URL: ${{ secrets.SLACK_INCOMING_WEBHOOK_URL }}
-
   dependabot:
-    name: Merge
-    needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    # Only allow dependabot from this repo and not via forks
-    if: github.actor == 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
+    if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
     steps:
-      - run: gh pr merge --auto --rebase "$PR_URL"
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Auto-merge changes from Dependabot
+        if: steps.metadata.outputs.update-type != 'version-update:semver-major' || steps.metadata.outputs.package-ecosystem == 'github_actions'
+        run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Notify Slack in case of merge failure
-        if: failure()
-        run: |
-          curl -X POST --data-urlencode "payload={ \"attachments\": [{ \"pretext\": \"[${{ github.event.repository.name }}] Merge failed :cry:\", \"color\": \"danger\", \"fields\": [ { \"title\": \"Author\", \"value\": \"$AUTHOR\", \"short\": false }, { \"title\": \"Branch\", \"value\": \"$BRANCH\", \"short\": false }, { \"title\": \"Commit\", \"value\": \"<https://github.com/${{ github.repository }}/commit/$PR_SHA|$PR_SHA>\", \"short\": false } ] }] }" $WEBHOOK_URL
-        env:
-          PR_SHA: ${{ github.event.pull_request.head.sha }}
-          BRANCH: ${{ github.head_ref }}
-          AUTHOR: ${{ github.actor }}
-          WEBHOOK_URL: ${{ secrets.SLACK_INCOMING_WEBHOOK_URL }}
