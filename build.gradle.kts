@@ -1,4 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 val javaVersion = JavaVersion.VERSION_21
+val jvmVersion = JvmTarget.JVM_21
+
 val mockkVersion = "1.13.13"
 val ktorVersion = "2.3.12"
 val jacksonVersion = "2.18.1"
@@ -91,11 +95,15 @@ spotless {
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = javaVersion.toString()
+        compilerOptions {
+            jvmTarget.set(jvmVersion)
+        }
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = javaVersion.toString()
-        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+        compilerOptions {
+            jvmTarget.set(jvmVersion)
+            freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
+        }
     }
     jar {
         dependsOn(configurations.runtimeClasspath)
@@ -113,12 +121,8 @@ tasks {
         // https://phauer.com/2018/best-practices-unit-testing-kotlin/
         systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
     }
-}
-
-task("addPreCommitGitHookOnBuild") {
-    println("⚈ ⚈ ⚈ Running Add Pre Commit Git Hook Script on Build ⚈ ⚈ ⚈")
-    exec {
-        commandLine("cp", "./.scripts/pre-commit", "./.git/hooks")
+    register<Copy>("gitHooks") {
+        from(file(".scripts/pre-commit"))
+        into(file(".git/hooks"))
     }
-    println("✅ Added Pre Commit Git Hook Script.")
 }
