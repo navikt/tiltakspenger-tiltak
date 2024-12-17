@@ -40,4 +40,4 @@ jobs:
           PR_SHA: ${{ github.event.pull_request.head.sha }}
           BRANCH: ${{ github.head_ref }}
           AUTHOR: ${{ github.actor }}
-          WEBHOOK_URL: ${{ secrets.SLACK_VARSEL_WEBHOOK_URL }}
+          WEBHOOK_URL: ${{ secrets.SLACK_INCOMING_WEBHOOK_URL }}
