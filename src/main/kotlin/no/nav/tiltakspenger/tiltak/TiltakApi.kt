@@ -26,7 +26,7 @@ import no.nav.tiltakspenger.tiltak.routes.healthRoutes
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
 import no.nav.tiltakspenger.tiltak.services.RoutesService
 import java.net.URI
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 fun Application.tiltakApi(

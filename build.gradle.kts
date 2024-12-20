@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val javaVersion = JavaVersion.VERSION_21
@@ -12,7 +13,6 @@ val felleslibVersion = "0.0.309"
 plugins {
     application
     kotlin("jvm") version "2.1.0"
-    // id("ca.cutterslade.analyze") version "1.9.1"
     id("com.diffplug.spotless") version "6.25.0"
 }
 
@@ -65,6 +65,8 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.11.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
     testImplementation("io.mockk:mockk-dsl-jvm:$mockkVersion")
@@ -89,20 +91,20 @@ java {
 
 spotless {
     kotlin {
-        ktlint("0.48.2")
+        ktlint()
+            .editorConfigOverride(
+                mapOf(
+                    "ktlint_standard_max-line-length" to "off",
+                ),
+            )
     }
 }
 
 tasks {
-    compileKotlin {
+    kotlin {
         compilerOptions {
             jvmTarget.set(jvmVersion)
-        }
-    }
-    compileTestKotlin {
-        compilerOptions {
-            jvmTarget.set(jvmVersion)
-            freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
+            freeCompilerArgs.add("-Xconsistent-data-class-copy-visibility")
         }
     }
     jar {
@@ -120,6 +122,11 @@ tasks {
         useJUnitPlatform()
         // https://phauer.com/2018/best-practices-unit-testing-kotlin/
         systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
+        testLogging {
+            // We only want to log failed and skipped tests when running Gradle.
+            events("skipped", "failed")
+            exceptionFormat = TestExceptionFormat.FULL
+        }
     }
     register<Copy>("gitHooks") {
         from(file(".scripts/pre-commit"))

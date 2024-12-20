@@ -9,7 +9,9 @@ import com.natpryce.konfig.stringType
 import no.nav.tiltakspenger.tiltak.auth.AzureTokenProvider
 
 enum class Profile {
-    LOCAL, DEV, PROD
+    LOCAL,
+    DEV,
+    PROD,
 }
 
 object Configuration {

@@ -12,12 +12,9 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.Configuration
 import no.nav.tiltakspenger.tiltak.defaultObjectMapper
 import no.nav.tiltakspenger.tiltak.httpClientWithRetry
-
-val securelog = KotlinLogging.logger("tjenestekall")
 
 data class KometReqBody(
     val personIdent: String,
@@ -34,13 +31,13 @@ class KometClientImpl(
     ),
 ) : KometClient {
     companion object {
-        const val navCallIdHeader = "Nav-Call-Id"
+        const val NAV_CALL_ID_HEADER = "Nav-Call-Id"
     }
 
     override suspend fun hentTiltakDeltagelser(fnr: String, correlationId: String?): List<DeltakerDTO> {
         val httpResponse =
             httpClient.post("${config.baseUrl}/api/external/deltakelser") {
-                header(navCallIdHeader, correlationId)
+                header(NAV_CALL_ID_HEADER, correlationId)
                 bearerAuth(getToken())
                 accept(ContentType.Application.Json)
                 contentType(ContentType.Application.Json)

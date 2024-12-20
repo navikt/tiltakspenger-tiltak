@@ -33,7 +33,7 @@ class ArenaClientImpl(
     ),
 ) : ArenaClient {
     companion object {
-        const val navCallIdHeader = "Nav-Call-Id"
+        const val NAV_CALL_ID_HEADER = "Nav-Call-Id"
     }
 
     override suspend fun hentTiltakArena(fnr: String, correlationId: String?): List<TiltaksaktivitetDTO> {
@@ -47,7 +47,7 @@ class ArenaClientImpl(
     private suspend fun kallArena(fnr: String, correlationId: String?): ArenaTiltaksaktivitetResponsDTO? {
         val httpResponse =
             httpClient.post("${config.baseUrl}/tiltakAzure") {
-                header(navCallIdHeader, correlationId)
+                header(NAV_CALL_ID_HEADER, correlationId)
                 bearerAuth(getToken())
                 accept(ContentType.Application.Json)
                 contentType(ContentType.Application.Json)

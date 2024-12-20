@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 internal class KometClientImplTest {
 
     companion object {
-        const val accessToken = "woopwoop"
+        const val ACCESS_TOKEN = "woopwoop"
     }
 
     @Test
@@ -33,7 +33,7 @@ internal class KometClientImplTest {
         }
 
         val client = KometClientImpl(
-            getToken = { accessToken },
+            getToken = { ACCESS_TOKEN },
             engine = mockEngine,
         )
 
