@@ -3,6 +3,8 @@ on:
   pull_request:
     branches:
       - main
+    types:
+      - opened
 
 permissions:
   contents: write
@@ -23,12 +25,10 @@ jobs:
         uses: dependabot/fetch-metadata@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Notify Slack on new major version and abort
+      - name: Notify Slack on new major version
         if: steps.metadata.outputs.update-type == 'version-update:semver-major' && steps.metadata.outputs.package-ecosystem != 'github_actions'
-        id: major
         run: |
           curl -X POST --data-urlencode "payload={ \"attachments\": [{ \"pretext\": \"[${{ github.event.repository.name }}] Ny major dependency versjon!\", \"color\": \"info\", \"fields\": [ { \"title\": \"Commit\", \"value\": \"<https://github.com/${{ github.repository }}/commit/$PR_SHA|$PR_SHA>\", \"short\": false }, { \"title\": \"Dependency\", \"value\": \"$DEPENDENCY_NAME $VERSION_CHANGE\", \"short\": false } ] }] }" $WEBHOOK_URL
-          exit 1
         env:
           DEPENDENCY_NAME: ${{ steps.metadata.outputs.dependency-names }}
           VERSION_CHANGE: "${{ steps.metadata.outputs.previous-version }} -> ${{ steps.metadata.outputs.new-version }}"
@@ -43,18 +43,17 @@ jobs:
         if: steps.metadata.outputs.package-ecosystem != 'github_actions'
       - name: Build and run tests
         run: ./gradlew build
-        id: build
         if: steps.metadata.outputs.package-ecosystem != 'github_actions'
       - name: Auto-merge changes from Dependabot
         run: gh pr merge --auto --squash "$PR_URL"
-        id: merge
+        if: steps.metadata.outputs.update-type != 'version-update:semver-major' || steps.metadata.outputs.package-ecosystem == 'github_actions'
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Notify Slack in case of merge failure
-        if: failure() && steps.major.conclusion == 'skipped'
+        if: failure() && steps.metadata.outputs.update-type != 'version-update:semver-major'
         run: |
-          curl -X POST --data-urlencode "payload={ \"attachments\": [{ \"pretext\": \"[${{ github.event.repository.name }}] Dependabot auto-merge failed :cry:\", \"color\": \"danger\", \"fields\": [ { \"title\": \"Commit\", \"value\": \"<https://github.com/${{ github.repository }}/commit/$PR_SHA|$PR_SHA>\", \"short\": false }, { \"title\": \"Dependency\", \"value\": \"$DEPENDENCY_NAME $VERSION_CHANGE\", \"short\": false } ] }] }" $WEBHOOK_URL
+          curl -X POST --data-urlencode "payload={ \"attachments\": [{ \"pretext\": \"[${{ github.event.repository.name }}] Dependabot auto-merge feilet :cry:\", \"color\": \"danger\", \"fields\": [ { \"title\": \"Commit\", \"value\": \"<https://github.com/${{ github.repository }}/commit/$PR_SHA|$PR_SHA>\", \"short\": false }, { \"title\": \"Dependency\", \"value\": \"$DEPENDENCY_NAME $VERSION_CHANGE\", \"short\": false } ] }] }" $WEBHOOK_URL
         env:
           DEPENDENCY_NAME: ${{ steps.metadata.outputs.dependency-names }}
           VERSION_CHANGE: "${{ steps.metadata.outputs.previous-version }} -> ${{ steps.metadata.outputs.new-version }}"
