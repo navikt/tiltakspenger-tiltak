@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.tiltak.clients.komet
 
+import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.GjennomføringDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
@@ -9,6 +10,8 @@ import no.nav.tiltakspenger.tiltak.services.earliest
 import no.nav.tiltakspenger.tiltak.services.latest
 import java.time.LocalDate
 import java.time.LocalDateTime
+
+private val logger = KotlinLogging.logger { }
 
 /**
  * https://confluence.adeo.no/pages/viewpage.action?pageId=573710206
@@ -92,6 +95,7 @@ private fun String.toDeltakerStatusDTO() = when (this) {
     /** Mappes til IKKAKTUELL i Arena */
     "AVBRUTT_UTKAST" -> DeltakerStatusDTO.IKKE_AKTUELL
     else -> {
+        logger.error { "Ukjent deltakerstatus fra Komet: $this. Denne bør legges til ASAP." }
         throw RuntimeException("Klarte ikke tolke respons fra Komet. Ukjent deltakerstatus: $this")
     }
 }
