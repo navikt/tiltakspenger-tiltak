@@ -34,7 +34,7 @@ class KometClientImpl(
         const val NAV_CALL_ID_HEADER = "Nav-Call-Id"
     }
 
-    override suspend fun hentTiltakDeltagelser(fnr: String, correlationId: String?): List<DeltakerDTO> {
+    override suspend fun hentTiltakDeltagelser(fnr: String, correlationId: String?): List<KometResponseJson> {
         val httpResponse =
             httpClient.post("${config.baseUrl}/api/external/deltakelser") {
                 header(NAV_CALL_ID_HEADER, correlationId)

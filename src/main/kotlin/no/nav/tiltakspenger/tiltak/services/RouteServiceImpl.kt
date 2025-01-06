@@ -6,6 +6,8 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakTilSaksbehandlingDTO
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
+import no.nav.tiltakspenger.tiltak.clients.komet.toSaksbehandlingDTO
+import no.nav.tiltakspenger.tiltak.clients.komet.toSøknadTiltak
 
 val securelog = KotlinLogging.logger("tjenestekall")
 

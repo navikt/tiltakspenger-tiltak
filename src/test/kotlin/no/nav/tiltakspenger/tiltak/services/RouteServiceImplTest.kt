@@ -14,12 +14,17 @@ import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.Ti
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.ARBTREN
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.KURS
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.DELTAR
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.FEILREGISTRERT
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.IKKE_AKTUELL
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.PABEGYNT_REGISTRERING
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.SOKT_INN
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.VENTELISTE
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.VURDERES
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
-import no.nav.tiltakspenger.tiltak.clients.komet.ArrangorDTO
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerDTO
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO
-import no.nav.tiltakspenger.tiltak.clients.komet.GjennomforingDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
+import no.nav.tiltakspenger.tiltak.clients.komet.KometResponseJson
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -36,7 +41,7 @@ internal class RouteServiceImplTest {
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
-            kometDeltaker("VASV", DeltakerStatusDTO.AVBRUTT),
+            kometDeltaker("VASV", "AVBRUTT"),
         )
         coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             arenaTiltak(KURS, DeltakerStatusType.DELAVB),
@@ -56,18 +61,18 @@ internal class RouteServiceImplTest {
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
             // Disse skal være med...
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.AVBRUTT),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.FULLFORT),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.DELTAR),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.VENTER_PA_OPPSTART),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.HAR_SLUTTET),
+            kometDeltaker("ARBFORB", "AVBRUTT"),
+            kometDeltaker("ARBFORB", "FULLFORT"),
+            kometDeltaker("ARBFORB", "DELTAR"),
+            kometDeltaker("ARBFORB", "VENTER_PA_OPPSTART"),
+            kometDeltaker("ARBFORB", "HAR_SLUTTET"),
             // Disse skal ikke være med
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.IKKE_AKTUELL),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.VURDERES),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.FEILREGISTRERT),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.PABEGYNT_REGISTRERING),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.SOKT_INN),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.VENTELISTE),
+            kometDeltaker("ARBFORB", "IKKE_AKTUELL"),
+            kometDeltaker("ARBFORB", "VURDERES"),
+            kometDeltaker("ARBFORB", "FEILREGISTRERT"),
+            kometDeltaker("ARBFORB", "PABEGYNT_REGISTRERING"),
+            kometDeltaker("ARBFORB", "SOKT_INN"),
+            kometDeltaker("ARBFORB", "VENTELISTE"),
         )
         coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             // Disse skal være med
@@ -96,12 +101,12 @@ internal class RouteServiceImplTest {
             println(it.deltakelseStatus)
             it.deltakelseStatus
         } shouldNotContain listOf(
-            TiltakResponsDTO.DeltakerStatusDTO.IKKE_AKTUELL,
-            TiltakResponsDTO.DeltakerStatusDTO.FEILREGISTRERT,
-            TiltakResponsDTO.DeltakerStatusDTO.PABEGYNT_REGISTRERING,
-            TiltakResponsDTO.DeltakerStatusDTO.SOKT_INN,
-            TiltakResponsDTO.DeltakerStatusDTO.VENTELISTE,
-            TiltakResponsDTO.DeltakerStatusDTO.VURDERES,
+            IKKE_AKTUELL,
+            FEILREGISTRERT,
+            PABEGYNT_REGISTRERING,
+            SOKT_INN,
+            VENTELISTE,
+            VURDERES,
         )
     }
 
@@ -145,10 +150,10 @@ internal class RouteServiceImplTest {
         )
         routesService.hentTiltakForSaksbehandling("123", "correlationId").also { actual ->
             actual.size shouldBe 4
-            actual[0].deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
-            actual[1].deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
-            actual[2].deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.DELTAR
-            actual[3].deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.DELTAR
+            actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
+            actual[1].deltakelseStatus shouldBe VENTER_PA_OPPSTART
+            actual[2].deltakelseStatus shouldBe DELTAR
+            actual[3].deltakelseStatus shouldBe DELTAR
         }
 
         routesService.hentTiltakForSøknad("123", "correlationId").also { actual ->
@@ -166,7 +171,7 @@ internal class RouteServiceImplTest {
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.DELTAR),
+            kometDeltaker("ARBFORB", "DELTAR"),
         )
         coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             arenaTiltak(ARBTREN, DeltakerStatusType.JATAKK),
@@ -191,7 +196,7 @@ internal class RouteServiceImplTest {
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
-            kometDeltaker("VASV", DeltakerStatusDTO.DELTAR),
+            kometDeltaker("VASV", "DELTAR"),
         )
         coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             arenaTiltak(KURS, DeltakerStatusType.JATAKK),
@@ -216,11 +221,11 @@ internal class RouteServiceImplTest {
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.AVBRUTT),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.FULLFORT),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.DELTAR),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.VENTER_PA_OPPSTART),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.HAR_SLUTTET),
+            kometDeltaker("ARBFORB", "AVBRUTT"),
+            kometDeltaker("ARBFORB", "FULLFORT"),
+            kometDeltaker("ARBFORB", "DELTAR"),
+            kometDeltaker("ARBFORB", "VENTER_PA_OPPSTART"),
+            kometDeltaker("ARBFORB", "HAR_SLUTTET"),
         )
         coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             arenaTiltak(AMO, DeltakerStatusType.DELAVB),
@@ -251,12 +256,12 @@ internal class RouteServiceImplTest {
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.IKKE_AKTUELL),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.VURDERES),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.FEILREGISTRERT),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.PABEGYNT_REGISTRERING),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.SOKT_INN),
-            kometDeltaker("ARBFORB", DeltakerStatusDTO.VENTELISTE),
+            kometDeltaker("ARBFORB", "IKKE_AKTUELL"),
+            kometDeltaker("ARBFORB", "VURDERES"),
+            kometDeltaker("ARBFORB", "FEILREGISTRERT"),
+            kometDeltaker("ARBFORB", "PABEGYNT_REGISTRERING"),
+            kometDeltaker("ARBFORB", "SOKT_INN"),
+            kometDeltaker("ARBFORB", "VENTELISTE"),
         )
         coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             arenaTiltak(AMO, DeltakerStatusType.AKTUELL),
@@ -302,15 +307,15 @@ private fun arenaTiltak(
     )
 }
 
-private fun kometDeltaker(type: String, status: DeltakerStatusDTO): DeltakerDTO {
-    return DeltakerDTO(
+private fun kometDeltaker(type: String, status: String): KometResponseJson {
+    return KometResponseJson(
         id = "id",
-        gjennomforing = GjennomforingDTO(
+        gjennomforing = KometResponseJson.GjennomforingDTO(
             id = "id",
             navn = "navn",
             type = type,
             tiltakstypeNavn = "tiltakstypeNavn",
-            arrangor = ArrangorDTO(virksomhetsnummer = "123", navn = "arrangor"),
+            arrangor = KometResponseJson.GjennomforingDTO.ArrangorDTO(virksomhetsnummer = "123", navn = "arrangor"),
         ),
         startDato = LocalDate.of(2023, 1, 1),
         sluttDato = LocalDate.of(2023, 3, 31),

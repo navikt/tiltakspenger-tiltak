@@ -41,20 +41,20 @@ internal class KometClientImplTest {
             val deltakere = client.hentTiltakDeltagelser("123", "correlationId")
 
             deltakere shouldContainAll listOf(
-                DeltakerDTO(
+                KometResponseJson(
                     id = "1c51c943-ce2d-4029-8c1e-18b3c59d3e2e",
                     startDato = null,
                     sluttDato = null,
-                    status = DeltakerStatusDTO.IKKE_AKTUELL,
+                    status = "IKKE_AKTUELL",
                     dagerPerUke = 2.0F,
                     prosentStilling = 100.0F,
                     registrertDato = LocalDateTime.of(2022, 2, 17, 14, 53, 31),
-                    gjennomforing = GjennomforingDTO(
+                    gjennomforing = KometResponseJson.GjennomforingDTO(
                         id = "bc4a05a5-56ed-47ac-8176-b685b0731751",
                         navn = "Testing Linn 1",
                         type = "INDOPPFAG",
                         tiltakstypeNavn = "Oppfølging",
-                        arrangor = ArrangorDTO(
+                        arrangor = KometResponseJson.GjennomforingDTO.ArrangorDTO(
                             virksomhetsnummer = "974548283",
                             navn = "TINN KOMMUNE KOMMUNEDIREKTØRENS STAB",
                         ),

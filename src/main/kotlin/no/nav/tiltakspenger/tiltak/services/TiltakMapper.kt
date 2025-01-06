@@ -8,71 +8,8 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.GjennomføringDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
 import no.nav.tiltakspenger.libs.tiltak.TiltakTilSaksbehandlingDTO
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerDTO
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.AVBRUTT
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.AVBRUTT_UTKAST
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.DELTAR
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.FEILREGISTRERT
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.FULLFORT
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.HAR_SLUTTET
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.IKKE_AKTUELL
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.PABEGYNT_REGISTRERING
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.SOKT_INN
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.UTKAST_TIL_PAMELDING
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.VENTELISTE
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.VENTER_PA_OPPSTART
-import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.VURDERES
 import java.time.LocalDate
 import java.time.LocalDateTime
-
-internal fun DeltakerDTO.toSaksbehandlingDTO(): TiltakTilSaksbehandlingDTO = TiltakTilSaksbehandlingDTO(
-    id = id,
-    deltakelseFom = startDato,
-    deltakelseTom = sluttDato,
-    gjennomføringId = gjennomforing.id,
-    typeNavn = gjennomforing.navn,
-    typeKode = TiltakType.valueOf(gjennomforing.type),
-    deltakelseStatus = deltakerStatusDTO(),
-    deltakelsePerUke = dagerPerUke,
-    deltakelseProsent = prosentStilling,
-    kilde = "Komet",
-)
-
-internal fun DeltakerDTO.toSøknadTiltak(): TiltakDTO =
-    TiltakDTO(
-        id = id,
-        deltakelseFom = earliest(startDato, sluttDato),
-        deltakelseTom = latest(startDato, sluttDato),
-        deltakelseDagerUke = dagerPerUke,
-        deltakelseProsent = prosentStilling,
-        registrertDato = registrertDato,
-        gjennomforing = GjennomføringDTO(
-            id = gjennomforing.id,
-            arrangørnavn = gjennomforing.arrangor.navn,
-            typeNavn = gjennomforing.tiltakstypeNavn,
-            arenaKode = TiltakType.valueOf(gjennomforing.type),
-        ),
-        kilde = "Komet",
-        deltakelseStatus = deltakerStatusDTO(),
-    )
-
-private fun DeltakerDTO.deltakerStatusDTO() = when (status) {
-    AVBRUTT -> DeltakerStatusDTO.AVBRUTT
-    FULLFORT -> DeltakerStatusDTO.FULLFORT
-    DELTAR -> DeltakerStatusDTO.DELTAR
-    IKKE_AKTUELL -> DeltakerStatusDTO.IKKE_AKTUELL
-    VENTER_PA_OPPSTART -> DeltakerStatusDTO.VENTER_PA_OPPSTART
-    HAR_SLUTTET -> DeltakerStatusDTO.HAR_SLUTTET
-
-    // Disse er ikke med i søknaden
-    VURDERES -> DeltakerStatusDTO.VURDERES
-    FEILREGISTRERT -> DeltakerStatusDTO.FEILREGISTRERT
-    PABEGYNT_REGISTRERING -> DeltakerStatusDTO.PABEGYNT_REGISTRERING
-    SOKT_INN -> DeltakerStatusDTO.SOKT_INN
-    VENTELISTE -> DeltakerStatusDTO.VENTELISTE
-    UTKAST_TIL_PAMELDING -> DeltakerStatusDTO.PABEGYNT_REGISTRERING
-    AVBRUTT_UTKAST -> DeltakerStatusDTO.IKKE_AKTUELL
-}
 
 // Vi får ikke gjennomføringId fra Arena
 // confluenseside for endepunktet vi kaller for å hente Arenatiltak: https://confluence.adeo.no/pages/viewpage.action?pageId=470748287
@@ -109,7 +46,7 @@ internal fun TiltaksaktivitetDTO.toSøknadTiltak(): TiltakDTO =
     )
 
 // Fordi Arena noen ganger bytter om på fom og tom, må vi bytte tilbake hvis det skjer...
-private fun earliest(fom: LocalDate?, tom: LocalDate?) =
+internal fun earliest(fom: LocalDate?, tom: LocalDate?) =
     when {
         fom != null && tom != null -> if (tom.isBefore(fom)) {
             securelog.warn { "fom er etter tom, så vi bytter om de to datoene på tiltaket" }
@@ -121,7 +58,7 @@ private fun earliest(fom: LocalDate?, tom: LocalDate?) =
         else -> fom
     }
 
-private fun latest(fom: LocalDate?, tom: LocalDate?) =
+internal fun latest(fom: LocalDate?, tom: LocalDate?) =
     when {
         fom != null && tom != null -> if (fom.isAfter(tom)) fom else tom
         else -> tom
