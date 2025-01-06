@@ -5,7 +5,7 @@ val javaVersion = JavaVersion.VERSION_21
 val jvmVersion = JvmTarget.JVM_21
 
 val mockkVersion = "1.13.14"
-val ktorVersion = "2.3.12"
+val ktorVersion = "3.0.3"
 val jacksonVersion = "2.18.2"
 val kotestVersion = "5.9.1"
 val felleslibVersion = "0.0.324"
@@ -76,7 +76,7 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
 
     testImplementation("no.nav.security:mock-oauth2-server:2.1.10")
-    testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.12")
+    testImplementation("io.ktor:ktor-server-test-host-jvm:3.0.3")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.1.0")
 }
 
