@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
 import no.nav.tiltakspenger.libs.tiltak.TiltakTilSaksbehandlingDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.AVBRUTT
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.AVBRUTT_UTKAST
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.DELTAR
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.FEILREGISTRERT
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.FULLFORT
@@ -17,6 +18,7 @@ import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.HAR_SLUTTET
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.IKKE_AKTUELL
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.PABEGYNT_REGISTRERING
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.SOKT_INN
+import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.UTKAST_TIL_PAMELDING
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.VENTELISTE
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.VENTER_PA_OPPSTART
 import no.nav.tiltakspenger.tiltak.clients.komet.DeltakerStatusDTO.VURDERES
@@ -30,21 +32,7 @@ internal fun DeltakerDTO.toSaksbehandlingDTO(): TiltakTilSaksbehandlingDTO = Til
     gjennomføringId = gjennomforing.id,
     typeNavn = gjennomforing.navn,
     typeKode = TiltakType.valueOf(gjennomforing.type),
-    deltakelseStatus = when (status) {
-        AVBRUTT -> DeltakerStatusDTO.AVBRUTT
-        FULLFORT -> DeltakerStatusDTO.FULLFORT
-        DELTAR -> DeltakerStatusDTO.DELTAR
-        IKKE_AKTUELL -> DeltakerStatusDTO.IKKE_AKTUELL
-        VENTER_PA_OPPSTART -> DeltakerStatusDTO.VENTER_PA_OPPSTART
-        HAR_SLUTTET -> DeltakerStatusDTO.HAR_SLUTTET
-
-        // Disse er ikke med i søknaden
-        VURDERES -> DeltakerStatusDTO.VURDERES
-        FEILREGISTRERT -> DeltakerStatusDTO.FEILREGISTRERT
-        PABEGYNT_REGISTRERING -> DeltakerStatusDTO.PABEGYNT_REGISTRERING
-        SOKT_INN -> DeltakerStatusDTO.SOKT_INN
-        VENTELISTE -> DeltakerStatusDTO.VENTELISTE
-    },
+    deltakelseStatus = deltakerStatusDTO(),
     deltakelsePerUke = dagerPerUke,
     deltakelseProsent = prosentStilling,
     kilde = "Komet",
@@ -65,22 +53,26 @@ internal fun DeltakerDTO.toSøknadTiltak(): TiltakDTO =
             arenaKode = TiltakType.valueOf(gjennomforing.type),
         ),
         kilde = "Komet",
-        deltakelseStatus = when (status) {
-            AVBRUTT -> DeltakerStatusDTO.AVBRUTT
-            FULLFORT -> DeltakerStatusDTO.FULLFORT
-            DELTAR -> DeltakerStatusDTO.DELTAR
-            IKKE_AKTUELL -> DeltakerStatusDTO.IKKE_AKTUELL
-            VENTER_PA_OPPSTART -> DeltakerStatusDTO.VENTER_PA_OPPSTART
-            HAR_SLUTTET -> DeltakerStatusDTO.HAR_SLUTTET
-
-            // Disse er ikke med i søknaden
-            VURDERES -> DeltakerStatusDTO.VURDERES
-            FEILREGISTRERT -> DeltakerStatusDTO.FEILREGISTRERT
-            PABEGYNT_REGISTRERING -> DeltakerStatusDTO.PABEGYNT_REGISTRERING
-            SOKT_INN -> DeltakerStatusDTO.SOKT_INN
-            VENTELISTE -> DeltakerStatusDTO.VENTELISTE
-        },
+        deltakelseStatus = deltakerStatusDTO(),
     )
+
+private fun DeltakerDTO.deltakerStatusDTO() = when (status) {
+    AVBRUTT -> DeltakerStatusDTO.AVBRUTT
+    FULLFORT -> DeltakerStatusDTO.FULLFORT
+    DELTAR -> DeltakerStatusDTO.DELTAR
+    IKKE_AKTUELL -> DeltakerStatusDTO.IKKE_AKTUELL
+    VENTER_PA_OPPSTART -> DeltakerStatusDTO.VENTER_PA_OPPSTART
+    HAR_SLUTTET -> DeltakerStatusDTO.HAR_SLUTTET
+
+    // Disse er ikke med i søknaden
+    VURDERES -> DeltakerStatusDTO.VURDERES
+    FEILREGISTRERT -> DeltakerStatusDTO.FEILREGISTRERT
+    PABEGYNT_REGISTRERING -> DeltakerStatusDTO.PABEGYNT_REGISTRERING
+    SOKT_INN -> DeltakerStatusDTO.SOKT_INN
+    VENTELISTE -> DeltakerStatusDTO.VENTELISTE
+    UTKAST_TIL_PAMELDING -> DeltakerStatusDTO.PABEGYNT_REGISTRERING
+    AVBRUTT_UTKAST -> DeltakerStatusDTO.IKKE_AKTUELL
+}
 
 // Vi får ikke gjennomføringId fra Arena
 // confluenseside for endepunktet vi kaller for å hente Arenatiltak: https://confluence.adeo.no/pages/viewpage.action?pageId=470748287

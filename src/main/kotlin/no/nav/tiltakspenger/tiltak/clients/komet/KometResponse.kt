@@ -28,6 +28,10 @@ data class GjennomforingDTO(
     val arrangor: ArrangorDTO,
 )
 
+/**
+ * https://confluence.adeo.no/pages/viewpage.action?pageId=573710206
+ * https://confluence.adeo.no/pages/viewpage.action?pageId=597205082
+ */
 enum class DeltakerStatusDTO {
     VENTER_PA_OPPSTART,
     DELTAR,
@@ -40,4 +44,10 @@ enum class DeltakerStatusDTO {
     PABEGYNT_REGISTRERING,
     SOKT_INN,
     VENTELISTE,
+
+    /** Mappes til AKTUELL i Arena */
+    UTKAST_TIL_PAMELDING,
+
+    /** Mappes til IKKAKTUELL i Arena */
+    AVBRUTT_UTKAST,
 }
