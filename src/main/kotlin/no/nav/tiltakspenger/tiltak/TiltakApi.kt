@@ -86,7 +86,8 @@ fun Application.installAuthentication() {
             }
             validate { credential ->
                 securelog.info("Credentials: $credential")
-                if (credential.audience.contains(tokenxValidationConfig.clientId) && credential.payload.getClaim("pid")
+                if (credential.audience.contains(tokenxValidationConfig.clientId) &&
+                    credential.payload.getClaim("pid")
                         .asString() != ""
                 ) {
                     JWTPrincipal(credential.payload)
