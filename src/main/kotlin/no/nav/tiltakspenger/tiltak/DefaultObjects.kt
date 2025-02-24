@@ -94,7 +94,7 @@ private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> 
         }
         level = LogLevel.ALL
     }
-    this.expectSuccess = true
+    this.expectSuccess = false
 }
 
 fun defaultObjectMapper(): ObjectMapper = JsonMapper.builder()

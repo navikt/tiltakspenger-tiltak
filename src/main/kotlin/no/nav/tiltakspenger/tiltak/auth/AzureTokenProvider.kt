@@ -10,6 +10,7 @@ import io.ktor.client.engine.http
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.http.Parameters
+import io.ktor.http.isSuccess
 import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.defaultObjectMapper
 import no.nav.tiltakspenger.tiltak.httpClientWithRetry
@@ -48,11 +49,16 @@ class AzureTokenProvider(
     }
 
     private suspend fun wellknown(): WellKnown {
-        return azureHttpClient.get(config.wellknownUrl).body()
+        val response = azureHttpClient.get(config.wellknownUrl)
+        if (response.status.isSuccess()) {
+            return response.body()
+        } else {
+            throw RuntimeException("Kunne ikke hente wellknown")
+        }
     }
 
     private suspend fun clientCredentials(): String {
-        return azureHttpClient.submitForm(
+        val response = azureHttpClient.submitForm(
             url = wellknown().tokenEndpoint,
             formParameters = Parameters.build {
                 append("grant_type", "client_credentials")
@@ -60,12 +66,17 @@ class AzureTokenProvider(
                 append("client_secret", config.clientSecret)
                 append("scope", config.scope)
             },
-        ).body<OAuth2AccessTokenResponse>().let {
-            tokenCache.update(
-                it.accessToken,
-                it.expiresIn.toLong(),
-            )
-            return@let it.accessToken
+        )
+        if (response.status.isSuccess()) {
+            return response.body<OAuth2AccessTokenResponse>().let {
+                tokenCache.update(
+                    it.accessToken,
+                    it.expiresIn.toLong(),
+                )
+                return@let it.accessToken
+            }
+        } else {
+            throw RuntimeException("Kunne ikke hente token")
         }
     }
 

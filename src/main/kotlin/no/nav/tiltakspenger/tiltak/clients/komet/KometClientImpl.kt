@@ -12,9 +12,11 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.Configuration
 import no.nav.tiltakspenger.tiltak.defaultObjectMapper
 import no.nav.tiltakspenger.tiltak.httpClientWithRetry
+import kotlin.math.log
 
 data class KometReqBody(
     val personIdent: String,
@@ -33,6 +35,7 @@ class KometClientImpl(
     companion object {
         const val NAV_CALL_ID_HEADER = "Nav-Call-Id"
     }
+    private val log = KotlinLogging.logger {}
 
     override suspend fun hentTiltakDeltagelser(fnr: String, correlationId: String?): List<KometResponseJson> {
         val httpResponse =
@@ -50,7 +53,10 @@ class KometClientImpl(
 
         return when (httpResponse.status) {
             HttpStatusCode.OK -> httpResponse.call.response.body()
-            else -> throw RuntimeException("error (responseCode=${httpResponse.status.value}) fra Komet")
+            else -> {
+                log.error { "Mottok feilkode ved henting av tiltak fra Komet: ${httpResponse.status.value}" }
+                throw RuntimeException("error (responseCode=${httpResponse.status.value}) fra Komet")
+            }
         }
     }
 }
