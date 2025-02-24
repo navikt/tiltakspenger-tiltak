@@ -12,6 +12,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO
 import no.nav.tiltakspenger.tiltak.Configuration
@@ -35,6 +36,7 @@ class ArenaClientImpl(
     companion object {
         const val NAV_CALL_ID_HEADER = "Nav-Call-Id"
     }
+    private val log = KotlinLogging.logger {}
 
     override suspend fun hentTiltakArena(fnr: String, correlationId: String?): List<TiltaksaktivitetDTO> {
         return kallArena(fnr, correlationId)?.let {
@@ -61,7 +63,10 @@ class ArenaClientImpl(
         return when (httpResponse.status) {
             HttpStatusCode.OK -> httpResponse.call.response.body()
             HttpStatusCode.NotFound -> null
-            else -> throw RuntimeException("error (responseCode=${httpResponse.status.value}) fra Tiltakspenger-Arena")
+            else -> {
+                log.error { "Mottok feilkode ved henting av tiltak fra Tiltakspenger-Arena: ${httpResponse.status.value}" }
+                throw RuntimeException("error (responseCode=${httpResponse.status.value}) fra Tiltakspenger-Arena")
+            }
         }
     }
 }
