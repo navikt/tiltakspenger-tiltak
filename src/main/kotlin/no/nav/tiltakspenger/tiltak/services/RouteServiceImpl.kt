@@ -1,15 +1,13 @@
 package no.nav.tiltakspenger.tiltak.services
 
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakTilSaksbehandlingDTO
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
 import no.nav.tiltakspenger.tiltak.clients.komet.toSaksbehandlingDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.toSøknadTiltak
-
-val securelog = KotlinLogging.logger("tjenestekall")
 
 class RouteServiceImpl(
     private val kometClient: KometClient,
@@ -25,7 +23,7 @@ class RouteServiceImpl(
             val arena = arenaClient.hentTiltakArena(fnr, correlationId)
                 .filterNot { it.tiltakType.name in tiltakViFårFraKomet }
                 .map {
-                    securelog.info { "Deltakelsene fra Arena vi mapper tilbake $it" }
+                    sikkerlogg.info { "Deltakelsene fra Arena vi mapper tilbake $it" }
                     it.toSaksbehandlingDTO()
                 }
             arena + komet
@@ -44,7 +42,7 @@ class RouteServiceImpl(
             val arena = arenaClient.hentTiltakArena(fnr, correlationId)
                 .filterNot { it.tiltakType.name in tiltakViFårFraKomet }
                 .map {
-                    securelog.info { "Deltakelsene fra Arena vi mapper tilbake $it" }
+                    sikkerlogg.info { "Deltakelsene fra Arena vi mapper tilbake $it" }
                     it.toSøknadTiltak()
                 }
             arena + komet

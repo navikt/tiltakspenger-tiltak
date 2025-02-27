@@ -20,7 +20,7 @@ import io.ktor.server.request.httpMethod
 import io.ktor.server.request.path
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
-import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import no.nav.tiltakspenger.tiltak.routes.azureRoutes
 import no.nav.tiltakspenger.tiltak.routes.healthRoutes
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
@@ -53,8 +53,6 @@ fun Application.setupRouting(
 }
 
 fun Application.installAuthentication() {
-    val securelog = KotlinLogging.logger("tjenestekall")
-
     val tokenxValidationConfig = Configuration.tokenxValidationConfig()
     val azureValidationConfig = Configuration.azureValidationConfig()
 
@@ -81,11 +79,11 @@ fun Application.installAuthentication() {
         jwt("tokenx") {
             verifier(tokenxTokenProvider, tokenxValidationConfig.issuer)
             challenge { _, _ ->
-                securelog.info { "verifier feilet" }
+                sikkerlogg.info { "verifier feilet" }
                 call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang! Issuer: ${tokenxValidationConfig.issuer}")
             }
             validate { credential ->
-                securelog.info("Credentials: $credential")
+                sikkerlogg.info("Credentials: $credential")
                 if (credential.audience.contains(tokenxValidationConfig.clientId) &&
                     credential.payload.getClaim("pid")
                         .asString() != ""
@@ -110,7 +108,6 @@ fun Application.jacksonSerialization() {
 }
 
 internal fun Application.installCallLogging() {
-    val securelog = KotlinLogging.logger("tjenestekall")
     install(CallId) {
         generate { UUID.randomUUID().toString() }
     }
@@ -127,9 +124,8 @@ internal fun Application.installCallLogging() {
             val httpMethod = call.request.httpMethod.value
             val req = call.request
             val userAgent = call.request.headers["User-Agent"]
-            val auth = call.request.headers["Authorization"]
-            securelog.info { "Authentication: $auth" }
-            "Status: $status, HTTP method: $httpMethod, User agent: $userAgent req: $req"
+            sikkerlogg.info { "Status: $status, HTTP method: $httpMethod, User agent: $userAgent req: $req" }
+            "Status: $status, HTTP method: $httpMethod, User agent: $userAgent"
         }
     }
 }

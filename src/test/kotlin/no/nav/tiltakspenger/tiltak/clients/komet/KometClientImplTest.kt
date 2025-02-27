@@ -8,6 +8,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
+import no.nav.tiltakspenger.libs.tiltak.KometDeltakerStatusType
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
@@ -45,7 +46,7 @@ internal class KometClientImplTest {
                     id = "1c51c943-ce2d-4029-8c1e-18b3c59d3e2e",
                     startDato = null,
                     sluttDato = null,
-                    status = "IKKE_AKTUELL",
+                    status = KometDeltakerStatusType.IKKE_AKTUELL,
                     dagerPerUke = 2.0F,
                     prosentStilling = 100.0F,
                     registrertDato = LocalDateTime.of(2022, 2, 17, 14, 53, 31),

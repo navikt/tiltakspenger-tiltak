@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.tiltak.routes
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
@@ -9,14 +8,12 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
-import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import no.nav.tiltakspenger.tiltak.services.RoutesService
 
 fun Route.azureRoutes(
     routesService: RoutesService,
 ) {
-    val securelog = KotlinLogging.logger("tjenestekall")
-
     data class RequestBody(
         val ident: String,
     )
@@ -26,7 +23,7 @@ fun Route.azureRoutes(
         val correlationId = call.request.headers["Nav-Call-Id"]
         val response = routesService.hentTiltakForSaksbehandling(ident, correlationId)
 
-        securelog.info { response }
+        sikkerlogg.info { response }
         call.respond(message = response, status = HttpStatusCode.OK)
     }
 
@@ -35,7 +32,7 @@ fun Route.azureRoutes(
         val correlationId = call.request.headers["Nav-Call-Id"]
 
         val response = routesService.hentTiltakForSaksbehandling(ident, correlationId)
-        securelog.info { response }
+        sikkerlogg.info { response }
         call.respond(message = response, status = HttpStatusCode.OK)
     }
 }

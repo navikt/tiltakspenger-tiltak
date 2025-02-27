@@ -8,7 +8,7 @@ val mockkVersion = "1.13.16"
 val ktorVersion = "3.1.1"
 val jacksonVersion = "2.18.2"
 val kotestVersion = "5.9.1"
-val felleslibVersion = "0.0.373"
+val felleslibVersion = "0.0.378"
 
 plugins {
     application
@@ -37,6 +37,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:logging:$felleslibVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
