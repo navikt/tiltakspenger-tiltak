@@ -20,10 +20,10 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.serialization.jackson.JacksonConverter
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import java.time.Duration
 
 private val LOG = KotlinLogging.logger {}
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
 private const val SIXTY_SECONDS = 60L
 
 // engine skal brukes primært i test-øyemed, når man sender med MockEngine.
@@ -61,14 +61,14 @@ fun httpClientWithRetry(
                 maxRetries = 3
                 retryIf { request, response ->
                     if (response.status.value.let { it in 500..599 }) {
-                        SECURELOG.warn("Http-kall feilet med ${response.status.value}. Kjører retry")
+                        sikkerlogg.warn("Http-kall feilet med ${response.status.value}. Kjører retry")
                         true
                     } else {
                         false
                     }
                 }
                 retryOnExceptionIf { request, throwable ->
-                    SECURELOG.warn("Kastet exception ved http-kall: ${throwable.message}")
+                    sikkerlogg.warn("Kastet exception ved http-kall: ${throwable.message}")
                     true
                 }
                 constantDelay(100, 0, false)
@@ -89,7 +89,7 @@ private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> 
         logger = object : Logger {
             override fun log(message: String) {
                 LOG.info("HttpClient detaljer logget til securelog")
-                SECURELOG.info(message)
+                sikkerlogg.info(message)
             }
         }
         level = LogLevel.ALL
