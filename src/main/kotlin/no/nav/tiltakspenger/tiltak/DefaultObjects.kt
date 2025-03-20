@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
@@ -19,7 +20,6 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.serialization.jackson.JacksonConverter
-import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import java.time.Duration
 
@@ -61,14 +61,14 @@ fun httpClientWithRetry(
                 maxRetries = 3
                 retryIf { request, response ->
                     if (response.status.value.let { it in 500..599 }) {
-                        sikkerlogg.warn("Http-kall feilet med ${response.status.value}. Kjører retry")
+                        sikkerlogg.warn { "Http-kall feilet med ${response.status.value}. Kjører retry" }
                         true
                     } else {
                         false
                     }
                 }
                 retryOnExceptionIf { request, throwable ->
-                    sikkerlogg.warn("Kastet exception ved http-kall: ${throwable.message}")
+                    sikkerlogg.warn { "Kastet exception ved http-kall: ${throwable.message}" }
                     true
                 }
                 constantDelay(100, 0, false)
@@ -88,8 +88,8 @@ private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> 
     this.install(Logging) {
         logger = object : Logger {
             override fun log(message: String) {
-                LOG.info("HttpClient detaljer logget til securelog")
-                sikkerlogg.info(message)
+                LOG.info { "HttpClient detaljer logget til securelog" }
+                sikkerlogg.info { message }
             }
         }
         level = LogLevel.ALL

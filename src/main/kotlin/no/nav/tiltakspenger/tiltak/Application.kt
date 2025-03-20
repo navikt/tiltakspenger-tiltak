@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.tiltak
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.util.AttributeKey
-import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.logging.sikkerlogg
 
 fun main() {

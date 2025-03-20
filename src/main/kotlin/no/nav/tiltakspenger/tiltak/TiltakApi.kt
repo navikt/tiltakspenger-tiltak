@@ -83,7 +83,7 @@ fun Application.installAuthentication() {
                 call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang! Issuer: ${tokenxValidationConfig.issuer}")
             }
             validate { credential ->
-                sikkerlogg.info("Credentials: $credential")
+                sikkerlogg.info { "Credentials: $credential" }
                 if (credential.audience.contains(tokenxValidationConfig.clientId) &&
                     credential.payload.getClaim("pid")
                         .asString() != ""

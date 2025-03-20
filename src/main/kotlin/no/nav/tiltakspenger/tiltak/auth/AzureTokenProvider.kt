@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.tiltak.auth
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.ProxyBuilder
@@ -11,7 +12,6 @@ import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.http.Parameters
 import io.ktor.http.isSuccess
-import mu.KotlinLogging
 import no.nav.tiltakspenger.tiltak.defaultObjectMapper
 import no.nav.tiltakspenger.tiltak.httpClientWithRetry
 
@@ -28,7 +28,7 @@ class AzureTokenProvider(
 ) : TokenProvider {
     private val azureHttpClient = httpClientWithRetry(objectMapper = objectMapper, engine = engine) {
         System.getenv("HTTP_PROXY")?.let {
-            LOG.info("Setter opp proxy mot $it")
+            LOG.info { "Setter opp proxy mot $it" }
             this.proxy = ProxyBuilder.http(it)
         }
     }

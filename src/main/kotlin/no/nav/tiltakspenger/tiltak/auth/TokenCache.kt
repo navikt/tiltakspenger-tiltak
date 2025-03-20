@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.tiltak.auth
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.time.LocalDateTime
 import kotlin.math.min
 
