@@ -45,6 +45,8 @@ spec:
           namespace: amt
         - application: mulighetsrommet-api
           namespace: team-mulighetsrommet
+        - application: logging
+          namespace: nais-system
       external:
         - host: {{outboundExternalUrls.tiltakspengerarena}}
   observability:

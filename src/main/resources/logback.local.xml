@@ -11,8 +11,8 @@
     <logger name="org.flywaydb" level="WARN"/>
     <logger name="com.zaxxer" level="WARN"/>
 
-    <logger name="tjenestekall" level="DEBUG" additivity="false">
-        <appender-ref ref="STDOUT"/>
+    <logger name="team-logs-logger" level="DEBUG" additivity="false">
+        <appender-ref ref="team-logs" />
     </logger>
 
 

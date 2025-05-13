@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT_JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                <!--<value>(\b\d{11}\b)</value>-->
+                <value>(?&lt;!\d)\d{11}(?!\d)</value>
+                <path>message/*</path>
+                <defaultMask>***********</defaultMask>
+            </jsonGeneratorDecorator>
+        </encoder>
+    </appender>
+
+    <logger name="team-logs-logger" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT_JSON" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT_JSON"/>
+    </root>
+</configuration>
