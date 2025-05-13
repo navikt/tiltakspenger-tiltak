@@ -8,7 +8,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
-import no.nav.tiltakspenger.libs.logging.sikkerlogg
+import no.nav.tiltakspenger.libs.logging.Sikkerlogg
 import no.nav.tiltakspenger.tiltak.services.RoutesService
 
 fun Route.azureRoutes(
@@ -23,7 +23,7 @@ fun Route.azureRoutes(
         val correlationId = call.request.headers["Nav-Call-Id"]
         val response = routesService.hentTiltakForSaksbehandling(ident, correlationId)
 
-        sikkerlogg.info { response }
+        Sikkerlogg.info { response }
         call.respond(message = response, status = HttpStatusCode.OK)
     }
 
@@ -32,7 +32,7 @@ fun Route.azureRoutes(
         val correlationId = call.request.headers["Nav-Call-Id"]
 
         val response = routesService.hentTiltakForSaksbehandling(ident, correlationId)
-        sikkerlogg.info { response }
+        Sikkerlogg.info { response }
         call.respond(message = response, status = HttpStatusCode.OK)
     }
 }

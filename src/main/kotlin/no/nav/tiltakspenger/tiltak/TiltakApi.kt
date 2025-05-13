@@ -4,6 +4,7 @@ import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
@@ -20,7 +21,6 @@ import io.ktor.server.request.httpMethod
 import io.ktor.server.request.path
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
-import no.nav.tiltakspenger.libs.logging.sikkerlogg
 import no.nav.tiltakspenger.tiltak.routes.azureRoutes
 import no.nav.tiltakspenger.tiltak.routes.healthRoutes
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
@@ -28,6 +28,8 @@ import no.nav.tiltakspenger.tiltak.services.RoutesService
 import java.net.URI
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+
+private val LOG = KotlinLogging.logger {}
 
 fun Application.tiltakApi(
     routesService: RoutesService,
@@ -79,11 +81,10 @@ fun Application.installAuthentication() {
         jwt("tokenx") {
             verifier(tokenxTokenProvider, tokenxValidationConfig.issuer)
             challenge { _, _ ->
-                sikkerlogg.info { "verifier feilet" }
+                LOG.info { "verifier feilet" }
                 call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang! Issuer: ${tokenxValidationConfig.issuer}")
             }
             validate { credential ->
-                sikkerlogg.info { "Credentials: $credential" }
                 if (credential.audience.contains(tokenxValidationConfig.clientId) &&
                     credential.payload.getClaim("pid")
                         .asString() != ""
@@ -122,9 +123,7 @@ internal fun Application.installCallLogging() {
         format { call ->
             val status = call.response.status()
             val httpMethod = call.request.httpMethod.value
-            val req = call.request
             val userAgent = call.request.headers["User-Agent"]
-            sikkerlogg.info { "Status: $status, HTTP method: $httpMethod, User agent: $userAgent req: $req" }
             "Status: $status, HTTP method: $httpMethod, User agent: $userAgent"
         }
     }

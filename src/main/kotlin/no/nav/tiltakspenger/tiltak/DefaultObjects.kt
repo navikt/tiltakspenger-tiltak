@@ -20,7 +20,7 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.serialization.jackson.JacksonConverter
-import no.nav.tiltakspenger.libs.logging.sikkerlogg
+import no.nav.tiltakspenger.libs.logging.Sikkerlogg
 import java.time.Duration
 
 private val LOG = KotlinLogging.logger {}
@@ -61,14 +61,14 @@ fun httpClientWithRetry(
                 maxRetries = 3
                 retryIf { request, response ->
                     if (response.status.value.let { it in 500..599 }) {
-                        sikkerlogg.warn { "Http-kall feilet med ${response.status.value}. Kjører retry" }
+                        LOG.warn { "Http-kall feilet med ${response.status.value}. Kjører retry" }
                         true
                     } else {
                         false
                     }
                 }
                 retryOnExceptionIf { request, throwable ->
-                    sikkerlogg.warn { "Kastet exception ved http-kall: ${throwable.message}" }
+                    LOG.warn { "Kastet exception ved http-kall: ${throwable.message}" }
                     true
                 }
                 constantDelay(100, 0, false)
@@ -89,7 +89,7 @@ private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> 
         logger = object : Logger {
             override fun log(message: String) {
                 LOG.info { "HttpClient detaljer logget til securelog" }
-                sikkerlogg.info { message }
+                Sikkerlogg.info { message }
             }
         }
         level = LogLevel.ALL

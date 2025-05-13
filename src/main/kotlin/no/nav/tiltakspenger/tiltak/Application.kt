@@ -5,7 +5,6 @@ import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.util.AttributeKey
-import no.nav.tiltakspenger.libs.logging.sikkerlogg
 
 fun main() {
     System.setProperty("logback.configurationFile", Configuration.logbackConfigurationFile())
@@ -13,8 +12,7 @@ fun main() {
     val log = KotlinLogging.logger {}
     log.info { "starting server" }
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
-        log.error { e }
-        sikkerlogg.error(e) { e.message }
+        log.error(e) { e }
     }
     val appBuilder = ApplicationBuilder()
 

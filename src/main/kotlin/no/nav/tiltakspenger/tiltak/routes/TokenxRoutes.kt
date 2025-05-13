@@ -9,7 +9,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.libs.common.CorrelationId
-import no.nav.tiltakspenger.libs.logging.sikkerlogg
+import no.nav.tiltakspenger.libs.logging.Sikkerlogg
 import no.nav.tiltakspenger.tiltak.services.RoutesService
 
 data class RequestBody(
@@ -25,7 +25,7 @@ fun Route.tokenxRoutes(
         val correlationId = CorrelationId.generate()
         val response = routesService.hentTiltakForSøknad(ident, correlationId.value)
 
-        sikkerlogg.info { response }
+        Sikkerlogg.info { response }
         call.respond(message = response, status = HttpStatusCode.OK)
     }
 
@@ -34,7 +34,7 @@ fun Route.tokenxRoutes(
         // Genereres her foreløpig til den legges ved i kallet fra soknad-api
         val correlationId = CorrelationId.generate()
         val response = routesService.hentTiltakForSøknad(ident, correlationId.value)
-        sikkerlogg.info { response }
+        Sikkerlogg.info { response }
         call.respond(message = response, status = HttpStatusCode.OK)
     }
 }
