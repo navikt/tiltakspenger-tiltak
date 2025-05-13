@@ -21,7 +21,6 @@ import io.ktor.server.request.httpMethod
 import io.ktor.server.request.path
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
-import no.nav.tiltakspenger.libs.logging.Sikkerlogg
 import no.nav.tiltakspenger.tiltak.routes.azureRoutes
 import no.nav.tiltakspenger.tiltak.routes.healthRoutes
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
@@ -124,9 +123,7 @@ internal fun Application.installCallLogging() {
         format { call ->
             val status = call.response.status()
             val httpMethod = call.request.httpMethod.value
-            val req = call.request
             val userAgent = call.request.headers["User-Agent"]
-            Sikkerlogg.info { "Status: $status, HTTP method: $httpMethod, User agent: $userAgent req: $req" }
             "Status: $status, HTTP method: $httpMethod, User agent: $userAgent"
         }
     }
