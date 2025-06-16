@@ -41,8 +41,6 @@ spec:
       rules:
         - application: amt-tiltak
           namespace: amt
-        - application: mulighetsrommet-api
-          namespace: team-mulighetsrommet
         - application: logging
           namespace: nais-system
       external:
