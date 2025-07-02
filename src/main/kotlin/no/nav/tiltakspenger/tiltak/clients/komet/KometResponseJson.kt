@@ -13,6 +13,8 @@ import java.time.LocalDateTime
  * https://confluence.adeo.no/pages/viewpage.action?pageId=573710206
  * https://confluence.adeo.no/pages/viewpage.action?pageId=597205082
  * Formatet er mye det samme som beskrevet her: https://github.com/navikt/amt-tiltak/blob/main/.docs/deltaker-v1.md
+ * https://github.com/navikt/amt-deltaker/blob/7b442ad70573ca4d19ff4947bf56f2610c398861/src/main/kotlin/no/nav/amt/deltaker/external/api/SystemApi.kt
+ *
  */
 data class KometResponseJson(
     val id: String,

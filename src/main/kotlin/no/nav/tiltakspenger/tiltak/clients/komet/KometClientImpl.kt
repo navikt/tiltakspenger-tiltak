@@ -18,7 +18,7 @@ import no.nav.tiltakspenger.tiltak.defaultObjectMapper
 import no.nav.tiltakspenger.tiltak.httpClientWithRetry
 
 data class KometReqBody(
-    val personIdent: String,
+    val norskIdent: String,
 )
 
 class KometClientImpl(
@@ -38,14 +38,14 @@ class KometClientImpl(
 
     override suspend fun hentTiltakDeltagelser(fnr: String, correlationId: String?): List<KometResponseJson> {
         val httpResponse =
-            httpClient.post("${config.baseUrl}/api/external/deltakelser") {
+            httpClient.post("${config.baseUrl}/external/deltakelser") {
                 header(NAV_CALL_ID_HEADER, correlationId)
                 bearerAuth(getToken())
                 accept(ContentType.Application.Json)
                 contentType(ContentType.Application.Json)
                 setBody(
                     KometReqBody(
-                        personIdent = fnr,
+                        norskIdent = fnr,
                     ),
                 )
             }
