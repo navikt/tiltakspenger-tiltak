@@ -38,7 +38,7 @@ class KometClientImpl(
 
     override suspend fun hentTiltakDeltagelser(fnr: String, correlationId: String?): List<KometResponseJson> {
         val httpResponse =
-            httpClient.post("${config.baseUrl}/api/external/deltakelser") {
+            httpClient.post("${config.baseUrl}/external/deltakelser") {
                 header(NAV_CALL_ID_HEADER, correlationId)
                 bearerAuth(getToken())
                 accept(ContentType.Application.Json)
