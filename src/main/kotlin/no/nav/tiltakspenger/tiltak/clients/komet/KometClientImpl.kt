@@ -18,7 +18,7 @@ import no.nav.tiltakspenger.tiltak.defaultObjectMapper
 import no.nav.tiltakspenger.tiltak.httpClientWithRetry
 
 data class KometReqBody(
-    val personIdent: String,
+    val norskIdent: String,
 )
 
 class KometClientImpl(
@@ -45,7 +45,7 @@ class KometClientImpl(
                 contentType(ContentType.Application.Json)
                 setBody(
                     KometReqBody(
-                        personIdent = fnr,
+                        norskIdent = fnr,
                     ),
                 )
             }
