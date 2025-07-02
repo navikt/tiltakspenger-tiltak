@@ -6,10 +6,12 @@ import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClientImpl
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClientImpl
 import no.nav.tiltakspenger.tiltak.services.RouteServiceImpl
 import no.nav.tiltakspenger.tiltak.services.RoutesService
+import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
 
 internal class ApplicationBuilder {
     val tokenProviderKomet: AzureTokenProvider = AzureTokenProvider(config = Configuration.oauthConfigKomet())
     val tokenProviderArena: AzureTokenProvider = AzureTokenProvider(config = Configuration.oauthConfigArena())
+    val tokenProviderKometTestdata: AzureTokenProvider = AzureTokenProvider(config = Configuration.oauthConfigKometTestdata())
     val kometClient: KometClientImpl = KometClientImpl(
         getToken = tokenProviderKomet::getToken,
     )
@@ -19,5 +21,9 @@ internal class ApplicationBuilder {
     val routesService: RoutesService = RouteServiceImpl(
         kometClient = kometClient,
         arenaClient = arenaClient,
+    )
+    val kometTestdataClient = KometTestdataClient(
+        kometTestdataEndpoint = Configuration.kometTestdataClientConfig().baseUrl,
+        getToken = tokenProviderKometTestdata::getToken,
     )
 }

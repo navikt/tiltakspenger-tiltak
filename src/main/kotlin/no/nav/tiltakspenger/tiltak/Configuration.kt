@@ -18,8 +18,6 @@ object Configuration {
 
     private val otherDefaultProperties = mapOf(
         "application.httpPort" to 8080.toString(),
-//        "SERVICEUSER_TPTS_USERNAME" to System.getenv("SERVICEUSER_TPTS_USERNAME"),
-//        "SERVICEUSER_TPTS_PASSWORD" to System.getenv("SERVICEUSER_TPTS_PASSWORD"),
         "AZURE_APP_CLIENT_ID" to System.getenv("AZURE_APP_CLIENT_ID"),
         "AZURE_APP_CLIENT_SECRET" to System.getenv("AZURE_APP_CLIENT_SECRET"),
         "AZURE_APP_WELL_KNOWN_URL" to System.getenv("AZURE_APP_WELL_KNOWN_URL"),
@@ -49,6 +47,8 @@ object Configuration {
             "TOKEN_X_JWKS_URI" to "http://host.docker.internal:6969/default",
             "AZURE_OPENID_CONFIG_ISSUER" to "azure",
             "AZURE_OPENID_CONFIG_JWKS_URI" to "http://host.docker.internal:6969/azure/jwks",
+            "KOMET_TESTDATA_URL" to "http://localhost",
+            "KOMET_TESTDATA_SCOPE" to "api://localhost/.default",
         ),
     )
     private val devProperties = ConfigurationMap(
@@ -59,6 +59,8 @@ object Configuration {
             "KOMET_SCOPE" to "api://dev-gcp.amt.amt-tiltak/.default",
             "ARENA_URL" to "https://tiltakspenger-arena.dev-fss-pub.nais.io",
             "ARENA_SCOPE" to "api://dev-fss.tpts.tiltakspenger-arena/.default",
+            "KOMET_TESTDATA_URL" to "http://amt-deltaker-bff.amt",
+            "KOMET_TESTDATA_SCOPE" to "api://dev-gcp.amt.amt-deltaker-bff/.default",
         ),
     )
     private val prodProperties = ConfigurationMap(
@@ -69,6 +71,8 @@ object Configuration {
             "KOMET_SCOPE" to "api://prod-gcp.amt.amt-tiltak/.default",
             "ARENA_URL" to "https://tiltakspenger-arena.prod-fss-pub.nais.io",
             "ARENA_SCOPE" to "api://prod-fss.tpts.tiltakspenger-arena/.default",
+            "KOMET_TESTDATA_URL" to "http://amt-deltaker-bff.amt",
+            "KOMET_TESTDATA_SCOPE" to "api://prod-gcp.amt.amt-deltaker-bff/.default",
         ),
     )
 
@@ -84,11 +88,13 @@ object Configuration {
         }
     }
 
-    fun kjøreMiljø() = when (System.getenv("NAIS_CLUSTER_NAME") ?: System.getProperty("NAIS_CLUSTER_NAME")) {
+    fun applicationProfile() = when (System.getenv("NAIS_CLUSTER_NAME") ?: System.getProperty("NAIS_CLUSTER_NAME")) {
         "dev-gcp" -> Profile.DEV
         "prod-gcp" -> Profile.PROD
         else -> Profile.LOCAL
     }
+
+    fun isProd() = applicationProfile() == Profile.PROD
 
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
 
@@ -96,6 +102,9 @@ object Configuration {
         ClientConfig(baseUrl = baseUrl)
 
     fun arenaClientConfig(baseUrl: String = config()[Key("ARENA_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
+
+    fun kometTestdataClientConfig(baseUrl: String = config()[Key("KOMET_TESTDATA_URL", stringType)]) =
         ClientConfig(baseUrl = baseUrl)
 
     fun tokenxValidationConfig(
@@ -147,6 +156,18 @@ object Configuration {
 
     fun oauthConfigArena(
         scope: String = config()[Key("ARENA_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun oauthConfigKometTestdata(
+        scope: String = config()[Key("KOMET_TESTDATA_SCOPE", stringType)],
         clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
         clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
         wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],

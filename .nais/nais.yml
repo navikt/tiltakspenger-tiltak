@@ -41,6 +41,8 @@ spec:
       rules:
         - application: amt-tiltak
           namespace: amt
+        - application: amt-deltaker-bff
+          namespace: amt
         - application: logging
           namespace: nais-system
       external:
