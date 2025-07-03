@@ -43,7 +43,8 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: { }
+            schema:
+              $ref: "#/components/schemas/HentTiltaksdeltakelserRequest"
         required: true
       responses:
         "200":
@@ -70,6 +71,14 @@ paths:
                   $ref: "#/components/schemas/TiltakDTO"
 components:
   schemas:
+    HentTiltaksdeltakelserRequest:
+      type: "object"
+      properties:
+        ident:
+          type: "string"
+          pattern: '^[0-9]{11}$'
+      required:
+        - "personident"
     TiltakTilSaksbehandlingDTO:
       type: "object"
       properties:
@@ -212,9 +221,13 @@ components:
         deltakelsePerUke:
           type: "number"
           format: "float"
+          minimum: 1
+          maximum: 5
         deltakelseProsent:
           type: "number"
           format: "float"
+          minimum: 1
+          maximum: 100
         kilde:
           type: "string"
       required:
@@ -228,6 +241,7 @@ components:
       properties:
         personident:
           type: "string"
+          pattern: '^[0-9]{11}$'
         deltakerlisteId:
           type: "string"
           format: "uuid"
@@ -237,9 +251,13 @@ components:
         deltakelsesprosent:
           type: "integer"
           format: "int32"
+          minimum: 1
+          maximum: 100
         dagerPerUke:
           type: "integer"
           format: "int32"
+          minimum: 1
+          maximum: 5
       required:
       - "personident"
       - "deltakerlisteId"
@@ -250,6 +268,7 @@ components:
       properties:
         personident:
           type: "string"
+          pattern: '^[0-9]{11}$'
       required:
       - "personident"
     Deltakerliste:
@@ -304,9 +323,13 @@ components:
         dagerPerUke:
           type: "number"
           format: "float"
+          minimum: 1
+          maximum: 5
         deltakelsesprosent:
           type: "number"
           format: "float"
+          minimum: 1
+          maximum: 100
         status:
           $ref: "#/components/schemas/DeltakerStatus"
         sistEndret:
@@ -472,9 +495,13 @@ components:
         deltakelseDagerUke:
           type: "number"
           format: "float"
+          minimum: 1
+          maximum: 5
         deltakelseProsent:
           type: "number"
           format: "float"
+          minimum: 1
+          maximum: 100
         kilde:
           type: "string"
         registrertDato:
