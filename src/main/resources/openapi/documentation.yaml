@@ -5,6 +5,7 @@ info:
   version: "1.0.0"
 servers:
 - url: "https://tiltakspenger-tiltak.intern.dev.nav.no"
+- url: "https://tiltakspenger-tiltak.ansatt.dev.nav.no"
 tags:
   - name: Testdata
     description: Opprette testdeltakelser
@@ -515,10 +516,16 @@ components:
       - "registrertDato"
 
   securitySchemes:
-    bearerAuth:
+    azureAd:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: |
+        Bruker [AzureAD](https://docs.nais.io/security/auth/azure-ad) til autentisering. 
+        Token må ha `audience` satt til `dev-gcp.tpts.tiltakspenger-tiltak`.
+        
+        For å teste APIet kan du lage et gyldig OBO-token ved å bruke wonderwalled:
+        - [dev-gcp](https://azure-token-generator.intern.dev.nav.no/api/obo?aud=dev-gcp.tpts.tiltakspenger-tiltak)
 
 security:
-  - bearerAuth: [ ]
+  - azureAd: [ ]
