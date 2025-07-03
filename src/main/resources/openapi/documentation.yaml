@@ -4,8 +4,8 @@ info:
   description: "tiltakspenger_tiltak API"
   version: "1.0.0"
 servers:
-- url: "https://tiltakspenger-tiltak.intern.dev.nav.no"
 - url: "https://tiltakspenger-tiltak.ansatt.dev.nav.no"
+- url: "https://tiltakspenger-tiltak.intern.dev.nav.no"
 tags:
   - name: Testdata
     description: Opprette testdeltakelser
@@ -30,6 +30,12 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/DeltakerResponse"
+        "500":
+          description: "Internal server error"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TestDeltakelseFeilmelding"
   /azure/tiltak:
     post:
       description: "Hente tiltaksdeltakelser for systembruker"
@@ -80,6 +86,11 @@ components:
           pattern: '^[0-9]{11}$'
       required:
         - "personident"
+    TestDeltakelseFeilmelding:
+      type: "object"
+      properties:
+        feilmelding:
+          type: "string"
     TiltakTilSaksbehandlingDTO:
       type: "object"
       properties:
