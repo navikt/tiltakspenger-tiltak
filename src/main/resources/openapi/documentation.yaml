@@ -224,11 +224,13 @@ components:
           format: "float"
           minimum: 1
           maximum: 5
+          default: 5
         deltakelseProsent:
           type: "number"
           format: "float"
           minimum: 1
           maximum: 100
+          default: 100
         kilde:
           type: "string"
       required:
@@ -254,11 +256,13 @@ components:
           format: "int32"
           minimum: 1
           maximum: 100
+          default: 100
         dagerPerUke:
           type: "integer"
           format: "int32"
           minimum: 1
           maximum: 5
+          default: 5
       required:
       - "personident"
       - "deltakerlisteId"
@@ -326,11 +330,13 @@ components:
           format: "float"
           minimum: 1
           maximum: 5
+          default: 5
         deltakelsesprosent:
           type: "number"
           format: "float"
           minimum: 1
           maximum: 100
+          default: 100
         status:
           $ref: "#/components/schemas/DeltakerStatus"
         sistEndret:
@@ -498,11 +504,13 @@ components:
           format: "float"
           minimum: 1
           maximum: 5
+          default: 5
         deltakelseProsent:
           type: "number"
           format: "float"
           minimum: 1
           maximum: 100
+          default: 100
         kilde:
           type: "string"
         registrertDato:
