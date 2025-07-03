@@ -259,9 +259,11 @@ components:
         deltakerlisteId:
           type: "string"
           format: "uuid"
+          description: "Id for gjennomføring, hentes fra Valp sin flate. Må være AFT."
         startdato:
           type: "string"
           format: "date"
+          description: "Sluttdato blir 3 måneder etter startdato."
         deltakelsesprosent:
           type: "integer"
           format: "int32"
