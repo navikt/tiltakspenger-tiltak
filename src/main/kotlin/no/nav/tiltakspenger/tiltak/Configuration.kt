@@ -55,8 +55,8 @@ object Configuration {
         mapOf(
             "application.profile" to Profile.DEV.toString(),
             "logback.configurationFile" to "logback.xml",
-            "KOMET_URL" to "http://amt-tiltak.amt",
-            "KOMET_SCOPE" to "api://dev-gcp.amt.amt-tiltak/.default",
+            "KOMET_URL" to "http://amt-deltaker.amt",
+            "KOMET_SCOPE" to "api://dev-gcp.amt.amt-deltaker/.default",
             "ARENA_URL" to "https://tiltakspenger-arena.dev-fss-pub.nais.io",
             "ARENA_SCOPE" to "api://dev-fss.tpts.tiltakspenger-arena/.default",
         ),
@@ -65,8 +65,8 @@ object Configuration {
         mapOf(
             "application.profile" to Profile.PROD.toString(),
             "logback.configurationFile" to "logback.xml",
-            "KOMET_URL" to "http://amt-tiltak.amt",
-            "KOMET_SCOPE" to "api://prod-gcp.amt.amt-tiltak/.default",
+            "KOMET_URL" to "http://amt-deltaker.amt",
+            "KOMET_SCOPE" to "api://prod-gcp.amt.amt-deltaker/.default",
             "ARENA_URL" to "https://tiltakspenger-arena.prod-fss-pub.nais.io",
             "ARENA_SCOPE" to "api://prod-fss.tpts.tiltakspenger-arena/.default",
         ),

@@ -39,7 +39,7 @@ spec:
           cluster: {{ cluster }}
     outbound:
       rules:
-        - application: amt-tiltak
+        - application: amt-deltaker
           namespace: amt
         - application: logging
           namespace: nais-system

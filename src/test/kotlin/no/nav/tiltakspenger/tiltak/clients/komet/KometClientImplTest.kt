@@ -23,7 +23,7 @@ internal class KometClientImplTest {
         val mockEngine = MockEngine { request ->
             request.headers["Authorization"]
             when (request.url.toString()) {
-                "http://localhost/api/external/deltakelser" -> respond(
+                "http://localhost/external/deltakelser" -> respond(
                     content = successJson,
                     status = HttpStatusCode.OK,
                     headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
