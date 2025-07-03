@@ -23,8 +23,11 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import no.nav.tiltakspenger.tiltak.routes.azureRoutes
 import no.nav.tiltakspenger.tiltak.routes.healthRoutes
+import no.nav.tiltakspenger.tiltak.routes.swaggerRoute
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
 import no.nav.tiltakspenger.tiltak.services.RoutesService
+import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
+import no.nav.tiltakspenger.tiltak.testdata.testdataRoutes
 import java.net.URI
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -33,13 +36,15 @@ private val LOG = KotlinLogging.logger {}
 
 fun Application.tiltakApi(
     routesService: RoutesService,
+    kometTestdataClient: KometTestdataClient,
 ) {
     installCallLogging()
-    setupRouting(routesService)
+    setupRouting(routesService, kometTestdataClient)
 }
 
 fun Application.setupRouting(
     routesService: RoutesService,
+    kometTestdataClient: KometTestdataClient,
 ) {
     jacksonSerialization()
     installAuthentication()
@@ -50,6 +55,12 @@ fun Application.setupRouting(
         }
         authenticate("azure") {
             azureRoutes(routesService)
+            if (!Configuration.isProd()) {
+                testdataRoutes(kometTestdataClient)
+            }
+        }
+        if (Configuration.isDev()) {
+            swaggerRoute()
         }
     }
 }

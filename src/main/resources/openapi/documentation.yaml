@@ -1,0 +1,552 @@
+openapi: "3.1.0"
+info:
+  title: "tiltakspenger_tiltak API"
+  description: "tiltakspenger_tiltak API"
+  version: "1.0.0"
+servers:
+- url: "https://tiltakspenger-tiltak.ansatt.dev.nav.no"
+- url: "https://tiltakspenger-tiltak.intern.dev.nav.no"
+tags:
+  - name: Testdata
+    description: Opprette testdeltakelser
+  - name: Tiltaksdeltakelser
+    description: Hente tiltaksdeltakelser
+paths:
+  /testdata/tiltaksdeltakelse/opprett:
+    post:
+      description: "Opprette testdeltakelser (AFT) hos Komet. DeltakerlisteId finner du i Valp sin flate (må være et AFT-tiltak). Sluttdato blir 3 måneder etter startdato."
+      tags:
+        - Testdata
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpprettTestDeltakelseRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DeltakerResponse"
+        "500":
+          description: "Internal server error"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TestDeltakelseFeilmelding"
+  /azure/tiltak:
+    post:
+      description: "Hente tiltaksdeltakelser for systembruker"
+      tags:
+        - Tiltaksdeltakelser
+      parameters:
+        - name: "Nav-Call-Id"
+          in: "header"
+          required: false
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HentTiltaksdeltakelserRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/TiltakTilSaksbehandlingDTO"
+  /tokenx/tiltak:
+    get:
+      description: "Hente tiltaksdeltakelser for innlogget bruker"
+      tags:
+        - Tiltaksdeltakelser
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/TiltakDTO"
+components:
+  schemas:
+    HentTiltaksdeltakelserRequest:
+      type: "object"
+      properties:
+        ident:
+          type: "string"
+          pattern: '^[0-9]{11}$'
+      required:
+        - "personident"
+    TestDeltakelseFeilmelding:
+      type: "object"
+      properties:
+        feilmelding:
+          type: "string"
+    TiltakTilSaksbehandlingDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        gjennomføringId:
+          type: "string"
+        deltakelseFom:
+          type: "string"
+          format: "date"
+        deltakelseTom:
+          type: "string"
+          format: "date"
+        typeNavn:
+          type: "string"
+        typeKode:
+          type: "string"
+          enum:
+          - "ARBTREN"
+          - "GRUPPEAMO"
+          - "ENKELAMO"
+          - "GRUFAGYRKE"
+          - "ENKFAGYRKE"
+          - "HOYEREUTD"
+          - "ARBFORB"
+          - "UTVAOONAV"
+          - "FORSAMOGRU"
+          - "FORSAMOENK"
+          - "FORSFAGGRU"
+          - "FORSFAGENK"
+          - "FORSHOYUTD"
+          - "FORSOPPLEV"
+          - "AVKLARAG"
+          - "ARBRRHDAG"
+          - "JOBBK"
+          - "INDOPPFAG"
+          - "INDJOBSTOT"
+          - "DIGIOPPARB"
+          - "UTVOPPFOPL"
+          - "IPSUNG"
+          - "REFINO"
+          - "MIDLONTIL"
+          - "VARLONTIL"
+          - "TILSJOBB"
+          - "ETAB"
+          - "VASV"
+          - "VATIAROR"
+          - "FUNKSJASS"
+          - "INKLUTILS"
+          - "EKSPEBIST"
+          - "MENTOR"
+          - "AMBF1"
+          - "KURS"
+          - "ANNUTDANN"
+          - "ABOPPF"
+          - "ABUOPPF"
+          - "ABIST"
+          - "ABTBOPPF"
+          - "AMO"
+          - "AMOE"
+          - "AMOB"
+          - "AMOY"
+          - "PRAKSORD"
+          - "PRAKSKJERM"
+          - "ARBRRHBAG"
+          - "ARBRRHBSM"
+          - "ARBRDAGSM"
+          - "ARBRRDOGN"
+          - "ARBDOGNSM"
+          - "ASV"
+          - "ATG"
+          - "AVKLARUS"
+          - "AVKLARSP"
+          - "AVKLARKV"
+          - "AVKLARSV"
+          - "BIA"
+          - "BREVKURS"
+          - "DIVTILT"
+          - "FLEKSJOBB"
+          - "TILRTILSK"
+          - "KAT"
+          - "VALS"
+          - "GRUNNSKOLE"
+          - "HOYSKOLE"
+          - "INDOPPFOLG"
+          - "ITGRTILS"
+          - "JOBBKLUBB"
+          - "JOBBFOKUS"
+          - "JOBBBONUS"
+          - "JOBBSKAP"
+          - "AMBF2"
+          - "STATLAERL"
+          - "LONNTILS"
+          - "REAKTUFOR"
+          - "LONNTILL"
+          - "NETTAMO"
+          - "NETTKURS"
+          - "INST_S"
+          - "INDOPPFSP"
+          - "SYSSLANG"
+          - "YHEMMOFF"
+          - "SYSSOFF"
+          - "LONNTIL"
+          - "TIDSUBLONN"
+          - "AMBF3"
+          - "TILRETTEL"
+          - "TILPERBED"
+          - "PV"
+          - "SPA"
+          - "UFØREPENLØ"
+          - "UTDYRK"
+          - "UTDPERMVIK"
+          - "VIKARBLED"
+          - "UTBHLETTPS"
+          - "UTBHPSLD"
+          - "UTBHSAMLI"
+          - "VV"
+          - "VIDRSKOLE"
+          - "OPPLT2AAR"
+          - "LONNTILAAP"
+          - "BIO"
+          - "TESTING"
+          - "NYTEST"
+          - "INDOPPRF"
+          - "SUPPEMP"
+        deltakelseStatus:
+          type: "string"
+          enum:
+          - "VENTER_PA_OPPSTART"
+          - "DELTAR"
+          - "HAR_SLUTTET"
+          - "AVBRUTT"
+          - "FULLFORT"
+          - "IKKE_AKTUELL"
+          - "FEILREGISTRERT"
+          - "PABEGYNT_REGISTRERING"
+          - "SOKT_INN"
+          - "VENTELISTE"
+          - "VURDERES"
+        deltakelsePerUke:
+          type: "number"
+          format: "float"
+          minimum: 1
+          maximum: 5
+          default: 5
+        deltakelseProsent:
+          type: "number"
+          format: "float"
+          minimum: 1
+          maximum: 100
+          default: 100
+        kilde:
+          type: "string"
+      required:
+      - "id"
+      - "typeNavn"
+      - "typeKode"
+      - "deltakelseStatus"
+      - "kilde"
+    OpprettTestDeltakelseRequest:
+      type: "object"
+      properties:
+        personident:
+          type: "string"
+          pattern: '^[0-9]{11}$'
+        deltakerlisteId:
+          type: "string"
+          format: "uuid"
+          description: "Id for gjennomføring, hentes fra Valp sin flate. Må være AFT."
+        startdato:
+          type: "string"
+          format: "date"
+          description: "Sluttdato blir 3 måneder etter startdato."
+        deltakelsesprosent:
+          type: "integer"
+          format: "int32"
+          minimum: 1
+          maximum: 100
+          default: 100
+        dagerPerUke:
+          type: "integer"
+          format: "int32"
+          minimum: 1
+          maximum: 5
+          default: 5
+      required:
+      - "personident"
+      - "deltakerlisteId"
+      - "startdato"
+      - "deltakelsesprosent"
+    NavBruker:
+      type: "object"
+      properties:
+        personident:
+          type: "string"
+          pattern: '^[0-9]{11}$'
+      required:
+      - "personident"
+    Deltakerliste:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        navn:
+          type: "string"
+      required:
+      - "id"
+      - "navn"
+    DeltakerStatus:
+      type: "object"
+      properties:
+        type:
+          type: "string"
+          enum:
+          - "KLADD"
+          - "UTKAST_TIL_PAMELDING"
+          - "AVBRUTT_UTKAST"
+          - "VENTER_PA_OPPSTART"
+          - "DELTAR"
+          - "HAR_SLUTTET"
+          - "IKKE_AKTUELL"
+          - "FEILREGISTRERT"
+          - "SOKT_INN"
+          - "VURDERES"
+          - "VENTELISTE"
+          - "AVBRUTT"
+          - "FULLFORT"
+          - "PABEGYNT_REGISTRERING"
+      required:
+      - "type"
+    DeltakerResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        navBruker:
+          $ref: "#/components/schemas/NavBruker"
+        deltakerliste:
+          $ref: "#/components/schemas/Deltakerliste"
+        startdato:
+          type: "string"
+          format: "date"
+        sluttdato:
+          type: "string"
+          format: "date"
+        dagerPerUke:
+          type: "number"
+          format: "float"
+          minimum: 1
+          maximum: 5
+          default: 5
+        deltakelsesprosent:
+          type: "number"
+          format: "float"
+          minimum: 1
+          maximum: 100
+          default: 100
+        status:
+          $ref: "#/components/schemas/DeltakerStatus"
+        sistEndret:
+          type: "string"
+          format: "date-time"
+      required:
+      - "id"
+      - "navBruker"
+      - "deltakerliste"
+      - "status"
+      - "sistEndret"
+    GjennomføringDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        arrangørnavn:
+          type: "string"
+        typeNavn:
+          type: "string"
+        arenaKode:
+          type: "string"
+          enum:
+          - "ARBTREN"
+          - "GRUPPEAMO"
+          - "ENKELAMO"
+          - "GRUFAGYRKE"
+          - "ENKFAGYRKE"
+          - "HOYEREUTD"
+          - "ARBFORB"
+          - "UTVAOONAV"
+          - "FORSAMOGRU"
+          - "FORSAMOENK"
+          - "FORSFAGGRU"
+          - "FORSFAGENK"
+          - "FORSHOYUTD"
+          - "FORSOPPLEV"
+          - "AVKLARAG"
+          - "ARBRRHDAG"
+          - "JOBBK"
+          - "INDOPPFAG"
+          - "INDJOBSTOT"
+          - "DIGIOPPARB"
+          - "UTVOPPFOPL"
+          - "IPSUNG"
+          - "REFINO"
+          - "MIDLONTIL"
+          - "VARLONTIL"
+          - "TILSJOBB"
+          - "ETAB"
+          - "VASV"
+          - "VATIAROR"
+          - "FUNKSJASS"
+          - "INKLUTILS"
+          - "EKSPEBIST"
+          - "MENTOR"
+          - "AMBF1"
+          - "KURS"
+          - "ANNUTDANN"
+          - "ABOPPF"
+          - "ABUOPPF"
+          - "ABIST"
+          - "ABTBOPPF"
+          - "AMO"
+          - "AMOE"
+          - "AMOB"
+          - "AMOY"
+          - "PRAKSORD"
+          - "PRAKSKJERM"
+          - "ARBRRHBAG"
+          - "ARBRRHBSM"
+          - "ARBRDAGSM"
+          - "ARBRRDOGN"
+          - "ARBDOGNSM"
+          - "ASV"
+          - "ATG"
+          - "AVKLARUS"
+          - "AVKLARSP"
+          - "AVKLARKV"
+          - "AVKLARSV"
+          - "BIA"
+          - "BREVKURS"
+          - "DIVTILT"
+          - "FLEKSJOBB"
+          - "TILRTILSK"
+          - "KAT"
+          - "VALS"
+          - "GRUNNSKOLE"
+          - "HOYSKOLE"
+          - "INDOPPFOLG"
+          - "ITGRTILS"
+          - "JOBBKLUBB"
+          - "JOBBFOKUS"
+          - "JOBBBONUS"
+          - "JOBBSKAP"
+          - "AMBF2"
+          - "STATLAERL"
+          - "LONNTILS"
+          - "REAKTUFOR"
+          - "LONNTILL"
+          - "NETTAMO"
+          - "NETTKURS"
+          - "INST_S"
+          - "INDOPPFSP"
+          - "SYSSLANG"
+          - "YHEMMOFF"
+          - "SYSSOFF"
+          - "LONNTIL"
+          - "TIDSUBLONN"
+          - "AMBF3"
+          - "TILRETTEL"
+          - "TILPERBED"
+          - "PV"
+          - "SPA"
+          - "UFØREPENLØ"
+          - "UTDYRK"
+          - "UTDPERMVIK"
+          - "VIKARBLED"
+          - "UTBHLETTPS"
+          - "UTBHPSLD"
+          - "UTBHSAMLI"
+          - "VV"
+          - "VIDRSKOLE"
+          - "OPPLT2AAR"
+          - "LONNTILAAP"
+          - "BIO"
+          - "TESTING"
+          - "NYTEST"
+          - "INDOPPRF"
+          - "SUPPEMP"
+      required:
+      - "id"
+      - "arrangørnavn"
+      - "typeNavn"
+      - "arenaKode"
+    TiltakDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        gjennomforing:
+          $ref: "#/components/schemas/GjennomføringDTO"
+        deltakelseFom:
+          type: "string"
+          format: "date"
+        deltakelseTom:
+          type: "string"
+          format: "date"
+        deltakelseStatus:
+          type: "string"
+          enum:
+          - "VENTER_PA_OPPSTART"
+          - "DELTAR"
+          - "HAR_SLUTTET"
+          - "AVBRUTT"
+          - "FULLFORT"
+          - "IKKE_AKTUELL"
+          - "FEILREGISTRERT"
+          - "PABEGYNT_REGISTRERING"
+          - "SOKT_INN"
+          - "VENTELISTE"
+          - "VURDERES"
+        deltakelseDagerUke:
+          type: "number"
+          format: "float"
+          minimum: 1
+          maximum: 5
+          default: 5
+        deltakelseProsent:
+          type: "number"
+          format: "float"
+          minimum: 1
+          maximum: 100
+          default: 100
+        kilde:
+          type: "string"
+        registrertDato:
+          type: "string"
+          format: "date-time"
+      required:
+      - "id"
+      - "gjennomforing"
+      - "deltakelseStatus"
+      - "kilde"
+      - "registrertDato"
+
+  securitySchemes:
+    azureAd:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Bruker [AzureAD](https://docs.nais.io/security/auth/azure-ad) til autentisering. 
+        Token må ha `audience` satt til `dev-gcp.tpts.tiltakspenger-tiltak`.
+        
+        For å teste APIet kan du lage et gyldig OBO-token ved å bruke wonderwalled:
+        - [dev-gcp](https://azure-token-generator.intern.dev.nav.no/api/obo?aud=dev-gcp.tpts.tiltakspenger-tiltak)
+
+security:
+  - azureAd: [ ]

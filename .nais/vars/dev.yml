@@ -1,7 +1,0 @@
-kafka:
-  pool: nav-dev
-cluster: dev-gcp
-ingress:
-  url: https://tiltakspenger-tiltak.intern.dev.nav.no
-outboundExternalUrls:
-  tiltakspengerarena: tiltakspenger-arena.dev-fss-pub.nais.io
