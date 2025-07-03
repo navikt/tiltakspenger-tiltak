@@ -71,8 +71,9 @@ object Configuration {
             "KOMET_SCOPE" to "api://prod-gcp.amt.amt-deltaker/.default",
             "ARENA_URL" to "https://tiltakspenger-arena.prod-fss-pub.nais.io",
             "ARENA_SCOPE" to "api://prod-fss.tpts.tiltakspenger-arena/.default",
-            "KOMET_TESTDATA_URL" to "http://amt-deltaker-bff.amt",
-            "KOMET_TESTDATA_SCOPE" to "api://prod-gcp.amt.amt-deltaker-bff/.default",
+            // testdata-apiet er ikke tilgjengelig i prod
+            "KOMET_TESTDATA_URL" to "http://localhost",
+            "KOMET_TESTDATA_SCOPE" to "api://localhost/.default",
         ),
     )
 
