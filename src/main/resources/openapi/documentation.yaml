@@ -14,7 +14,7 @@ tags:
 paths:
   /testdata/tiltaksdeltakelse/opprett:
     post:
-      description: "Opprette testdeltakelser (AFT) hos Komet"
+      description: "Opprette testdeltakelser (AFT) hos Komet. DeltakerlisteId finner du i Valp sin flate (må være et AFT-tiltak). Sluttdato blir 3 måneder etter startdato."
       tags:
         - Testdata
       requestBody:
