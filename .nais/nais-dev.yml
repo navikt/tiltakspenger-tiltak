@@ -1,0 +1,53 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: tiltakspenger-tiltak
+  namespace: tpts
+  labels:
+    team: tpts
+spec:
+  image: {{ image }}
+  port: 8080
+  ingresses:
+    - https://tiltakspenger-tiltak.intern.dev.nav.no
+  azure:
+    application:
+      enabled: true
+      claims:
+        extra:
+          - "NAVident"
+  liveness:
+    path: /isalive
+  readiness:
+    path: /isready
+  prometheus:
+    enabled: true
+    path: /metrics
+  replicas:
+    min: 2
+    max: 2
+  tokenx:
+    enabled: true
+  accessPolicy:
+    inbound:
+      rules:
+        - application: tiltakspenger-soknad-api
+        - application: tiltakspenger-saksbehandling-api
+    outbound:
+      rules:
+        - application: amt-deltaker
+          namespace: amt
+        - application: amt-deltaker-bff
+          namespace: amt
+        - application: logging
+          namespace: nais-system
+      external:
+        - host: tiltakspenger-arena.dev-fss-pub.nais.io
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki

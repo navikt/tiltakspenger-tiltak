@@ -9,7 +9,7 @@ spec:
   image: {{ image }}
   port: 8080
   ingresses:
-    - {{ ingress.url }}
+    - https://tiltakspenger-tiltak.intern.nav.no
   azure:
     application:
       enabled: true
@@ -32,21 +32,15 @@ spec:
     inbound:
       rules:
         - application: tiltakspenger-soknad-api
-          namespace: tpts
-          cluster: {{ cluster }}
         - application: tiltakspenger-saksbehandling-api
-          namespace: tpts
-          cluster: {{ cluster }}
     outbound:
       rules:
         - application: amt-deltaker
           namespace: amt
-        - application: amt-deltaker-bff
-          namespace: amt
         - application: logging
           namespace: nais-system
       external:
-        - host: {{outboundExternalUrls.tiltakspengerarena}}
+        - host: tiltakspenger-arena.prod-fss-pub.nais.io
   observability:
     autoInstrumentation:
       enabled: true

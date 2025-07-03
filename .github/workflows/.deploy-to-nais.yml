@@ -25,6 +25,5 @@ jobs:
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: ${{ inputs.NAIS_ENV }}-gcp
-          RESOURCE: .nais/nais.yml
+          RESOURCE: .nais/nais-${{ inputs.NAIS_ENV }}.yml
           VAR: image=${{ inputs.IMAGE }}
-          VARS: .nais/vars/${{ inputs.NAIS_ENV }}.yml
