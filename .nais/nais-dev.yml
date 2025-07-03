@@ -33,6 +33,9 @@ spec:
       rules:
         - application: tiltakspenger-soknad-api
         - application: tiltakspenger-saksbehandling-api
+        - application: azure-token-generator
+          namespace: nais
+          cluster: dev-gcp
     outbound:
       rules:
         - application: amt-deltaker

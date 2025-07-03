@@ -21,7 +21,7 @@ class KometTestdataClient(
 
     private val log = KotlinLogging.logger {}
 
-    suspend fun opprettTiltaksdeltakelse(opprettTestDeltakelseRequest: OpprettTestDeltakelseRequest) {
+    suspend fun opprettTiltaksdeltakelse(opprettTestDeltakelseRequest: OpprettTestDeltakelseRequest): DeltakerResponse {
         val httpResponse = httpClient.post("$kometTestdataEndpoint/testdata/opprett") {
             bearerAuth(getToken())
             accept(ContentType.Application.Json)

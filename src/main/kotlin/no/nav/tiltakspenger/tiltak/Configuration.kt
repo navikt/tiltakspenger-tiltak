@@ -94,6 +94,8 @@ object Configuration {
         else -> Profile.LOCAL
     }
 
+    fun isDev() = applicationProfile() == Profile.DEV
+
     fun isProd() = applicationProfile() == Profile.PROD
 
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]

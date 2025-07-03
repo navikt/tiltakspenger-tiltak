@@ -23,6 +23,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import no.nav.tiltakspenger.tiltak.routes.azureRoutes
 import no.nav.tiltakspenger.tiltak.routes.healthRoutes
+import no.nav.tiltakspenger.tiltak.routes.swaggerRoute
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
 import no.nav.tiltakspenger.tiltak.services.RoutesService
 import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
@@ -57,6 +58,9 @@ fun Application.setupRouting(
             if (!Configuration.isProd()) {
                 testdataRoutes(kometTestdataClient)
             }
+        }
+        if (Configuration.isDev()) {
+            swaggerRoute()
         }
     }
 }
