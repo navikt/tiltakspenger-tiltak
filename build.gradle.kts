@@ -6,7 +6,7 @@ val jvmVersion = JvmTarget.JVM_21
 
 val mockkVersion = "1.14.5"
 val ktorVersion = "3.2.2"
-val jacksonVersion = "2.19.1"
+val jacksonVersion = "2.19.2"
 val kotestVersion = "5.9.1"
 val felleslibVersion = "0.0.519"
 
