@@ -21,6 +21,10 @@ data class KometReqBody(
     val norskIdent: String,
 )
 
+/**
+ * Kildekode API: https://github.com/navikt/amt-tiltak/blob/main/external-api/src/main/kotlin/no/nav/amt/tiltak/external/api/ExternalAPI.kt
+ * Per nå (7. aug. 2025) støtter Komet bare oppslag på fnr, ikke på tiltaksdeltagelse-id, slik at vi må gjøre filtreringen selv.
+ */
 class KometClientImpl(
     private val config: Configuration.ClientConfig = Configuration.kometClientConfig(),
     private val objectMapper: ObjectMapper = defaultObjectMapper(),
