@@ -11,19 +11,20 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
+import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.tiltak.defaultHttpClient
 
 class KometTestdataClient(
     private val httpClient: HttpClient = defaultHttpClient(),
     private val kometTestdataEndpoint: String,
-    private val getToken: suspend () -> String,
+    private val getToken: suspend () -> AccessToken,
 ) {
 
     private val log = KotlinLogging.logger {}
 
     suspend fun opprettTiltaksdeltakelse(opprettTestDeltakelseRequest: OpprettTestDeltakelseRequest): DeltakerResponse {
         val httpResponse = httpClient.post("$kometTestdataEndpoint/testdata/opprett") {
-            bearerAuth(getToken())
+            bearerAuth(getToken().token)
             accept(ContentType.Application.Json)
             contentType(ContentType.Application.Json)
             setBody(opprettTestDeltakelseRequest)

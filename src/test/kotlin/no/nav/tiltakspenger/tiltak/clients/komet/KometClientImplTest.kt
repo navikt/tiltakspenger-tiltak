@@ -8,6 +8,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
+import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.tiltak.KometDeltakerStatusType
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -15,7 +16,11 @@ import java.time.LocalDateTime
 internal class KometClientImplTest {
 
     companion object {
-        const val ACCESS_TOKEN = "woopwoop"
+        val ACCESS_TOKEN = AccessToken(
+            token = "woopwoop",
+            expiresAt = java.time.Instant.now().plusSeconds(5000L),
+            invaliderCache = {},
+        )
     }
 
     @Test
@@ -34,6 +39,7 @@ internal class KometClientImplTest {
         }
 
         val client = KometClientImpl(
+            baseUrl = "http://localhost",
             getToken = { ACCESS_TOKEN },
             engine = mockEngine,
         )

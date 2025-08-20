@@ -20,7 +20,7 @@ fun main() {
         factory = Netty,
         port = 8080,
         module = {
-            tiltakApi(appBuilder.routesService, appBuilder.kometTestdataClient)
+            tiltakApi(appBuilder.routesService, appBuilder.kometTestdataClient, appBuilder.texasClient)
         },
     )
     server.application.attributes.put(isReadyKey, true)
