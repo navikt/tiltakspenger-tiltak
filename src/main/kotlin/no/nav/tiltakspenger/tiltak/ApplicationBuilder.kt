@@ -1,6 +1,8 @@
 package no.nav.tiltakspenger.tiltak
 
-import no.nav.tiltakspenger.tiltak.auth.AzureTokenProvider
+import no.nav.tiltakspenger.libs.texas.IdentityProvider
+import no.nav.tiltakspenger.libs.texas.client.TexasClient
+import no.nav.tiltakspenger.libs.texas.client.TexasHttpClient
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClientImpl
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClientImpl
@@ -9,21 +11,25 @@ import no.nav.tiltakspenger.tiltak.services.RoutesService
 import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
 
 internal class ApplicationBuilder {
-    val tokenProviderKomet: AzureTokenProvider = AzureTokenProvider(config = Configuration.oauthConfigKomet())
-    val tokenProviderArena: AzureTokenProvider = AzureTokenProvider(config = Configuration.oauthConfigArena())
-    val tokenProviderKometTestdata: AzureTokenProvider = AzureTokenProvider(config = Configuration.oauthConfigKometTestdata())
+    val texasClient: TexasClient = TexasHttpClient(
+        introspectionUrl = Configuration.naisTokenIntrospectionEndpoint,
+        tokenUrl = Configuration.naisTokenEndpoint,
+        tokenExchangeUrl = Configuration.tokenExchangeEndpoint,
+    )
     val kometClient: KometClientImpl = KometClientImpl(
-        getToken = tokenProviderKomet::getToken,
+        baseUrl = Configuration.kometUrl,
+        getToken = { texasClient.getSystemToken(Configuration.kometScope, IdentityProvider.AZUREAD) },
     )
     val arenaClient: ArenaClient = ArenaClientImpl(
-        getToken = tokenProviderArena::getToken,
+        baseUrl = Configuration.arenaUrl,
+        getToken = { texasClient.getSystemToken(Configuration.arenaScope, IdentityProvider.AZUREAD) },
     )
     val routesService: RoutesService = RouteServiceImpl(
         kometClient = kometClient,
         arenaClient = arenaClient,
     )
     val kometTestdataClient = KometTestdataClient(
-        kometTestdataEndpoint = Configuration.kometTestdataClientConfig().baseUrl,
-        getToken = tokenProviderKometTestdata::getToken,
+        kometTestdataEndpoint = Configuration.kometTestdataUrl,
+        getToken = { texasClient.getSystemToken(Configuration.kometTestdataScope, IdentityProvider.AZUREAD) },
     )
 }

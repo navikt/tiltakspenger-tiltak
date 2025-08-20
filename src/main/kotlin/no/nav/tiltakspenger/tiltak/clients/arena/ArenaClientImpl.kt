@@ -15,7 +15,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO
-import no.nav.tiltakspenger.tiltak.Configuration
+import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.tiltak.defaultObjectMapper
 import no.nav.tiltakspenger.tiltak.httpClientWithRetry
 
@@ -24,9 +24,9 @@ data class RequestBody(
 )
 
 class ArenaClientImpl(
-    private val config: Configuration.ClientConfig = Configuration.arenaClientConfig(),
+    private val baseUrl: String,
     private val objectMapper: ObjectMapper = defaultObjectMapper(),
-    private val getToken: suspend () -> String,
+    private val getToken: suspend () -> AccessToken,
     engine: HttpClientEngine? = null,
     private val httpClient: HttpClient = httpClientWithRetry(
         objectMapper = objectMapper,
@@ -48,9 +48,9 @@ class ArenaClientImpl(
 
     private suspend fun kallArena(fnr: String, correlationId: String?): ArenaTiltaksaktivitetResponsDTO? {
         val httpResponse =
-            httpClient.post("${config.baseUrl}/tiltakAzure") {
+            httpClient.post("$baseUrl/tiltakAzure") {
                 header(NAV_CALL_ID_HEADER, correlationId)
-                bearerAuth(getToken())
+                bearerAuth(getToken().token)
                 accept(ContentType.Application.Json)
                 contentType(ContentType.Application.Json)
                 setBody(

@@ -8,7 +8,7 @@ val mockkVersion = "1.14.5"
 val ktorVersion = "3.2.3"
 val jacksonVersion = "2.19.2"
 val kotestVersion = "5.9.1"
-val felleslibVersion = "0.0.557"
+val felleslibVersion = "0.0.558"
 
 plugins {
     application
@@ -38,6 +38,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:logging:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:texas:$felleslibVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
@@ -69,14 +70,13 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
-    testImplementation("io.mockk:mockk-dsl-jvm:$mockkVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
 
-    testImplementation("no.nav.security:mock-oauth2-server:2.2.1")
     testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.2.10")
+    testApi("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
 }
 
 application {

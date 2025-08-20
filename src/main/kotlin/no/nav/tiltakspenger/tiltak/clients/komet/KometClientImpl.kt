@@ -13,7 +13,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import no.nav.tiltakspenger.tiltak.Configuration
+import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.tiltak.defaultObjectMapper
 import no.nav.tiltakspenger.tiltak.httpClientWithRetry
 
@@ -26,9 +26,9 @@ data class KometReqBody(
  * Per nå (7. aug. 2025) støtter Komet bare oppslag på fnr, ikke på tiltaksdeltagelse-id, slik at vi må gjøre filtreringen selv.
  */
 class KometClientImpl(
-    private val config: Configuration.ClientConfig = Configuration.kometClientConfig(),
+    private val baseUrl: String,
     private val objectMapper: ObjectMapper = defaultObjectMapper(),
-    private val getToken: suspend () -> String,
+    private val getToken: suspend () -> AccessToken,
     engine: HttpClientEngine? = null,
     private val httpClient: HttpClient = httpClientWithRetry(
         objectMapper = objectMapper,
@@ -42,9 +42,9 @@ class KometClientImpl(
 
     override suspend fun hentTiltakDeltagelser(fnr: String, correlationId: String?): List<KometResponseJson> {
         val httpResponse =
-            httpClient.post("${config.baseUrl}/external/deltakelser") {
+            httpClient.post("$baseUrl/external/deltakelser") {
                 header(NAV_CALL_ID_HEADER, correlationId)
-                bearerAuth(getToken())
+                bearerAuth(getToken().token)
                 accept(ContentType.Application.Json)
                 contentType(ContentType.Application.Json)
                 setBody(
