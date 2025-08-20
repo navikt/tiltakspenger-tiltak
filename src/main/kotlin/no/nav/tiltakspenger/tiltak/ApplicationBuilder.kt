@@ -18,11 +18,11 @@ internal class ApplicationBuilder {
     )
     val kometClient: KometClientImpl = KometClientImpl(
         baseUrl = Configuration.kometUrl,
-        getToken = { texasClient.getSystemToken(Configuration.kometScope, IdentityProvider.AZUREAD) },
+        getToken = { texasClient.getSystemToken(Configuration.kometScope, IdentityProvider.AZUREAD, rewriteAudienceTarget = false) },
     )
     val arenaClient: ArenaClient = ArenaClientImpl(
         baseUrl = Configuration.arenaUrl,
-        getToken = { texasClient.getSystemToken(Configuration.arenaScope, IdentityProvider.AZUREAD) },
+        getToken = { texasClient.getSystemToken(Configuration.arenaScope, IdentityProvider.AZUREAD, rewriteAudienceTarget = false) },
     )
     val routesService: RoutesService = RouteServiceImpl(
         kometClient = kometClient,
@@ -30,6 +30,6 @@ internal class ApplicationBuilder {
     )
     val kometTestdataClient = KometTestdataClient(
         kometTestdataEndpoint = Configuration.kometTestdataUrl,
-        getToken = { texasClient.getSystemToken(Configuration.kometTestdataScope, IdentityProvider.AZUREAD) },
+        getToken = { texasClient.getSystemToken(Configuration.kometTestdataScope, IdentityProvider.AZUREAD, rewriteAudienceTarget = false) },
     )
 }
