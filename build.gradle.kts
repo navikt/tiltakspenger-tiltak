@@ -6,7 +6,8 @@ val jvmVersion = JvmTarget.JVM_21
 
 val mockkVersion = "1.14.5"
 val ktorVersion = "3.3.0"
-val jacksonVersion = "2.19.2"
+val jacksonVersion = "2.20.0"
+val jacksonAnnotationsVersion = "2.20"
 val kotestVersion = "6.0.3"
 val felleslibVersion = "0.0.574"
 
@@ -61,7 +62,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
 
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonAnnotationsVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     testImplementation(platform("org.junit:junit-bom:5.13.4"))
