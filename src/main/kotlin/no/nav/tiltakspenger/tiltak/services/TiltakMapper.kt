@@ -12,6 +12,12 @@ import java.time.LocalDateTime
 // confluenseside for endepunktet vi kaller for å hente Arenatiltak: https://confluence.adeo.no/pages/viewpage.action?pageId=470748287
 internal fun TiltaksaktivitetDTO.toSaksbehandlingDTO(): TiltakTilSaksbehandlingDTO = TiltakTilSaksbehandlingDTO(
     id = aktivitetId,
+    gjennomforing = GjennomføringDTO(
+        id = "",
+        arrangørnavn = arrangoer ?: "Ukjent",
+        typeNavn = tiltakType.navn,
+        arenaKode = TiltakType.valueOf(tiltakType.name),
+    ),
     gjennomføringId = null,
     deltakelseFom = deltakelsePeriode?.fom,
     deltakelseTom = deltakelsePeriode?.tom,

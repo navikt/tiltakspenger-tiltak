@@ -182,6 +182,8 @@ internal class RouteServiceImplTest {
             it.size shouldBe 2
             it[0].typeKode.rettPåTiltakspenger shouldBe true
             it[1].typeKode.rettPåTiltakspenger shouldBe true
+            it[0].gjennomforing?.arenaKode?.rettPåTiltakspenger shouldBe true
+            it[1].gjennomforing?.arenaKode?.rettPåTiltakspenger shouldBe true
         }
         routesService.hentTiltakForSøknad("123", "correlationId").also {
             it.size shouldBe 2
@@ -206,8 +208,11 @@ internal class RouteServiceImplTest {
 
         routesService.hentTiltakForSaksbehandling("123", "correlationId").also {
             it.size shouldBe 2
+            // TODO fjern sjekk med deprekert felt
             it.first { it.typeKode == TiltakResponsDTO.TiltakType.VASV }.typeKode.rettPåTiltakspenger shouldBe false
             it.first { it.typeKode == TiltakResponsDTO.TiltakType.KURS }.typeKode.rettPåTiltakspenger shouldBe false
+            it.first { it.gjennomforing?.arenaKode == TiltakResponsDTO.TiltakType.KURS }.gjennomforing?.arenaKode?.rettPåTiltakspenger shouldBe false
+            it.first { it.gjennomforing?.arenaKode == TiltakResponsDTO.TiltakType.VASV }.gjennomforing?.arenaKode?.rettPåTiltakspenger shouldBe false
         }
 
         routesService.hentTiltakForSøknad("123", "correlationId").also {
@@ -243,6 +248,7 @@ internal class RouteServiceImplTest {
             it.size shouldBe 12
             it.all { it.deltakelseStatus.rettTilÅSøke }
             it.all { it.typeKode.rettPåTiltakspenger }
+            it.all { it.gjennomforing?.arenaKode?.rettPåTiltakspenger == true }
         }
 
         routesService.hentTiltakForSøknad("123", "correlationId").also {
