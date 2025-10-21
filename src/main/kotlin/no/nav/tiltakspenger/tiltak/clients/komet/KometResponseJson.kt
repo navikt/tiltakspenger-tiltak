@@ -44,6 +44,12 @@ data class KometResponseJson(
 internal fun KometResponseJson.toSaksbehandlingDTO(): TiltakTilSaksbehandlingDTO {
     return TiltakTilSaksbehandlingDTO(
         id = id,
+        gjennomforing = GjennomføringDTO(
+            id = gjennomforing.id,
+            arrangørnavn = gjennomforing.arrangor.navn,
+            typeNavn = gjennomforing.tiltakstypeNavn,
+            arenaKode = TiltakType.valueOf(gjennomforing.type),
+        ),
         deltakelseFom = startDato,
         deltakelseTom = sluttDato,
         gjennomføringId = gjennomforing.id,
