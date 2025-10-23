@@ -14,7 +14,7 @@ fun main() {
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
         log.error(e) { e }
     }
-    val appBuilder = ApplicationBuilder()
+    val appBuilder = ApplicationBuilder(log)
 
     val server = embeddedServer(
         factory = Netty,

@@ -15,7 +15,7 @@ import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.libs.texas.client.TexasIntrospectionResponse
 import no.nav.tiltakspenger.tiltak.services.RoutesService
-import no.nav.tiltakspenger.tiltak.setupRouting
+import no.nav.tiltakspenger.tiltak.setupTestApplication
 import org.junit.jupiter.api.Test
 
 class TokenxRoutesTest {
@@ -35,7 +35,7 @@ class TokenxRoutesTest {
         runTest {
             testApplication {
                 application {
-                    setupRouting(mockRoutesService, mockk(), texasClient)
+                    setupTestApplication(mockRoutesService, texasClient)
                 }
                 defaultRequest(
                     HttpMethod.Get,
@@ -69,7 +69,7 @@ class TokenxRoutesTest {
         runTest {
             testApplication {
                 application {
-                    setupRouting(mockRoutesService, mockk(), texasClient)
+                    setupTestApplication(mockRoutesService, texasClient)
                 }
                 defaultRequest(
                     HttpMethod.Get,

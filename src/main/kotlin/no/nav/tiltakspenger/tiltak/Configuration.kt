@@ -21,6 +21,7 @@ object Configuration {
         "NAIS_TOKEN_ENDPOINT" to System.getenv("NAIS_TOKEN_ENDPOINT"),
         "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT"),
         "NAIS_TOKEN_EXCHANGE_ENDPOINT" to System.getenv("NAIS_TOKEN_EXCHANGE_ENDPOINT"),
+        "DB_JDBC_URL" to System.getenv("DB_JDBC_URL"),
     )
 
     private val defaultProperties = ConfigurationMap(otherDefaultProperties)
@@ -88,6 +89,8 @@ object Configuration {
 
     fun isProd() = applicationProfile() == Profile.PROD
 
+    fun isNais() = applicationProfile() != Profile.LOCAL
+
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
 
     val naisTokenIntrospectionEndpoint: String = config()[Key("NAIS_TOKEN_INTROSPECTION_ENDPOINT", stringType)]
@@ -100,4 +103,6 @@ object Configuration {
     val arenaScope: String = config()[Key("ARENA_SCOPE", stringType)]
     val kometTestdataUrl = config()[Key("KOMET_TESTDATA_URL", stringType)]
     val kometTestdataScope: String = config()[Key("KOMET_TESTDATA_SCOPE", stringType)]
+
+    val jdbcUrl: String = config()[Key("DB_JDBC_URL", stringType)]
 }

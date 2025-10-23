@@ -26,6 +26,16 @@ spec:
   replicas:
     min: 2
     max: 2
+  gcp:
+    sqlInstances:
+      - name: tiltakspenger-tiltak
+        type: POSTGRES_17
+        tier: db-custom-1-3840
+        diskAutoresize: true
+        pointInTimeRecovery: true
+        databases:
+          - name: tiltak
+            envVarPrefix: DB
   tokenx:
     enabled: true
   accessPolicy:
