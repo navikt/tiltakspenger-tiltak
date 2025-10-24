@@ -81,7 +81,7 @@ internal class TestDatabaseManager {
             sqlQuery(
                 """
                 TRUNCATE
-                  gjennomforing
+                  tiltakstype
                 """,
             ).asUpdate,
         )

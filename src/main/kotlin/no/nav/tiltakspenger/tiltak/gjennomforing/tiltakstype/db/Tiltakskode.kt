@@ -1,0 +1,34 @@
+package no.nav.tiltakspenger.tiltak.gjennomforing.tiltakstype.db
+
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
+
+enum class Tiltakskode {
+    ARBEIDSFORBEREDENDE_TRENING,
+    ARBEIDSRETTET_REHABILITERING,
+    AVKLARING,
+    DIGITALT_OPPFOLGINGSTILTAK,
+    GRUPPE_ARBEIDSMARKEDSOPPLAERING,
+    GRUPPE_FAG_OG_YRKESOPPLAERING,
+    JOBBKLUBB,
+    OPPFOLGING,
+    VARIG_TILRETTELAGT_ARBEID_SKJERMET,
+    HOYERE_UTDANNING,
+    ENKELTPLASS_ARBEIDSMARKEDSOPPLAERING,
+    ENKELTPLASS_FAG_OG_YRKESOPPLAERING,
+    ;
+
+    fun toArenaKode() = when (this) {
+        ARBEIDSFORBEREDENDE_TRENING -> TiltakResponsDTO.TiltakType.ARBFORB
+        ARBEIDSRETTET_REHABILITERING -> TiltakResponsDTO.TiltakType.ARBRRHDAG
+        AVKLARING -> TiltakResponsDTO.TiltakType.AVKLARAG
+        DIGITALT_OPPFOLGINGSTILTAK -> TiltakResponsDTO.TiltakType.DIGIOPPARB
+        GRUPPE_ARBEIDSMARKEDSOPPLAERING -> TiltakResponsDTO.TiltakType.GRUPPEAMO
+        GRUPPE_FAG_OG_YRKESOPPLAERING -> TiltakResponsDTO.TiltakType.GRUFAGYRKE
+        JOBBKLUBB -> TiltakResponsDTO.TiltakType.JOBBK
+        OPPFOLGING -> TiltakResponsDTO.TiltakType.INDOPPFAG
+        VARIG_TILRETTELAGT_ARBEID_SKJERMET -> TiltakResponsDTO.TiltakType.VASV
+        ENKELTPLASS_ARBEIDSMARKEDSOPPLAERING -> TiltakResponsDTO.TiltakType.ENKELAMO
+        ENKELTPLASS_FAG_OG_YRKESOPPLAERING -> TiltakResponsDTO.TiltakType.ENKFAGYRKE
+        HOYERE_UTDANNING -> TiltakResponsDTO.TiltakType.HOYEREUTD
+    }
+}
