@@ -14,17 +14,20 @@ enum class Profile {
 }
 
 object Configuration {
-
-    private val otherDefaultProperties = mapOf(
-        "application.httpPort" to 8080.toString(),
-        "logback.configurationFile" to "logback.xml",
-        "NAIS_TOKEN_ENDPOINT" to System.getenv("NAIS_TOKEN_ENDPOINT"),
-        "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT"),
-        "NAIS_TOKEN_EXCHANGE_ENDPOINT" to System.getenv("NAIS_TOKEN_EXCHANGE_ENDPOINT"),
-        "DB_JDBC_URL" to System.getenv("DB_JDBC_URL"),
+    private val defaultProperties = ConfigurationMap(
+        mapOf(
+            "application.httpPort" to 8080.toString(),
+            "logback.configurationFile" to "logback.xml",
+            "NAIS_TOKEN_ENDPOINT" to System.getenv("NAIS_TOKEN_ENDPOINT"),
+            "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT"),
+            "NAIS_TOKEN_EXCHANGE_ENDPOINT" to System.getenv("NAIS_TOKEN_EXCHANGE_ENDPOINT"),
+            "DB_JDBC_URL" to System.getenv("DB_JDBC_URL"),
+            "KOMET_URL" to "http://amt-deltaker.amt",
+            "KOMET_SCOPE" to System.getenv("KOMET_SCOPE"),
+            "ARENA_URL" to System.getenv("ARENA_URL"),
+            "ARENA_SCOPE" to System.getenv("ARENA_SCOPE"),
+        ),
     )
-
-    private val defaultProperties = ConfigurationMap(otherDefaultProperties)
 
     private val localProperties = ConfigurationMap(
         mapOf(
@@ -44,11 +47,6 @@ object Configuration {
     private val devProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.DEV.toString(),
-            "logback.configurationFile" to "logback.xml",
-            "KOMET_URL" to "http://amt-deltaker.amt",
-            "KOMET_SCOPE" to "api://dev-gcp.amt.amt-deltaker/.default",
-            "ARENA_URL" to "https://tiltakspenger-arena.dev-fss-pub.nais.io",
-            "ARENA_SCOPE" to "api://dev-fss.tpts.tiltakspenger-arena/.default",
             "KOMET_TESTDATA_URL" to "http://amt-deltaker-bff.amt",
             "KOMET_TESTDATA_SCOPE" to "api://dev-gcp.amt.amt-deltaker-bff/.default",
         ),
@@ -56,11 +54,6 @@ object Configuration {
     private val prodProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.PROD.toString(),
-            "logback.configurationFile" to "logback.xml",
-            "KOMET_URL" to "http://amt-deltaker.amt",
-            "KOMET_SCOPE" to "api://prod-gcp.amt.amt-deltaker/.default",
-            "ARENA_URL" to "https://tiltakspenger-arena.prod-fss-pub.nais.io",
-            "ARENA_SCOPE" to "api://prod-fss.tpts.tiltakspenger-arena/.default",
             // testdata-apiet er ikke tilgjengelig i prod
             "KOMET_TESTDATA_URL" to "http://localhost",
             "KOMET_TESTDATA_SCOPE" to "api://localhost/.default",

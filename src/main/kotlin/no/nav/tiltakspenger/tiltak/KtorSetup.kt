@@ -27,7 +27,7 @@ import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
 import no.nav.tiltakspenger.tiltak.testdata.testdataRoutes
 import java.util.UUID
 
-fun Application.tiltakApi(
+fun Application.ktorSetup(
     routesService: RoutesService,
     kometTestdataClient: KometTestdataClient,
     texasClient: TexasClient,
