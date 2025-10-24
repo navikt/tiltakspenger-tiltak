@@ -51,6 +51,13 @@ spec:
           namespace: nais-system
       external:
         - host: tiltakspenger-arena.prod-fss-pub.nais.io
+  env:
+    - name: KOMET_SCOPE
+      value: api://prod-gcp.amt.amt-deltaker/.default
+    - name: ARENA_URL
+      value: https://tiltakspenger-arena.prod-fss-pub.nais.io
+    - name: ARENA_SCOPE
+      value: api://prod-fss.tpts.tiltakspenger-arena/.default
   observability:
     autoInstrumentation:
       enabled: true

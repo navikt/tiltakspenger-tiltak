@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.tiltak
 
+import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
@@ -11,16 +12,26 @@ fun main() {
 
     val log = KotlinLogging.logger {}
     log.info { "starting server" }
+    start(log)
+}
+
+fun start(
+    log: KLogger,
+    applicationContext: ApplicationContext = ApplicationContext(log),
+) {
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
-        log.error(e) { e }
+        log.error(e) { e.message }
     }
-    val appBuilder = ApplicationBuilder(log)
 
     val server = embeddedServer(
         factory = Netty,
         port = 8080,
         module = {
-            tiltakApi(appBuilder.routesService, appBuilder.kometTestdataClient, appBuilder.texasClient)
+            ktorSetup(
+                routesService = applicationContext.routesService,
+                kometTestdataClient = applicationContext.kometTestdataClient,
+                texasClient = applicationContext.texasClient,
+            )
         },
     )
     server.application.attributes.put(isReadyKey, true)

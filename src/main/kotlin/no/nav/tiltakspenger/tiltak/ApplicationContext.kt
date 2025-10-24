@@ -14,7 +14,7 @@ import no.nav.tiltakspenger.tiltak.services.RouteServiceImpl
 import no.nav.tiltakspenger.tiltak.services.RoutesService
 import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
 
-internal class ApplicationBuilder(log: KLogger) {
+class ApplicationContext(log: KLogger) {
     val dataSource = DataSourceSetup.createDatasource(Configuration.jdbcUrl)
     val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
