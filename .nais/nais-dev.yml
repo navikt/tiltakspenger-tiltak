@@ -31,6 +31,8 @@ spec:
   replicas:
     min: 2
     max: 2
+  kafka:
+    pool: nav-dev
   gcp:
     sqlInstances:
       - name: tiltakspenger-tiltak

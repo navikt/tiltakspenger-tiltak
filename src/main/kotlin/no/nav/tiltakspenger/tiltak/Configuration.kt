@@ -7,6 +7,9 @@ import com.natpryce.konfig.Key
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 
+private const val APPLICATION_NAME = "tiltakspenger-tiltak"
+const val KAFKA_CONSUMER_GROUP_ID = "$APPLICATION_NAME-consumer"
+
 enum class Profile {
     LOCAL,
     DEV,
@@ -26,6 +29,7 @@ object Configuration {
             "KOMET_SCOPE" to System.getenv("KOMET_SCOPE"),
             "ARENA_URL" to System.getenv("ARENA_URL"),
             "ARENA_SCOPE" to System.getenv("ARENA_SCOPE"),
+            "TILTAKSTYPE_TOPIC" to "team-mulighetsrommet.siste-tiltakstyper-v3",
         ),
     )
 
@@ -96,6 +100,8 @@ object Configuration {
     val arenaScope: String = config()[Key("ARENA_SCOPE", stringType)]
     val kometTestdataUrl = config()[Key("KOMET_TESTDATA_URL", stringType)]
     val kometTestdataScope: String = config()[Key("KOMET_TESTDATA_SCOPE", stringType)]
+
+    val tiltakstypeTopic: String = config()[Key("TILTAKSTYPE_TOPIC", stringType)]
 
     val jdbcUrl: String = config()[Key("DB_JDBC_URL", stringType)]
 }

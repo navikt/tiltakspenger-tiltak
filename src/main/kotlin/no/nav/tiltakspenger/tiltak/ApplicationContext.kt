@@ -10,6 +10,8 @@ import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClientImpl
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClientImpl
 import no.nav.tiltakspenger.tiltak.db.DataSourceSetup
+import no.nav.tiltakspenger.tiltak.gjennomforing.tiltakstype.db.TiltakstypeRepo
+import no.nav.tiltakspenger.tiltak.gjennomforing.tiltakstype.kafka.TiltakstypeConsumer
 import no.nav.tiltakspenger.tiltak.services.RouteServiceImpl
 import no.nav.tiltakspenger.tiltak.services.RoutesService
 import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
@@ -39,5 +41,11 @@ class ApplicationContext(log: KLogger) {
     val kometTestdataClient = KometTestdataClient(
         kometTestdataEndpoint = Configuration.kometTestdataUrl,
         getToken = { texasClient.getSystemToken(Configuration.kometTestdataScope, IdentityProvider.AZUREAD, rewriteAudienceTarget = false) },
+    )
+
+    val tiltakstypeRepo = TiltakstypeRepo(sessionFactory)
+    val tiltakstypeConsumer = TiltakstypeConsumer(
+        tiltakstypeRepo = tiltakstypeRepo,
+        topic = Configuration.tiltakstypeTopic,
     )
 }

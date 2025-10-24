@@ -36,6 +36,13 @@ fun start(
     )
     server.application.attributes.put(isReadyKey, true)
 
+    if (Configuration.isNais()) {
+        val consumers = listOf(
+            applicationContext.tiltakstypeConsumer,
+        )
+        consumers.forEach { it.run() }
+    }
+
     Runtime.getRuntime().addShutdownHook(
         Thread {
             server.application.attributes.put(isReadyKey, false)
