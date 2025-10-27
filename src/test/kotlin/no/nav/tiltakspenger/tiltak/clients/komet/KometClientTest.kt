@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.libs.tiltak.KometDeltakerStatusType
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
-internal class KometClientImplTest {
+internal class KometClientTest {
 
     companion object {
         val ACCESS_TOKEN = AccessToken(
@@ -38,7 +38,7 @@ internal class KometClientImplTest {
             }
         }
 
-        val client = KometClientImpl(
+        val client = KometClient(
             baseUrl = "http://localhost",
             getToken = { ACCESS_TOKEN },
             engine = mockEngine,

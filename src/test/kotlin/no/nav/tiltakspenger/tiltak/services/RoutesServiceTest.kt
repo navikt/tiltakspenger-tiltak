@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.tiltak.services
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaDeltakerStatusType
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
@@ -27,19 +28,35 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.VURDE
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
 import no.nav.tiltakspenger.tiltak.clients.komet.KometResponseJson
+import no.nav.tiltakspenger.tiltak.gjennomforing.db.Gjennomforing
+import no.nav.tiltakspenger.tiltak.gjennomforing.db.GjennomforingRepo
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.UUID
 
-internal class RouteServiceImplTest {
+internal class RoutesServiceTest {
     private val kometClient = mockk<KometClient>()
     private val arenaClient = mockk<ArenaClient>()
+    private val gjennomforingRepo = mockk<GjennomforingRepo>()
+
+    @BeforeEach
+    fun setup() {
+        every { gjennomforingRepo.hent(any()) } returns Gjennomforing(
+            id = UUID.randomUUID(),
+            tiltakstypeId = UUID.randomUUID(),
+            deltidsprosent = 100.0,
+        )
+    }
 
     @Test
     fun `tiltak som ikke gir rett til Tiltakspenger er ikke med i søknaden selv om de har riktig status`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
+            gjennomforingRepo = gjennomforingRepo,
+
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
@@ -56,9 +73,10 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak fra komet og arena som ikke gir rett til å søke er ikke med i listen`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
+            gjennomforingRepo = gjennomforingRepo,
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
@@ -114,9 +132,10 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak fra arena med status GJENN og TILBUD gir DELTAR hvis startdato har passert og VENTER_PÅ_OPPSTART hvis ikke`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
+            gjennomforingRepo = gjennomforingRepo,
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns emptyList()
@@ -167,9 +186,10 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak fra komet og arena som gir rett på tiltakspenger returnerer true`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
+            gjennomforingRepo = gjennomforingRepo,
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
@@ -194,9 +214,10 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak fra komet og arena som ikke gir rett på tiltakspenger returnerer false`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
+            gjennomforingRepo = gjennomforingRepo,
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
@@ -222,9 +243,10 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak med status som skal dukke opp i søknaden gir rett til å søke`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
+            gjennomforingRepo = gjennomforingRepo,
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
@@ -260,9 +282,10 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak med status som ikke skal dukke opp i søknaden gir ikke rett til å søke`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
+            gjennomforingRepo = gjennomforingRepo,
         )
 
         coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
@@ -321,7 +344,7 @@ private fun kometDeltaker(type: String, status: KometDeltakerStatusType): KometR
     return KometResponseJson(
         id = "id",
         gjennomforing = KometResponseJson.GjennomforingDTO(
-            id = "id",
+            id = UUID.randomUUID().toString(),
             navn = "navn",
             type = type,
             tiltakstypeNavn = "tiltakstypeNavn",
