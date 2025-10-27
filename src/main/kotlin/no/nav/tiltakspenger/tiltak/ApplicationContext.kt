@@ -21,6 +21,9 @@ class ApplicationContext(log: KLogger) {
     val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
 
+    val tiltakstypeRepo = TiltakstypeRepo(sessionFactory)
+    val gjennomforingRepo = GjennomforingRepo(sessionFactory)
+
     val texasClient: TexasClient = TexasHttpClient(
         introspectionUrl = Configuration.naisTokenIntrospectionEndpoint,
         tokenUrl = Configuration.naisTokenEndpoint,
@@ -37,18 +40,17 @@ class ApplicationContext(log: KLogger) {
     val routesService: RoutesService = RoutesService(
         kometClient = kometClient,
         arenaClient = arenaClient,
+        gjennomforingRepo = gjennomforingRepo,
     )
     val kometTestdataClient = KometTestdataClient(
         kometTestdataEndpoint = Configuration.kometTestdataUrl,
         getToken = { texasClient.getSystemToken(Configuration.kometTestdataScope, IdentityProvider.AZUREAD, rewriteAudienceTarget = false) },
     )
 
-    val tiltakstypeRepo = TiltakstypeRepo(sessionFactory)
     val tiltakstypeConsumer = TiltakstypeConsumer(
         tiltakstypeRepo = tiltakstypeRepo,
         topic = Configuration.tiltakstypeTopic,
     )
-    val gjennomforingRepo = GjennomforingRepo(sessionFactory)
     val gjennomforingConsumer = GjennomforingConsumer(
         gjennomforingRepo = gjennomforingRepo,
         topic = Configuration.gjennomforingTopic,

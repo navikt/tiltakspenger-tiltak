@@ -41,7 +41,7 @@ data class KometResponseJson(
     }
 }
 
-internal fun KometResponseJson.toSaksbehandlingDTO(): TiltakTilSaksbehandlingDTO {
+internal fun KometResponseJson.toSaksbehandlingDTO(deltidsprosent: Double?): TiltakTilSaksbehandlingDTO {
     return TiltakTilSaksbehandlingDTO(
         id = id,
         gjennomforing = GjennomføringDTO(
@@ -49,6 +49,7 @@ internal fun KometResponseJson.toSaksbehandlingDTO(): TiltakTilSaksbehandlingDTO
             arrangørnavn = gjennomforing.arrangor.navn,
             typeNavn = gjennomforing.tiltakstypeNavn,
             arenaKode = TiltakType.valueOf(gjennomforing.type),
+            deltidsprosent = deltidsprosent,
         ),
         deltakelseFom = startDato,
         deltakelseTom = sluttDato,
@@ -62,7 +63,7 @@ internal fun KometResponseJson.toSaksbehandlingDTO(): TiltakTilSaksbehandlingDTO
     )
 }
 
-internal fun KometResponseJson.toSøknadTiltak(): TiltakDTO {
+internal fun KometResponseJson.toSøknadTiltak(deltidsprosent: Double?): TiltakDTO {
     return TiltakDTO(
         id = id,
         deltakelseFom = startDato,
@@ -75,6 +76,7 @@ internal fun KometResponseJson.toSøknadTiltak(): TiltakDTO {
             arrangørnavn = gjennomforing.arrangor.navn,
             typeNavn = gjennomforing.tiltakstypeNavn,
             arenaKode = TiltakType.valueOf(gjennomforing.type),
+            deltidsprosent = deltidsprosent,
         ),
         kilde = "Komet",
         deltakelseStatus = this.status.toDeltakerStatusDTO(),

@@ -8,16 +8,20 @@ import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
 import no.nav.tiltakspenger.tiltak.clients.komet.toSaksbehandlingDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.toSøknadTiltak
+import no.nav.tiltakspenger.tiltak.gjennomforing.db.GjennomforingRepo
+import java.util.UUID
 
 class RoutesService(
     private val kometClient: KometClient,
     private val arenaClient: ArenaClient,
+    private val gjennomforingRepo: GjennomforingRepo,
 ) {
     fun hentTiltakForSaksbehandling(fnr: String, correlationId: String?): List<TiltakTilSaksbehandlingDTO> {
         val tiltakdeltakelser = runBlocking {
             val komet = kometClient.hentTiltakDeltagelser(fnr, correlationId)
                 .map { deltakelse ->
-                    deltakelse.toSaksbehandlingDTO()
+                    val gjennomforing = gjennomforingRepo.hent(UUID.fromString(deltakelse.gjennomforing.id))
+                    deltakelse.toSaksbehandlingDTO(gjennomforing?.deltidsprosent)
                 }
 
             val arena = arenaClient.hentTiltakArena(fnr, correlationId)
@@ -36,7 +40,8 @@ class RoutesService(
         val tiltak = runBlocking {
             val komet = kometClient.hentTiltakDeltagelser(fnr, correlationId)
                 .map { deltakelse ->
-                    deltakelse.toSøknadTiltak()
+                    val gjennomforing = gjennomforingRepo.hent(UUID.fromString(deltakelse.gjennomforing.id))
+                    deltakelse.toSøknadTiltak(gjennomforing?.deltidsprosent)
                 }
 
             val arena = arenaClient.hentTiltakArena(fnr, correlationId)
