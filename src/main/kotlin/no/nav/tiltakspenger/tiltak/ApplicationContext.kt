@@ -7,14 +7,12 @@ import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.libs.texas.client.TexasHttpClient
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
-import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClientImpl
-import no.nav.tiltakspenger.tiltak.clients.komet.KometClientImpl
+import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
 import no.nav.tiltakspenger.tiltak.db.DataSourceSetup
 import no.nav.tiltakspenger.tiltak.gjennomforing.db.GjennomforingRepo
 import no.nav.tiltakspenger.tiltak.gjennomforing.kafka.GjennomforingConsumer
 import no.nav.tiltakspenger.tiltak.gjennomforing.tiltakstype.db.TiltakstypeRepo
 import no.nav.tiltakspenger.tiltak.gjennomforing.tiltakstype.kafka.TiltakstypeConsumer
-import no.nav.tiltakspenger.tiltak.services.RouteServiceImpl
 import no.nav.tiltakspenger.tiltak.services.RoutesService
 import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
 
@@ -28,15 +26,15 @@ class ApplicationContext(log: KLogger) {
         tokenUrl = Configuration.naisTokenEndpoint,
         tokenExchangeUrl = Configuration.tokenExchangeEndpoint,
     )
-    val kometClient: KometClientImpl = KometClientImpl(
+    val kometClient: KometClient = KometClient(
         baseUrl = Configuration.kometUrl,
         getToken = { texasClient.getSystemToken(Configuration.kometScope, IdentityProvider.AZUREAD, rewriteAudienceTarget = false) },
     )
-    val arenaClient: ArenaClient = ArenaClientImpl(
+    val arenaClient: ArenaClient = ArenaClient(
         baseUrl = Configuration.arenaUrl,
         getToken = { texasClient.getSystemToken(Configuration.arenaScope, IdentityProvider.AZUREAD, rewriteAudienceTarget = false) },
     )
-    val routesService: RoutesService = RouteServiceImpl(
+    val routesService: RoutesService = RoutesService(
         kometClient = kometClient,
         arenaClient = arenaClient,
     )

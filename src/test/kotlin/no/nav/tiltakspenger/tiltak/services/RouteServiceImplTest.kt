@@ -37,7 +37,7 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak som ikke gir rett til Tiltakspenger er ikke med i søknaden selv om de har riktig status`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
         )
@@ -56,7 +56,7 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak fra komet og arena som ikke gir rett til å søke er ikke med i listen`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
         )
@@ -114,7 +114,7 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak fra arena med status GJENN og TILBUD gir DELTAR hvis startdato har passert og VENTER_PÅ_OPPSTART hvis ikke`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
         )
@@ -167,7 +167,7 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak fra komet og arena som gir rett på tiltakspenger returnerer true`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
         )
@@ -194,7 +194,7 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak fra komet og arena som ikke gir rett på tiltakspenger returnerer false`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
         )
@@ -222,7 +222,7 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak med status som skal dukke opp i søknaden gir rett til å søke`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
         )
@@ -260,7 +260,7 @@ internal class RouteServiceImplTest {
 
     @Test
     fun `tiltak med status som ikke skal dukke opp i søknaden gir ikke rett til å søke`() {
-        val routesService = RouteServiceImpl(
+        val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
         )
