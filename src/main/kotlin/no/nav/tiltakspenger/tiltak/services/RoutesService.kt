@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.tiltak.services
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.libs.logging.Sikkerlogg
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
@@ -8,6 +9,7 @@ import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
 import no.nav.tiltakspenger.tiltak.clients.komet.toSaksbehandlingDTO
 import no.nav.tiltakspenger.tiltak.clients.komet.toSøknadTiltak
+import no.nav.tiltakspenger.tiltak.gjennomforing.db.Gjennomforing
 import no.nav.tiltakspenger.tiltak.gjennomforing.db.GjennomforingRepo
 import java.util.UUID
 
@@ -16,12 +18,13 @@ class RoutesService(
     private val arenaClient: ArenaClient,
     private val gjennomforingRepo: GjennomforingRepo,
 ) {
+    private val log = KotlinLogging.logger {}
+
     fun hentTiltakForSaksbehandling(fnr: String, correlationId: String?): List<TiltakTilSaksbehandlingDTO> {
         val tiltakdeltakelser = runBlocking {
             val komet = kometClient.hentTiltakDeltagelser(fnr, correlationId)
                 .map { deltakelse ->
-                    val gjennomforing = gjennomforingRepo.hent(UUID.fromString(deltakelse.gjennomforing.id))
-                    deltakelse.toSaksbehandlingDTO(gjennomforing?.deltidsprosent)
+                    deltakelse.toSaksbehandlingDTO(getGjennomforing(deltakelse.gjennomforing.id)?.deltidsprosent)
                 }
 
             val arena = arenaClient.hentTiltakArena(fnr, correlationId)
@@ -40,8 +43,7 @@ class RoutesService(
         val tiltak = runBlocking {
             val komet = kometClient.hentTiltakDeltagelser(fnr, correlationId)
                 .map { deltakelse ->
-                    val gjennomforing = gjennomforingRepo.hent(UUID.fromString(deltakelse.gjennomforing.id))
-                    deltakelse.toSøknadTiltak(gjennomforing?.deltidsprosent)
+                    deltakelse.toSøknadTiltak(getGjennomforing(deltakelse.gjennomforing.id)?.deltidsprosent)
                 }
 
             val arena = arenaClient.hentTiltakArena(fnr, correlationId)
@@ -55,5 +57,14 @@ class RoutesService(
         return tiltak
             .filter { it.deltakelseStatus.rettTilÅSøke }
             .filter { it.gjennomforing.arenaKode.rettPåTiltakspenger }
+    }
+
+    private fun getGjennomforing(gjennomforingId: String): Gjennomforing? {
+        try {
+            return gjennomforingRepo.hent(UUID.fromString(gjennomforingId))
+        } catch (e: Exception) {
+            log.warn { "Kunne ikke hente gjennomføring for id $gjennomforingId: ${e.message}" }
+            return null
+        }
     }
 }
