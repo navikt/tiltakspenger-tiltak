@@ -39,6 +39,7 @@ fun start(
     if (Configuration.isNais()) {
         val consumers = listOf(
             applicationContext.tiltakstypeConsumer,
+            applicationContext.gjennomforingConsumer,
         )
         consumers.forEach { it.run() }
     }

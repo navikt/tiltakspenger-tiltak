@@ -10,6 +10,8 @@ import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClientImpl
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClientImpl
 import no.nav.tiltakspenger.tiltak.db.DataSourceSetup
+import no.nav.tiltakspenger.tiltak.gjennomforing.db.GjennomforingRepo
+import no.nav.tiltakspenger.tiltak.gjennomforing.kafka.GjennomforingConsumer
 import no.nav.tiltakspenger.tiltak.gjennomforing.tiltakstype.db.TiltakstypeRepo
 import no.nav.tiltakspenger.tiltak.gjennomforing.tiltakstype.kafka.TiltakstypeConsumer
 import no.nav.tiltakspenger.tiltak.services.RouteServiceImpl
@@ -47,5 +49,10 @@ class ApplicationContext(log: KLogger) {
     val tiltakstypeConsumer = TiltakstypeConsumer(
         tiltakstypeRepo = tiltakstypeRepo,
         topic = Configuration.tiltakstypeTopic,
+    )
+    val gjennomforingRepo = GjennomforingRepo(sessionFactory)
+    val gjennomforingConsumer = GjennomforingConsumer(
+        gjennomforingRepo = gjennomforingRepo,
+        topic = Configuration.gjennomforingTopic,
     )
 }
