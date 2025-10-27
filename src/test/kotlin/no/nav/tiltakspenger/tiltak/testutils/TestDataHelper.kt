@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.tiltak.testutils
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
+import no.nav.tiltakspenger.tiltak.gjennomforing.db.GjennomforingRepo
 import no.nav.tiltakspenger.tiltak.gjennomforing.tiltakstype.db.TiltakstypeRepo
 import javax.sql.DataSource
 
@@ -13,6 +14,7 @@ internal class TestDataHelper(
     private val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
     val tiltakstypeRepo = TiltakstypeRepo(sessionFactory)
+    val gjennomforingRepo = GjennomforingRepo(sessionFactory)
 }
 
 private val dbManager = TestDatabaseManager()

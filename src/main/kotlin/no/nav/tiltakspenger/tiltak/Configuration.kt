@@ -30,6 +30,7 @@ object Configuration {
             "ARENA_URL" to System.getenv("ARENA_URL"),
             "ARENA_SCOPE" to System.getenv("ARENA_SCOPE"),
             "TILTAKSTYPE_TOPIC" to "team-mulighetsrommet.siste-tiltakstyper-v3",
+            "GJENNOMFORING_TOPIC" to "team-mulighetsrommet.siste-tiltaksgjennomforinger-v1",
         ),
     )
 
@@ -102,6 +103,7 @@ object Configuration {
     val kometTestdataScope: String = config()[Key("KOMET_TESTDATA_SCOPE", stringType)]
 
     val tiltakstypeTopic: String = config()[Key("TILTAKSTYPE_TOPIC", stringType)]
+    val gjennomforingTopic: String = config()[Key("GJENNOMFORING_TOPIC", stringType)]
 
     val jdbcUrl: String = config()[Key("DB_JDBC_URL", stringType)]
 }
