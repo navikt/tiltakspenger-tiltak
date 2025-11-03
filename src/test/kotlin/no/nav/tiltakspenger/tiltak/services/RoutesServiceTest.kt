@@ -131,7 +131,7 @@ internal class RoutesServiceTest {
     }
 
     @Test
-    fun `tiltak fra arena med status GJENN og TILBUD gir DELTAR hvis startdato har passert og VENTER_PÅ_OPPSTART hvis ikke`() {
+    fun `tiltak fra arena med status GJENN gir DELTAR hvis startdato har passert og VENTER_PÅ_OPPSTART hvis ikke`() {
         val routesService = RoutesService(
             kometClient = kometClient,
             arenaClient = arenaClient,
@@ -146,35 +146,19 @@ internal class RoutesServiceTest {
             LocalDate.now().plusDays(20),
         )
         val arenaTiltak2 = arenaTiltak(
-            tiltak = AMOE,
-            status = ArenaDeltakerStatusType.TILBUD,
-            LocalDate.now().plusDays(10),
-            LocalDate.now().plusDays(20),
-        )
-        val arenaTiltak3 = arenaTiltak(
             tiltak = AMOB,
             status = ArenaDeltakerStatusType.GJENN,
-            LocalDate.now().minusDays(20),
-            LocalDate.now().minusDays(10),
-        )
-        val arenaTiltak4 = arenaTiltak(
-            tiltak = AMOY,
-            status = ArenaDeltakerStatusType.TILBUD,
             LocalDate.now().minusDays(20),
             LocalDate.now().minusDays(10),
         )
         coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
             arenaTiltak1,
             arenaTiltak2,
-            arenaTiltak3,
-            arenaTiltak4,
         )
         routesService.hentTiltakForSaksbehandling("123", "correlationId").also { actual ->
-            actual.size shouldBe 4
+            actual.size shouldBe 2
             actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
-            actual[1].deltakelseStatus shouldBe VENTER_PA_OPPSTART
-            actual[2].deltakelseStatus shouldBe DELTAR
-            actual[3].deltakelseStatus shouldBe DELTAR
+            actual[1].deltakelseStatus shouldBe DELTAR
         }
 
         routesService.hentTiltakForSøknad("123", "correlationId").also { actual ->
