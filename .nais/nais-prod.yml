@@ -26,6 +26,11 @@ spec:
   replicas:
     min: 2
     max: 2
+  resources:
+    limits:
+      memory: 2000Mi
+    requests:
+      memory: 1000Mi
   kafka:
     pool: nav-prod
   gcp:
