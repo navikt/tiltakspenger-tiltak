@@ -10,7 +10,7 @@ val jacksonVersion = "2.20.1"
 val jacksonAnnotationsVersion = "2.20"
 val kotestVersion = "6.0.5"
 val felleslibVersion = "0.0.622"
-val testContainersVersion = "1.21.3"
+val testContainersVersion = "2.0.2"
 
 plugins {
     application
@@ -87,7 +87,7 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
 
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
-    testImplementation("org.testcontainers:postgresql:$testContainersVersion")
+    testImplementation("org.testcontainers:testcontainers-postgresql:$testContainersVersion")
 
     testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.2.21")
