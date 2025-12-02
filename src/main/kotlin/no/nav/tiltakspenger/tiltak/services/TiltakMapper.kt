@@ -57,3 +57,9 @@ val tiltakViFårFraKomet = setOf(
     "GRUPPEAMO",
     "GRUFAGYRKE",
 )
+
+val tiltakSomSkalIgnoreresFraKomet = setOf(
+    "ENKELAMO",
+    "ENKFAGYRKE",
+    "HOYEREUTD",
+)
