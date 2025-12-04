@@ -4,7 +4,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.libs.logging.Sikkerlogg
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
-import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
 import no.nav.tiltakspenger.libs.tiltak.TiltakTilSaksbehandlingDTO
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.komet.KometClient
@@ -24,6 +23,7 @@ class RoutesService(
     fun hentTiltakForSaksbehandling(fnr: String, correlationId: String?): List<TiltakTilSaksbehandlingDTO> {
         val tiltakdeltakelser = runBlocking {
             val komet = kometClient.hentTiltakDeltagelser(fnr, correlationId)
+                .filter { it.gjennomforing.type in tiltakViFårFraKomet }
                 .map { deltakelse ->
                     deltakelse.toSaksbehandlingDTO(getGjennomforing(deltakelse.gjennomforing.id)?.deltidsprosent)
                 }
@@ -43,7 +43,7 @@ class RoutesService(
     fun hentTiltakForSøknad(fnr: String, correlationId: String?): List<TiltakDTO> {
         val tiltak = runBlocking {
             val komet = kometClient.hentTiltakDeltagelser(fnr, correlationId)
-                .filterNot { it.gjennomforing.type in tiltakSomSkalIgnoreresFraKomet }
+                .filter { it.gjennomforing.type in tiltakViFårFraKomet }
                 .map { deltakelse ->
                     deltakelse.toSøknadTiltak(getGjennomforing(deltakelse.gjennomforing.id)?.deltidsprosent)
                 }
