@@ -8,7 +8,7 @@ val mockkVersion = "1.14.6"
 val ktorVersion = "3.3.3"
 val jacksonVersion = "2.20.1"
 val jacksonAnnotationsVersion = "2.20"
-val kotestVersion = "6.0.5"
+val kotestVersion = "6.0.7"
 val felleslibVersion = "0.0.629"
 val testContainersVersion = "2.0.2"
 
