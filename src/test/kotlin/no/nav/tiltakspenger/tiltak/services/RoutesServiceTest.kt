@@ -10,8 +10,6 @@ import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMO
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMOB
-import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMOE
-import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.AMOY
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.ARBTREN
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.HOYEREUTD
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.KURS
@@ -318,6 +316,38 @@ internal class RoutesServiceTest {
         routesService.hentTiltakForSøknad("123", "correlationId").also {
             it.size shouldBe 8
         }
+    }
+
+    @Test
+    fun `tiltak med til og med dato satt etter fra og med dato filtreres bort`() {
+        val routesService = RoutesService(
+            kometClient = kometClient,
+            arenaClient = arenaClient,
+            gjennomforingRepo = gjennomforingRepo,
+        )
+
+        coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
+            kometDeltaker("ARBFORB", KometDeltakerStatusType.AVBRUTT),
+            kometDeltaker(
+                type = "ARBFORB",
+                fom = LocalDate.now(),
+                tom = LocalDate.now().minusDays(1),
+                status = KometDeltakerStatusType.AVBRUTT,
+            ),
+        )
+        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.DELAVB),
+            arenaTiltak(
+                tiltak = ARBTREN,
+                fom = LocalDate.now(),
+                tom = LocalDate.now().minusDays(1),
+                status = ArenaDeltakerStatusType.DELAVB,
+            ),
+        )
+
+        val tiltakListe = routesService.hentTiltakForSøknad("123", "correlationId")
+
+        tiltakListe.size shouldBe 2
     }
 }
 
