@@ -37,7 +37,12 @@ class RoutesService(
             arena + komet
         }
 
-        return tiltakdeltakelser
+        return tiltakdeltakelser.filter { tiltak ->
+            // Filtrerer bort tiltak for til og med dato er etter fra og med
+            val fom = tiltak.deltakelseFom
+            val tom = tiltak.deltakelseTom
+            fom != null && tom != null && !fom.isAfter(tom)
+        }
     }
 
     fun hentTiltakForSøknad(fnr: String, correlationId: String?): List<TiltakDTO> {
@@ -59,6 +64,12 @@ class RoutesService(
         return tiltak
             .filter { it.deltakelseStatus.rettTilÅSøke }
             .filter { it.gjennomforing.arenaKode.rettPåTiltakspenger }
+            .filter { tiltak ->
+                // Filtrerer bort tiltak for til og med dato er etter fra og med
+                val fom = tiltak.deltakelseFom
+                val tom = tiltak.deltakelseTom
+                fom != null && tom != null && !fom.isAfter(tom)
+            }
     }
 
     private fun getGjennomforing(gjennomforingId: String): Gjennomforing? {
