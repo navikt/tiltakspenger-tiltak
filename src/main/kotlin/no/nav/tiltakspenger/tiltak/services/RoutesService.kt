@@ -39,9 +39,9 @@ class RoutesService(
 
         return tiltakdeltakelser.filter { tiltak ->
             // Filtrerer bort tiltak for til og med dato er etter fra og med
-            val fom = tiltak.deltakelseFom
-            val tom = tiltak.deltakelseTom
-            fom != null && tom != null && !fom.isAfter(tom)
+            val fom = tiltak.deltakelseFom ?: return@filter true
+            val tom = tiltak.deltakelseTom ?: return@filter true
+            fom <= tom
         }
     }
 
@@ -66,9 +66,9 @@ class RoutesService(
             .filter { it.gjennomforing.arenaKode.rettPåTiltakspenger }
             .filter { tiltak ->
                 // Filtrerer bort tiltak for til og med dato er etter fra og med
-                val fom = tiltak.deltakelseFom
-                val tom = tiltak.deltakelseTom
-                fom != null && tom != null && !fom.isAfter(tom)
+                val fom = tiltak.deltakelseFom ?: return@filter true
+                val tom = tiltak.deltakelseTom ?: return@filter true
+                fom <= tom
             }
     }
 

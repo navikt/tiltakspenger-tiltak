@@ -292,6 +292,33 @@ internal class RoutesServiceTest {
     }
 
     @Test
+    fun `filtrerer ikke bort tiltak som mangler datoer`() {
+        val routesService = RoutesService(
+            kometClient = kometClient,
+            arenaClient = arenaClient,
+            gjennomforingRepo = gjennomforingRepo,
+        )
+        coEvery { kometClient.hentTiltakDeltagelser(any(), any()) } returns listOf(
+            kometDeltaker("ARBFORB", KometDeltakerStatusType.DELTAR),
+            kometDeltaker("ARBFORB", KometDeltakerStatusType.DELTAR, fom = null),
+            kometDeltaker("ARBFORB", KometDeltakerStatusType.DELTAR, tom = null),
+            kometDeltaker("ARBFORB", KometDeltakerStatusType.DELTAR, fom = null, tom = null),
+        )
+        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF, fom = null),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF, tom = null),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF, fom = null, tom = null),
+        )
+        routesService.hentTiltakForSaksbehandling("123", "correlationId").also {
+            it.size shouldBe 8
+        }
+        routesService.hentTiltakForSøknad("123", "correlationId").also {
+            it.size shouldBe 8
+        }
+    }
+
+    @Test
     fun `tiltak med til og med dato satt etter fra og med dato filtreres bort`() {
         val routesService = RoutesService(
             kometClient = kometClient,
@@ -327,8 +354,8 @@ internal class RoutesServiceTest {
 private fun arenaTiltak(
     tiltak: TiltakType,
     status: ArenaDeltakerStatusType,
-    fom: LocalDate = LocalDate.of(2023, 1, 1),
-    tom: LocalDate = LocalDate.of(2023, 3, 31),
+    fom: LocalDate? = LocalDate.of(2023, 1, 1),
+    tom: LocalDate? = LocalDate.of(2023, 3, 31),
 ): ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO {
     return ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO(
         tiltakType = tiltak,
@@ -336,10 +363,7 @@ private fun arenaTiltak(
         tiltakLokaltNavn = "LokaltNavn",
         arrangoer = "arrangoerNavn",
         bedriftsnummer = "123",
-        deltakelsePeriode = ArenaTiltaksaktivitetResponsDTO.DeltakelsesPeriodeDTO(
-            fom,
-            tom,
-        ),
+        deltakelsePeriode = ArenaTiltaksaktivitetResponsDTO.DeltakelsesPeriodeDTO(fom, tom),
         deltakelseProsent = 100F,
         deltakerStatusType = status,
         statusSistEndret = LocalDate.now(),
@@ -351,8 +375,8 @@ private fun arenaTiltak(
 private fun kometDeltaker(
     type: String,
     status: KometDeltakerStatusType,
-    fom: LocalDate = LocalDate.of(2023, 1, 1),
-    tom: LocalDate = LocalDate.of(2023, 3, 31),
+    fom: LocalDate? = LocalDate.of(2023, 1, 1),
+    tom: LocalDate? = LocalDate.of(2023, 3, 31),
 ): KometResponseJson {
     return KometResponseJson(
         id = "id",
