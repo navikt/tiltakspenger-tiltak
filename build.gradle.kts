@@ -90,7 +90,7 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers-postgresql:$testContainersVersion")
 
     testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.2.21")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.3.0")
     testApi("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
 }
 
