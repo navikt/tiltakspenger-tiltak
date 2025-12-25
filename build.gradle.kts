@@ -71,7 +71,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:11.19.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.19.1")
     implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("org.postgresql:postgresql:42.7.8")
     implementation("com.github.seratch:kotliquery:1.9.1")
