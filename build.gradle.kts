@@ -32,7 +32,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("ch.qos.logback:logback-classic:1.5.23")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.13")
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.14")
     implementation("org.jetbrains:annotations:26.0.2-1")
 
     implementation("com.natpryce:konfig:1.6.10.0")
