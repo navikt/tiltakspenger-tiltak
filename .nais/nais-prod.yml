@@ -58,6 +58,8 @@ spec:
       rules:
         - application: amt-deltaker
           namespace: amt
+        - application: tiltakshistorikk
+          namespace: team-mulighetsrommet
         - application: logging
           namespace: nais-system
       external:
@@ -69,6 +71,8 @@ spec:
       value: https://tiltakspenger-arena.prod-fss-pub.nais.io
     - name: ARENA_SCOPE
       value: api://prod-fss.tpts.tiltakspenger-arena/.default
+    - name: TILTAKSHISTORIKK_SCOPE
+      value: api://prod-gcp.team-mulighetsrommet.tiltakshistorikk/.default
   observability:
     autoInstrumentation:
       enabled: true
