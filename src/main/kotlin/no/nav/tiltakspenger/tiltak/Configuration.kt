@@ -31,6 +31,8 @@ object Configuration {
             "ARENA_SCOPE" to System.getenv("ARENA_SCOPE"),
             "TILTAKSTYPE_TOPIC" to "team-mulighetsrommet.siste-tiltakstyper-v3",
             "GJENNOMFORING_TOPIC" to "team-mulighetsrommet.siste-tiltaksgjennomforinger-v1",
+            "TILTAKSHISTORIKK_URL" to "http://tiltakshistorikk.team-mulighetsrommet",
+            "TILTAKSHISTORIKK_SCOPE" to System.getenv("TILTAKSHISTORIKK_SCOPE"),
         ),
     )
 
@@ -47,6 +49,8 @@ object Configuration {
             "NAIS_TOKEN_ENDPOINT" to "http://localhost",
             "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to "http://localhost",
             "NAIS_TOKEN_EXCHANGE_ENDPOINT" to "http://localhost",
+            "TILTAKSHISTORIKK_URL" to "http://localhost",
+            "TILTAKSHISTORIKK_SCOPE" to "api://localhost/.default",
         ),
     )
     private val devProperties = ConfigurationMap(
@@ -104,6 +108,9 @@ object Configuration {
 
     val tiltakstypeTopic: String = config()[Key("TILTAKSTYPE_TOPIC", stringType)]
     val gjennomforingTopic: String = config()[Key("GJENNOMFORING_TOPIC", stringType)]
+
+    val tiltakshistorikkUrl: String = config()[Key("TILTAKSHISTORIKK_URL", stringType)]
+    val tiltakshistorikkScope: String = config()[Key("TILTAKSHISTORIKK_SCOPE", stringType)]
 
     val jdbcUrl: String = config()[Key("DB_JDBC_URL", stringType)]
 }

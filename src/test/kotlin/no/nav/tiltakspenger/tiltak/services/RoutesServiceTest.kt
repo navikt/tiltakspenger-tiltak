@@ -351,7 +351,7 @@ internal class RoutesServiceTest {
     }
 }
 
-private fun arenaTiltak(
+fun arenaTiltak(
     tiltak: TiltakType,
     status: ArenaDeltakerStatusType,
     fom: LocalDate? = LocalDate.of(2023, 1, 1),

@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.libs.texas.client.TexasIntrospectionResponse
 import no.nav.tiltakspenger.tiltak.services.RoutesService
+import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
 import no.nav.tiltakspenger.tiltak.setupTestApplication
 import org.junit.jupiter.api.Test
 
@@ -22,6 +23,7 @@ class TokenxRoutesTest {
 
     private val texasClient = mockk<TexasClient>()
     private val mockRoutesService = mockk<RoutesService>()
+    private val mockTiltakshistorikkService = mockk<TiltakshistorikkService>()
 
     @Test
     fun `get tiltak tokenx - utløpt token - returnerer 401`() {
@@ -35,7 +37,7 @@ class TokenxRoutesTest {
         runTest {
             testApplication {
                 application {
-                    setupTestApplication(mockRoutesService, texasClient)
+                    setupTestApplication(mockRoutesService, texasClient, mockTiltakshistorikkService)
                 }
                 defaultRequest(
                     HttpMethod.Get,
@@ -69,7 +71,7 @@ class TokenxRoutesTest {
         runTest {
             testApplication {
                 application {
-                    setupTestApplication(mockRoutesService, texasClient)
+                    setupTestApplication(mockRoutesService, texasClient, mockTiltakshistorikkService)
                 }
                 defaultRequest(
                     HttpMethod.Get,
