@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
 import java.time.LocalDate
 
 // Skal flyttes til libs
-data class TiltakshistorikkTilSaksbehandlingDTO(
+data class TiltakshistorikkDTO(
     val id: String,
     val gjennomforing: GjennomforingDTO,
     val deltakelseFom: LocalDate?,

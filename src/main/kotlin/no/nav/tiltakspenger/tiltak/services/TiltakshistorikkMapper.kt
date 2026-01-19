@@ -4,12 +4,12 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.toArenaKode
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.toDeltakerStatusDTO
-import no.nav.tiltakspenger.tiltak.routes.TiltakshistorikkTilSaksbehandlingDTO
+import no.nav.tiltakspenger.tiltak.routes.TiltakshistorikkDTO
 
-fun TiltakshistorikkV1Dto.TeamKometDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO(): TiltakshistorikkTilSaksbehandlingDTO {
-    return TiltakshistorikkTilSaksbehandlingDTO(
+fun TiltakshistorikkV1Dto.TeamKometDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO(): TiltakshistorikkDTO {
+    return TiltakshistorikkDTO(
         id = id.toString(),
-        gjennomforing = TiltakshistorikkTilSaksbehandlingDTO.GjennomforingDTO(
+        gjennomforing = TiltakshistorikkDTO.GjennomforingDTO(
             id = gjennomforing.id.toString(),
             visningsnavn = tittel,
             typeNavn = tiltakstype.navn,
@@ -25,10 +25,10 @@ fun TiltakshistorikkV1Dto.TeamKometDeltakelse.toTiltakshistorikkTilSaksbehandlin
     )
 }
 
-fun TiltakshistorikkV1Dto.ArenaDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO(): TiltakshistorikkTilSaksbehandlingDTO {
-    return TiltakshistorikkTilSaksbehandlingDTO(
+fun TiltakshistorikkV1Dto.ArenaDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO(): TiltakshistorikkDTO {
+    return TiltakshistorikkDTO(
         id = "TA$arenaId",
-        gjennomforing = TiltakshistorikkTilSaksbehandlingDTO.GjennomforingDTO(
+        gjennomforing = TiltakshistorikkDTO.GjennomforingDTO(
             id = "",
             visningsnavn = tittel,
             typeNavn = tiltakstype.navn,

@@ -85,4 +85,65 @@ class TokenxRoutesTest {
             }
         }
     }
+
+    @Test
+    fun `get tiltakshistorikk tokenx - utløpt token - returnerer 401`() {
+        coEvery { texasClient.introspectToken(any(), IdentityProvider.TOKENX) } returns TexasIntrospectionResponse(
+            active = false,
+            error = "Expired",
+            groups = null,
+            roles = null,
+            other = emptyMap(),
+        )
+        runTest {
+            testApplication {
+                application {
+                    setupTestApplication(mockRoutesService, texasClient, mockTiltakshistorikkService)
+                }
+                defaultRequest(
+                    HttpMethod.Get,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("/tokenx/tiltakshistorikk")
+                    },
+                ).apply {
+                    status shouldBe HttpStatusCode.Unauthorized
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `get tiltakshistorikk tokenx - gyldig token - returnerer ok respons`() {
+        val fnr = "12345678910"
+        coEvery { texasClient.introspectToken(any(), IdentityProvider.TOKENX) } returns TexasIntrospectionResponse(
+            active = true,
+            error = null,
+            groups = null,
+            roles = null,
+            other = mapOf(
+                "azp_name" to "soknad-api",
+                "azp" to "soknad-api-id",
+                "acr" to "idporten-loa-high",
+                "pid" to fnr,
+            ),
+        )
+        coEvery { mockTiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, any()) } returns emptyList()
+        runTest {
+            testApplication {
+                application {
+                    setupTestApplication(mockRoutesService, texasClient, mockTiltakshistorikkService)
+                }
+                defaultRequest(
+                    HttpMethod.Get,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("/tokenx/tiltakshistorikk")
+                    },
+                ).apply {
+                    status shouldBe HttpStatusCode.OK
+                }
+            }
+        }
+    }
 }

@@ -19,7 +19,7 @@ fun Application.setupTestApplication(
     installAuthentication(texasClient)
     routing {
         authenticate(IdentityProvider.TOKENX.value) {
-            tokenxRoutes(routesService)
+            tokenxRoutes(routesService, tiltakshistorikkService)
         }
         authenticate(IdentityProvider.AZUREAD.value) {
             azureRoutes(routesService, tiltakshistorikkService)

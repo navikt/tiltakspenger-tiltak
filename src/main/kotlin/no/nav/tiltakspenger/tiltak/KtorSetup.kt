@@ -49,7 +49,7 @@ fun Application.setupRouting(
     routing {
         healthRoutes()
         authenticate(IdentityProvider.TOKENX.value) {
-            tokenxRoutes(routesService)
+            tokenxRoutes(routesService, tiltakshistorikkService)
         }
         authenticate(IdentityProvider.AZUREAD.value) {
             azureRoutes(routesService, tiltakshistorikkService)

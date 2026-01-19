@@ -87,7 +87,7 @@ paths:
               schema:
                 type: "array"
                 items:
-                  $ref: "#/components/schemas/TiltakshistorikkTilSaksbehandlingDTO"
+                  $ref: "#/components/schemas/TiltakshistorikkDTO"
   /tokenx/tiltak:
     get:
       description: "Hente tiltaksdeltakelser for innlogget bruker"
@@ -102,6 +102,20 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/TiltakDTO"
+  /tokenx/tiltakshistorikk:
+    get:
+      description: "Hente tiltaksdeltakelser for innlogget bruker"
+      tags:
+        - Tiltaksdeltakelser
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/TiltakshistorikkDTO"
 components:
   schemas:
     HentTiltaksdeltakelserRequest:
@@ -276,7 +290,7 @@ components:
       - "typeKode"
       - "deltakelseStatus"
       - "kilde"
-    TiltakshistorikkTilSaksbehandlingDTO:
+    TiltakshistorikkDTO:
       type: "object"
       properties:
         id:

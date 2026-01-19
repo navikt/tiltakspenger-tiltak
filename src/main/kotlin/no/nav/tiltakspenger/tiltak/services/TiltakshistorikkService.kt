@@ -7,13 +7,23 @@ import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.TiltakshistorikkClient
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.KometDeltakerStatusDto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
-import no.nav.tiltakspenger.tiltak.routes.TiltakshistorikkTilSaksbehandlingDTO
+import no.nav.tiltakspenger.tiltak.routes.TiltakshistorikkDTO
 
 class TiltakshistorikkService(
     private val tiltakshistorikkClient: TiltakshistorikkClient,
     private val arenaClient: ArenaClient,
 ) {
-    fun hentTiltakshistorikkForSaksbehandling(fnr: String, correlationId: String?): List<TiltakshistorikkTilSaksbehandlingDTO> {
+    fun hentTiltakshistorikkForSaksbehandling(fnr: String, correlationId: String?): List<TiltakshistorikkDTO> {
+        return hentTiltakshistorikk(fnr = fnr, correlationId = correlationId)
+    }
+
+    fun hentTiltakshistorikkForSoknad(fnr: String, correlationId: String?): List<TiltakshistorikkDTO> {
+        return hentTiltakshistorikk(fnr = fnr, correlationId = correlationId)
+            .filter { it.deltakelseStatus.rettTilÅSøke }
+            .filter { it.gjennomforing.arenaKode.rettPåTiltakspenger }
+    }
+
+    private fun hentTiltakshistorikk(fnr: String, correlationId: String?): List<TiltakshistorikkDTO> {
         val tiltakdeltakelser = runBlocking {
             val tiltakshistorikk = tiltakshistorikkClient.hentTiltaksdeltakelser(fnr)
                 .filterNot { it.opphav == TiltakshistorikkV1Dto.Opphav.TEAM_TILTAK }

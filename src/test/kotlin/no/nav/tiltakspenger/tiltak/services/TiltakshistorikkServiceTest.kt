@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.tiltak.services
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import io.mockk.clearMocks
 import io.mockk.coEvery
@@ -8,6 +9,7 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaDeltakerStatusType
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.ARBTREN
+import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.KURS
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.DELTAR
@@ -19,7 +21,7 @@ import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.KometDeltakerSta
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Response
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakskodeDto
-import no.nav.tiltakspenger.tiltak.routes.TiltakshistorikkTilSaksbehandlingDTO
+import no.nav.tiltakspenger.tiltak.routes.TiltakshistorikkDTO
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -47,7 +49,7 @@ class TiltakshistorikkServiceTest {
         tiltakshistorikk.size shouldBe 2
         val tiltakFraKomet = tiltakshistorikk.find { it.kilde == "Komet" } ?: throw RuntimeException("Fant ikke komet-tiltak")
         tiltakFraKomet.id shouldBe "6d54228f-534f-4b4b-9160-65eae26a3b06"
-        tiltakFraKomet.gjennomforing shouldBe TiltakshistorikkTilSaksbehandlingDTO.GjennomforingDTO(
+        tiltakFraKomet.gjennomforing shouldBe TiltakshistorikkDTO.GjennomforingDTO(
             id = "9caf398e-8e38-41fc-af29-b7ee6f62205a",
             visningsnavn = "Arbeidsforberedende trening hos Arrangør",
             typeNavn = "Arbeidsforberedende trening",
@@ -62,7 +64,7 @@ class TiltakshistorikkServiceTest {
 
         val tiltakFraArena = tiltakshistorikk.find { it.kilde == "Arena" } ?: throw RuntimeException("Fant ikke arena-tiltak")
         tiltakFraArena.id shouldBe "TA1234567"
-        tiltakFraArena.gjennomforing shouldBe TiltakshistorikkTilSaksbehandlingDTO.GjennomforingDTO(
+        tiltakFraArena.gjennomforing shouldBe TiltakshistorikkDTO.GjennomforingDTO(
             id = "",
             visningsnavn = "Arbeidsmarkedsopplæring (enkeltplass) hos Arrangør",
             typeNavn = "Arbeidsmarkedsopplæring (enkeltplass)",
@@ -74,6 +76,103 @@ class TiltakshistorikkServiceTest {
         tiltakFraArena.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.DELTAR
         tiltakFraArena.deltakelsePerUke shouldBe 5.0F
         tiltakFraArena.deltakelseProsent shouldBe 100.0F
+    }
+
+    @Test
+    fun `hentTiltakshistorikkForSoknad - tiltak som ikke gir rett er ikke med i søknaden selv om de har riktig status`() {
+        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
+            tiltakshistorikkKometTiltak(
+                tiltak = TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype(
+                    tiltakskode = TiltakskodeDto.VARIG_TILRETTELAGT_ARBEID_SKJERMET,
+                    navn = "Varig tilrettelagt arbeid",
+                ),
+                status = KometDeltakerStatusDto(
+                    type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT,
+                ),
+            ),
+        )
+        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
+            arenaTiltak(KURS, ArenaDeltakerStatusType.DELAVB),
+        )
+
+        val tiltaksdeltakelser = tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId")
+
+        tiltaksdeltakelser.size shouldBe 0
+    }
+
+    @Test
+    fun `hentTiltakshistorikkForSoknad - tiltak fra komet og arena som ikke gir rett til å søke er ikke med i listen`() {
+        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
+            // Disse skal være med...
+            tiltakshistorikkKometTiltak(
+                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT),
+            ),
+            tiltakshistorikkKometTiltak(
+                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.FULLFORT),
+            ),
+            tiltakshistorikkKometTiltak(
+                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
+            ),
+            tiltakshistorikkKometTiltak(
+                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VENTER_PA_OPPSTART),
+            ),
+            tiltakshistorikkKometTiltak(
+                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.HAR_SLUTTET),
+            ),
+            // Disse skal ikke være med
+            tiltakshistorikkKometTiltak(
+                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.IKKE_AKTUELL),
+            ),
+            tiltakshistorikkKometTiltak(
+                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VURDERES),
+            ),
+            tiltakshistorikkKometTiltak(
+                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.FEILREGISTRERT),
+            ),
+            tiltakshistorikkKometTiltak(
+                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.PABEGYNT_REGISTRERING),
+            ),
+            tiltakshistorikkKometTiltak(
+                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.SOKT_INN),
+            ),
+            tiltakshistorikkKometTiltak(
+                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VENTELISTE),
+            ),
+        )
+        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
+            // Disse skal være med
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.DELAVB),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.GJENN),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.GJENN_AVB),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.IKKEM),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.JATAKK),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.TILBUD),
+
+            // Disse skal ikke være med
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.AKTUELL),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.AVSLAG),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.GJENN_AVL),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.IKKAKTUELL),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.INFOMOETE),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.NEITAKK),
+            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.VENTELISTE),
+        )
+
+        val tiltak = tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId")
+
+        tiltak.size shouldBe 12
+        tiltak.map {
+            println(it.deltakelseStatus)
+            it.deltakelseStatus
+        } shouldNotContain listOf(
+            TiltakResponsDTO.DeltakerStatusDTO.IKKE_AKTUELL,
+            TiltakResponsDTO.DeltakerStatusDTO.FEILREGISTRERT,
+            TiltakResponsDTO.DeltakerStatusDTO.PABEGYNT_REGISTRERING,
+            TiltakResponsDTO.DeltakerStatusDTO.SOKT_INN,
+            TiltakResponsDTO.DeltakerStatusDTO.VENTELISTE,
+            TiltakResponsDTO.DeltakerStatusDTO.VURDERES,
+        )
     }
 
     @Test
@@ -100,6 +199,12 @@ class TiltakshistorikkServiceTest {
             actual.size shouldBe 2
             actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
             actual[1].deltakelseStatus shouldBe DELTAR
+        }
+
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also { actual ->
+            // filtrerer bort INKLUTILS som ikke gir rett
+            actual.size shouldBe 1
+            actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
         }
     }
 
@@ -131,6 +236,12 @@ class TiltakshistorikkServiceTest {
             actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
             actual[1].deltakelseStatus shouldBe DELTAR
         }
+
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also { actual ->
+            // filtrerer bort ETAB som ikke gir rett
+            actual.size shouldBe 1
+            actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
+        }
     }
 
     @Test
@@ -151,6 +262,12 @@ class TiltakshistorikkServiceTest {
         )
 
         tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId").also {
+            it.size shouldBe 2
+            it[0].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+            it[1].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+        }
+
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also {
             it.size shouldBe 2
             it[0].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
             it[1].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
@@ -178,6 +295,10 @@ class TiltakshistorikkServiceTest {
             it.size shouldBe 2
             it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.MENTOR }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
             it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.VASV }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+        }
+
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also {
+            it.size shouldBe 0
         }
     }
 
@@ -211,6 +332,12 @@ class TiltakshistorikkServiceTest {
         )
 
         tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId").also {
+            it.size shouldBe 12
+            it.all { it.deltakelseStatus.rettTilÅSøke }
+            it.all { it.gjennomforing.arenaKode.rettPåTiltakspenger }
+        }
+
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also {
             it.size shouldBe 12
             it.all { it.deltakelseStatus.rettTilÅSøke }
             it.all { it.gjennomforing.arenaKode.rettPåTiltakspenger }
@@ -253,6 +380,10 @@ class TiltakshistorikkServiceTest {
             it.size shouldBe 13
             it.all { !it.deltakelseStatus.rettTilÅSøke }
         }
+
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also {
+            it.size shouldBe 0
+        }
     }
 
     @Test
@@ -281,7 +412,12 @@ class TiltakshistorikkServiceTest {
             arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF, tom = null),
             arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF, fom = null, tom = null),
         )
+
         tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId").also {
+            it.size shouldBe 8
+        }
+
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also {
             it.size shouldBe 8
         }
     }
@@ -308,9 +444,13 @@ class TiltakshistorikkServiceTest {
             ),
         )
 
-        val tiltakListe = tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId")
+        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId").also {
+            it.size shouldBe 2
+        }
 
-        tiltakListe.size shouldBe 2
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also {
+            it.size shouldBe 2
+        }
     }
 
     private fun getRespons(): TiltakshistorikkV1Response {
