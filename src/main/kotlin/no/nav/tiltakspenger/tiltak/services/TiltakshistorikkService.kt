@@ -25,7 +25,7 @@ class TiltakshistorikkService(
                         is TiltakshistorikkV1Dto.ArenaDeltakelse -> deltakelse.toTiltakshistorikkTilSaksbehandlingDTO()
                         is TiltakshistorikkV1Dto.TeamTiltakAvtale -> throw IllegalArgumentException("Skal ikke hente team tiltak sine deltakelser fra tiltakshistorikk")
                     }
-                }
+                }.filterNot { it.gjennomforing.arenaKode.name in tiltakFraTeamTiltak }
 
             val arena = arenaClient.hentTiltakArena(fnr, correlationId)
                 .filter { it.tiltakType.name in tiltakFraTeamTiltak }
