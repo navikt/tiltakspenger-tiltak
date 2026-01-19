@@ -31,6 +31,7 @@ fun start(
                 routesService = applicationContext.routesService,
                 kometTestdataClient = applicationContext.kometTestdataClient,
                 texasClient = applicationContext.texasClient,
+                tiltakshistorikkService = applicationContext.tiltakshistorikkService,
             )
         },
     )

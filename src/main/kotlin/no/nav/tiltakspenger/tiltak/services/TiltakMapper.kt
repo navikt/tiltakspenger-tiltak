@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.GjennomføringDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
 import no.nav.tiltakspenger.libs.tiltak.TiltakTilSaksbehandlingDTO
+import no.nav.tiltakspenger.tiltak.routes.TiltakshistorikkDTO
 import java.time.LocalDateTime
 
 // Vi får ikke gjennomføringId eller deltidsprosent fra Arena
@@ -15,6 +16,23 @@ internal fun TiltaksaktivitetDTO.toSaksbehandlingDTO(): TiltakTilSaksbehandlingD
     gjennomforing = GjennomføringDTO(
         id = "",
         arrangørnavn = arrangoer ?: "Ukjent",
+        typeNavn = tiltakType.navn,
+        arenaKode = TiltakType.valueOf(tiltakType.name),
+        deltidsprosent = null,
+    ),
+    deltakelseFom = deltakelsePeriode?.fom,
+    deltakelseTom = deltakelsePeriode?.tom,
+    deltakelseStatus = deltakerStatusType.toDTO(deltakelsePeriode?.fom),
+    deltakelsePerUke = antallDagerPerUke,
+    deltakelseProsent = deltakelseProsent,
+    kilde = "Arena",
+)
+
+fun TiltaksaktivitetDTO.toTiltakshistorikkTilSaksbehandlingDTO(): TiltakshistorikkDTO = TiltakshistorikkDTO(
+    id = aktivitetId,
+    gjennomforing = TiltakshistorikkDTO.GjennomforingDTO(
+        id = "",
+        visningsnavn = arrangoer?.let { "${tiltakType.navn} hos $it" } ?: "Ukjent",
         typeNavn = tiltakType.navn,
         arenaKode = TiltakType.valueOf(tiltakType.name),
         deltidsprosent = null,

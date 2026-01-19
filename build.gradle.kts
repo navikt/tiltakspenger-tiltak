@@ -91,7 +91,7 @@ dependencies {
 
     testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.3.0")
-    testApi("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
+    testImplementation("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
 }
 
 application {
