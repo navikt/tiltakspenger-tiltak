@@ -55,6 +55,26 @@ sealed class TiltakshistorikkV1Dto {
         TEAM_TILTAK,
     }
 
+    data class Virksomhet(
+        /**
+         * Navn på virksomhet vil stort sett være tilgjenglig, men i noen sjeldne tilfeller så kan det være
+         * at dette er ukjent (typisk for eldre tiltaksdeltakelser).
+         */
+        val navn: String?,
+    )
+
+    data class Arrangor(
+        /**
+         * Hovedenhet/Juridisk enhet hos arrangør (fra brreg)
+         */
+        val hovedenhet: Virksomhet?,
+
+        /**
+         * Underenhet hos arrangør (fra brreg) som tiltaksgjennomføringen er registrert på.
+         */
+        val underenhet: Virksomhet,
+    )
+
     data class Gjennomforing(
         val id: UUID,
         /**
@@ -73,6 +93,7 @@ sealed class TiltakshistorikkV1Dto {
         val status: ArenaDeltakerStatusDto,
         val tiltakstype: Tiltakstype,
         val gjennomforing: Gjennomforing,
+        val arrangor: Arrangor,
         val deltidsprosent: Float?,
         val dagerPerUke: Float?,
     ) : TiltakshistorikkV1Dto() {
@@ -92,6 +113,7 @@ sealed class TiltakshistorikkV1Dto {
         val status: KometDeltakerStatusDto,
         val tiltakstype: Tiltakstype,
         val gjennomforing: Gjennomforing,
+        val arrangor: Arrangor,
         val deltidsprosent: Float?,
         val dagerPerUke: Float?,
     ) : TiltakshistorikkV1Dto() {
@@ -110,6 +132,7 @@ sealed class TiltakshistorikkV1Dto {
         override val tittel: String,
         val tiltakstype: Tiltakstype,
         val status: ArbeidsgiverAvtaleStatusDto,
+        val arbeidsgiver: Virksomhet,
     ) : TiltakshistorikkV1Dto() {
         override val opphav = Opphav.TEAM_TILTAK
 

@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.DELTAR
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
+import no.nav.tiltakspenger.libs.tiltak.TiltakshistorikkDTO
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.TiltakshistorikkClient
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.ArenaDeltakerStatusDto
@@ -21,7 +22,6 @@ import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.KometDeltakerSta
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Response
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakskodeDto
-import no.nav.tiltakspenger.tiltak.routes.TiltakshistorikkDTO
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -47,11 +47,12 @@ class TiltakshistorikkServiceTest {
         val tiltakshistorikk = tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId")
 
         tiltakshistorikk.size shouldBe 2
-        val tiltakFraKomet = tiltakshistorikk.find { it.kilde == "Komet" } ?: throw RuntimeException("Fant ikke komet-tiltak")
+        val tiltakFraKomet = tiltakshistorikk.find { it.kilde == TiltakshistorikkDTO.Kilde.KOMET } ?: throw RuntimeException("Fant ikke komet-tiltak")
         tiltakFraKomet.id shouldBe "6d54228f-534f-4b4b-9160-65eae26a3b06"
         tiltakFraKomet.gjennomforing shouldBe TiltakshistorikkDTO.GjennomforingDTO(
             id = "9caf398e-8e38-41fc-af29-b7ee6f62205a",
             visningsnavn = "Arbeidsforberedende trening hos Arrangør",
+            arrangornavn = "Arrangør",
             typeNavn = "Arbeidsforberedende trening",
             arenaKode = TiltakResponsDTO.TiltakType.ARBFORB,
             deltidsprosent = 100.0,
@@ -62,18 +63,19 @@ class TiltakshistorikkServiceTest {
         tiltakFraKomet.deltakelsePerUke shouldBe 3.0F
         tiltakFraKomet.deltakelseProsent shouldBe 60.0F
 
-        val tiltakFraArena = tiltakshistorikk.find { it.kilde == "Arena" } ?: throw RuntimeException("Fant ikke arena-tiltak")
+        val tiltakFraArena = tiltakshistorikk.find { it.kilde == TiltakshistorikkDTO.Kilde.ARENA } ?: throw RuntimeException("Fant ikke arena-tiltak")
         tiltakFraArena.id shouldBe "TA1234567"
         tiltakFraArena.gjennomforing shouldBe TiltakshistorikkDTO.GjennomforingDTO(
             id = "",
             visningsnavn = "Arbeidsmarkedsopplæring (enkeltplass) hos Arrangør",
+            arrangornavn = "Arrangør",
             typeNavn = "Arbeidsmarkedsopplæring (enkeltplass)",
             arenaKode = TiltakResponsDTO.TiltakType.ENKELAMO,
             deltidsprosent = null,
         )
         tiltakFraArena.deltakelseFom shouldBe LocalDate.of(2024, 7, 3)
         tiltakFraArena.deltakelseTom shouldBe LocalDate.of(2024, 10, 31)
-        tiltakFraArena.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.DELTAR
+        tiltakFraArena.deltakelseStatus shouldBe DELTAR
         tiltakFraArena.deltakelsePerUke shouldBe 5.0F
         tiltakFraArena.deltakelseProsent shouldBe 100.0F
     }
@@ -562,6 +564,12 @@ fun tiltakshistorikkArenaTiltak(
         id = UUID.randomUUID(),
         deltidsprosent = null,
     ),
+    arrangor = TiltakshistorikkV1Dto.Arrangor(
+        hovedenhet = null,
+        underenhet = TiltakshistorikkV1Dto.Virksomhet(
+            navn = "Arrangør",
+        ),
+    ),
     deltidsprosent = 100.0f,
     dagerPerUke = 5.0f,
 )
@@ -584,6 +592,12 @@ fun tiltakshistorikkKometTiltak(
     gjennomforing = TiltakshistorikkV1Dto.Gjennomforing(
         id = UUID.randomUUID(),
         deltidsprosent = 100.0f,
+    ),
+    arrangor = TiltakshistorikkV1Dto.Arrangor(
+        hovedenhet = null,
+        underenhet = TiltakshistorikkV1Dto.Virksomhet(
+            navn = "Arrangør",
+        ),
     ),
     deltidsprosent = 100.0f,
     dagerPerUke = 5.0f,
