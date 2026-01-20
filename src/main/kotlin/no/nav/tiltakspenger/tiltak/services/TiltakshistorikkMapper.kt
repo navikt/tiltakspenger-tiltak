@@ -20,7 +20,7 @@ fun TiltakshistorikkV1Dto.TeamKometDeltakelse.toTiltakshistorikkTilSaksbehandlin
         deltakelseFom = startDato,
         deltakelseTom = sluttDato,
         deltakelseStatus = status.toDeltakerStatusDTO(),
-        deltakelsePerUke = dagerPerUke,
+        antallDagerPerUke = dagerPerUke,
         deltakelseProsent = deltidsprosent,
         kilde = TiltakshistorikkDTO.Kilde.KOMET,
     )
@@ -40,7 +40,7 @@ fun TiltakshistorikkV1Dto.ArenaDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO
         deltakelseFom = startDato,
         deltakelseTom = sluttDato,
         deltakelseStatus = status.toDeltakerStatusDTO(startDato),
-        deltakelsePerUke = dagerPerUke,
+        antallDagerPerUke = dagerPerUke,
         deltakelseProsent = deltidsprosent,
         kilde = TiltakshistorikkDTO.Kilde.ARENA,
     )

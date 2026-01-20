@@ -60,7 +60,7 @@ class TiltakshistorikkServiceTest {
         tiltakFraKomet.deltakelseFom shouldBe LocalDate.of(2024, 4, 4)
         tiltakFraKomet.deltakelseTom shouldBe LocalDate.of(2024, 4, 5)
         tiltakFraKomet.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.HAR_SLUTTET
-        tiltakFraKomet.deltakelsePerUke shouldBe 3.0F
+        tiltakFraKomet.antallDagerPerUke shouldBe 3.0F
         tiltakFraKomet.deltakelseProsent shouldBe 60.0F
 
         val tiltakFraArena = tiltakshistorikk.find { it.kilde == TiltakshistorikkDTO.Kilde.ARENA } ?: throw RuntimeException("Fant ikke arena-tiltak")
@@ -76,7 +76,7 @@ class TiltakshistorikkServiceTest {
         tiltakFraArena.deltakelseFom shouldBe LocalDate.of(2024, 7, 3)
         tiltakFraArena.deltakelseTom shouldBe LocalDate.of(2024, 10, 31)
         tiltakFraArena.deltakelseStatus shouldBe DELTAR
-        tiltakFraArena.deltakelsePerUke shouldBe 5.0F
+        tiltakFraArena.antallDagerPerUke shouldBe 5.0F
         tiltakFraArena.deltakelseProsent shouldBe 100.0F
     }
 
