@@ -331,6 +331,10 @@ components:
           default: 100
         kilde:
           type: "string"
+          enum:
+            - "ARENA"
+            - "KOMET"
+            - "TEAM_TILTAK"
       required:
         - "id"
         - "gjennomforing"
