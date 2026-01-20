@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.tiltak.services
 
 import kotlinx.coroutines.runBlocking
-import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.logging.Sikkerlogg
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.TiltakshistorikkClient
@@ -29,7 +28,7 @@ class TiltakshistorikkService(
                 .filterNot { it.opphav == TiltakshistorikkV1Dto.Opphav.TEAM_TILTAK }
                 .filterNot { it is TiltakshistorikkV1Dto.TeamKometDeltakelse && it.status.type == KometDeltakerStatusDto.DeltakerStatusType.KLADD }
                 .map { deltakelse ->
-                    Sikkerlogg.info { "Deltakelser fra tiltakshistorikk: ${objectMapper.writeValueAsString(deltakelse)}" }
+                    Sikkerlogg.info { "Deltakelser fra tiltakshistorikk: $deltakelse" }
                     when (deltakelse) {
                         is TiltakshistorikkV1Dto.TeamKometDeltakelse -> deltakelse.toTiltakshistorikkTilSaksbehandlingDTO()
                         is TiltakshistorikkV1Dto.ArenaDeltakelse -> deltakelse.toTiltakshistorikkTilSaksbehandlingDTO()

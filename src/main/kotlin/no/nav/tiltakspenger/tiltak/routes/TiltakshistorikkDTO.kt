@@ -13,13 +13,20 @@ data class TiltakshistorikkDTO(
     val deltakelseStatus: DeltakerStatusDTO,
     val deltakelsePerUke: Float?,
     val deltakelseProsent: Float?,
-    val kilde: String,
+    val kilde: Kilde,
 ) {
     data class GjennomforingDTO(
         val id: String,
         val visningsnavn: String,
+        val arrangornavn: String?,
         val typeNavn: String,
         val arenaKode: TiltakType,
         val deltidsprosent: Double?,
     )
+
+    enum class Kilde {
+        ARENA,
+        KOMET,
+        TEAM_TILTAK,
+    }
 }

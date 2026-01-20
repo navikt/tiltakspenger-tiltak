@@ -12,6 +12,7 @@ fun TiltakshistorikkV1Dto.TeamKometDeltakelse.toTiltakshistorikkTilSaksbehandlin
         gjennomforing = TiltakshistorikkDTO.GjennomforingDTO(
             id = gjennomforing.id.toString(),
             visningsnavn = tittel,
+            arrangornavn = arrangor.hovedenhet?.navn ?: arrangor.underenhet.navn,
             typeNavn = tiltakstype.navn,
             arenaKode = tiltakstype.tiltakskode.toArenaKode(),
             deltidsprosent = gjennomforing.deltidsprosent?.toDouble(),
@@ -21,7 +22,7 @@ fun TiltakshistorikkV1Dto.TeamKometDeltakelse.toTiltakshistorikkTilSaksbehandlin
         deltakelseStatus = status.toDeltakerStatusDTO(),
         deltakelsePerUke = dagerPerUke,
         deltakelseProsent = deltidsprosent,
-        kilde = "Komet",
+        kilde = TiltakshistorikkDTO.Kilde.KOMET,
     )
 }
 
@@ -31,6 +32,7 @@ fun TiltakshistorikkV1Dto.ArenaDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO
         gjennomforing = TiltakshistorikkDTO.GjennomforingDTO(
             id = "",
             visningsnavn = tittel,
+            arrangornavn = arrangor.hovedenhet?.navn ?: arrangor.underenhet.navn,
             typeNavn = tiltakstype.navn,
             arenaKode = TiltakType.valueOf(tiltakstype.tiltakskode),
             deltidsprosent = null,
@@ -40,6 +42,6 @@ fun TiltakshistorikkV1Dto.ArenaDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO
         deltakelseStatus = status.toDeltakerStatusDTO(startDato),
         deltakelsePerUke = dagerPerUke,
         deltakelseProsent = deltidsprosent,
-        kilde = "Arena",
+        kilde = TiltakshistorikkDTO.Kilde.ARENA,
     )
 }

@@ -33,6 +33,7 @@ fun TiltaksaktivitetDTO.toTiltakshistorikkTilSaksbehandlingDTO(): Tiltakshistori
     gjennomforing = TiltakshistorikkDTO.GjennomforingDTO(
         id = "",
         visningsnavn = arrangoer?.let { "${tiltakType.navn} hos $it" } ?: "Ukjent",
+        arrangornavn = arrangoer ?: "Ukjent",
         typeNavn = tiltakType.navn,
         arenaKode = TiltakType.valueOf(tiltakType.name),
         deltidsprosent = null,
@@ -42,7 +43,7 @@ fun TiltaksaktivitetDTO.toTiltakshistorikkTilSaksbehandlingDTO(): Tiltakshistori
     deltakelseStatus = deltakerStatusType.toDTO(deltakelsePeriode?.fom),
     deltakelsePerUke = antallDagerPerUke,
     deltakelseProsent = deltakelseProsent,
-    kilde = "Arena",
+    kilde = TiltakshistorikkDTO.Kilde.ARENA,
 )
 
 internal fun TiltaksaktivitetDTO.toSøknadTiltak(): TiltakDTO =

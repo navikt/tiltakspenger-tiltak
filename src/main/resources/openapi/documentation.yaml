@@ -343,6 +343,8 @@ components:
           type: "string"
         visningsnavn:
           type: "string"
+        arrangornavn:
+          type: "string"
         typeNavn:
           type: "string"
         arenaKode:
