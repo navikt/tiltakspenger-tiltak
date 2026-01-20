@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.GjennomføringDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
 import no.nav.tiltakspenger.libs.tiltak.TiltakTilSaksbehandlingDTO
-import no.nav.tiltakspenger.tiltak.routes.TiltakshistorikkDTO
+import no.nav.tiltakspenger.libs.tiltak.TiltakshistorikkDTO
 import java.time.LocalDateTime
 
 // Vi får ikke gjennomføringId eller deltidsprosent fra Arena

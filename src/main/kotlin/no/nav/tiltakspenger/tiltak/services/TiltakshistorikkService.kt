@@ -2,11 +2,11 @@ package no.nav.tiltakspenger.tiltak.services
 
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.libs.logging.Sikkerlogg
+import no.nav.tiltakspenger.libs.tiltak.TiltakshistorikkDTO
 import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.TiltakshistorikkClient
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.KometDeltakerStatusDto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
-import no.nav.tiltakspenger.tiltak.routes.TiltakshistorikkDTO
 
 class TiltakshistorikkService(
     private val tiltakshistorikkClient: TiltakshistorikkClient,

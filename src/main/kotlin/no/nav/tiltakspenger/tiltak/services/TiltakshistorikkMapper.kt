@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.tiltak.services
 
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
+import no.nav.tiltakspenger.libs.tiltak.TiltakshistorikkDTO
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.toArenaKode
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.toDeltakerStatusDTO
-import no.nav.tiltakspenger.tiltak.routes.TiltakshistorikkDTO
 
 fun TiltakshistorikkV1Dto.TeamKometDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO(): TiltakshistorikkDTO {
     return TiltakshistorikkDTO(
