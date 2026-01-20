@@ -9,7 +9,7 @@ val ktorVersion = "3.3.3"
 val jacksonVersion = "2.20.1"
 val jacksonAnnotationsVersion = "2.20"
 val kotestVersion = "6.0.7"
-val felleslibVersion = "0.0.650"
+val felleslibVersion = "0.0.651"
 val testContainersVersion = "2.0.3"
 
 plugins {

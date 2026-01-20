@@ -41,7 +41,7 @@ fun TiltaksaktivitetDTO.toTiltakshistorikkTilSaksbehandlingDTO(): Tiltakshistori
     deltakelseFom = deltakelsePeriode?.fom,
     deltakelseTom = deltakelsePeriode?.tom,
     deltakelseStatus = deltakerStatusType.toDTO(deltakelsePeriode?.fom),
-    deltakelsePerUke = antallDagerPerUke,
+    antallDagerPerUke = antallDagerPerUke,
     deltakelseProsent = deltakelseProsent,
     kilde = TiltakshistorikkDTO.Kilde.ARENA,
 )

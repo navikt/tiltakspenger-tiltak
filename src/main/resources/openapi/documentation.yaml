@@ -317,7 +317,7 @@ components:
             - "SOKT_INN"
             - "VENTELISTE"
             - "VURDERES"
-        deltakelsePerUke:
+        antallDagerPerUke:
           type: "number"
           format: "float"
           minimum: 1
