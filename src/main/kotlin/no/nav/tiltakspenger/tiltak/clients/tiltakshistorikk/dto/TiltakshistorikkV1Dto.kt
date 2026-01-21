@@ -14,29 +14,29 @@ import java.util.UUID
     JsonSubTypes.Type(value = TiltakshistorikkV1Dto.TeamKometDeltakelse::class, name = "TeamKometDeltakelse"),
     JsonSubTypes.Type(value = TiltakshistorikkV1Dto.TeamTiltakAvtale::class, name = "TeamTiltakAvtale"),
 )
-sealed interface TiltakshistorikkV1Dto {
+sealed class TiltakshistorikkV1Dto {
     /**
      * Id på deltakelse fra kildesystemet.
      *
      * MERK: Hvis kildesystemet er Arena så vil dette være en id som kun er kjent i `tiltakshistorikk`,
      * id fra Arena er tilgjengelig i feltet [TiltakshistorikkV1Dto.ArenaDeltakelse.arenaId].
      */
-    val id: UUID
+    abstract val id: UUID
 
     /**
      * Hvilket kildesystem deltakelsen kommer fra.
      */
-    val opphav: Opphav
+    abstract val opphav: Opphav
 
     /**
      * Startdato i tiltaket.
      */
-    val startDato: LocalDate?
+    abstract val startDato: LocalDate?
 
     /**
      * Sluttdato i tiltaket.
      */
-    val sluttDato: LocalDate?
+    abstract val sluttDato: LocalDate?
 
     /**
      * Beskrivende tittel/leslig navn for tiltaksdeltakelsen.
@@ -47,7 +47,7 @@ sealed interface TiltakshistorikkV1Dto {
      * Selve innholdet/oppbygning av tittelen kan variere mellom de forskjellige tiltakstypene og det kan komme
      * endringer i logikken på hvordan dette utledes.
      */
-    val tittel: String
+    abstract val tittel: String
 
     enum class Opphav {
         ARENA,
@@ -96,7 +96,7 @@ sealed interface TiltakshistorikkV1Dto {
         val arrangor: Arrangor,
         val deltidsprosent: Float?,
         val dagerPerUke: Float?,
-    ) : TiltakshistorikkV1Dto {
+    ) : TiltakshistorikkV1Dto() {
         override val opphav = Opphav.ARENA
 
         data class Tiltakstype(
@@ -116,7 +116,7 @@ sealed interface TiltakshistorikkV1Dto {
         val arrangor: Arrangor,
         val deltidsprosent: Float?,
         val dagerPerUke: Float?,
-    ) : TiltakshistorikkV1Dto {
+    ) : TiltakshistorikkV1Dto() {
         override val opphav = Opphav.TEAM_KOMET
 
         data class Tiltakstype(
@@ -133,7 +133,7 @@ sealed interface TiltakshistorikkV1Dto {
         val tiltakstype: Tiltakstype,
         val status: ArbeidsgiverAvtaleStatusDto,
         val arbeidsgiver: Virksomhet,
-    ) : TiltakshistorikkV1Dto {
+    ) : TiltakshistorikkV1Dto() {
         override val opphav = Opphav.TEAM_TILTAK
 
         data class Tiltakstype(
