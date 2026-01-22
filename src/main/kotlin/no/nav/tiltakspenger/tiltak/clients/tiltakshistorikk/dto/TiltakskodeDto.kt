@@ -29,17 +29,13 @@ fun TiltakskodeDto.toArenaKode(): TiltakResponsDTO.TiltakType {
         TiltakskodeDto.ARBEIDSRETTET_REHABILITERING -> TiltakResponsDTO.TiltakType.ARBRRHDAG
         TiltakskodeDto.AVKLARING -> TiltakResponsDTO.TiltakType.AVKLARAG
         TiltakskodeDto.DIGITALT_OPPFOLGINGSTILTAK -> TiltakResponsDTO.TiltakType.DIGIOPPARB
-        TiltakskodeDto.GRUPPE_ARBEIDSMARKEDSOPPLAERING,
-        TiltakskodeDto.ARBEIDSMARKEDSOPPLAERING,
-        TiltakskodeDto.NORSKOPPLAERING_GRUNNLEGGENDE_FERDIGHETER_FOV,
-        TiltakskodeDto.STUDIESPESIALISERING,
-        -> TiltakResponsDTO.TiltakType.GRUPPEAMO
-
-        TiltakskodeDto.GRUPPE_FAG_OG_YRKESOPPLAERING,
-        TiltakskodeDto.FAG_OG_YRKESOPPLAERING,
-        TiltakskodeDto.HOYERE_YRKESFAGLIG_UTDANNING,
-        -> TiltakResponsDTO.TiltakType.GRUFAGYRKE
-
+        TiltakskodeDto.GRUPPE_ARBEIDSMARKEDSOPPLAERING -> TiltakResponsDTO.TiltakType.GRUPPEAMO
+        TiltakskodeDto.ARBEIDSMARKEDSOPPLAERING -> TiltakResponsDTO.TiltakType.ARBEIDSMARKEDSOPPLAERING
+        TiltakskodeDto.NORSKOPPLAERING_GRUNNLEGGENDE_FERDIGHETER_FOV -> TiltakResponsDTO.TiltakType.NORSKOPPLAERING_GRUNNLEGGENDE_FERDIGHETER_FOV
+        TiltakskodeDto.STUDIESPESIALISERING -> TiltakResponsDTO.TiltakType.STUDIESPESIALISERING
+        TiltakskodeDto.GRUPPE_FAG_OG_YRKESOPPLAERING -> TiltakResponsDTO.TiltakType.GRUFAGYRKE
+        TiltakskodeDto.FAG_OG_YRKESOPPLAERING -> TiltakResponsDTO.TiltakType.FAG_OG_YRKESOPPLAERING
+        TiltakskodeDto.HOYERE_YRKESFAGLIG_UTDANNING -> TiltakResponsDTO.TiltakType.HOYERE_YRKESFAGLIG_UTDANNING
         TiltakskodeDto.JOBBKLUBB -> TiltakResponsDTO.TiltakType.JOBBK
         TiltakskodeDto.OPPFOLGING -> TiltakResponsDTO.TiltakType.INDOPPFAG
         TiltakskodeDto.VARIG_TILRETTELAGT_ARBEID_SKJERMET -> TiltakResponsDTO.TiltakType.VASV
