@@ -35,19 +35,6 @@ spec:
   replicas:
     min: 2
     max: 2
-  kafka:
-    pool: nav-dev
-  gcp:
-    sqlInstances:
-      - name: tiltakspenger-tiltak
-        type: POSTGRES_17
-        tier: db-f1-micro
-        diskAutoresize: true
-        pointInTimeRecovery: false
-        cascadingDelete: true
-        databases:
-          - name: tiltak
-            envVarPrefix: DB
   tokenx:
     enabled: true
   accessPolicy:
