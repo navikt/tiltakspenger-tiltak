@@ -35,19 +35,6 @@ spec:
       memory: 2000Mi
     requests:
       memory: 1000Mi
-  kafka:
-    pool: nav-prod
-  gcp:
-    sqlInstances:
-      - name: tiltakspenger-tiltak
-        type: POSTGRES_17
-        tier: db-custom-1-3840
-        diskAutoresize: true
-        pointInTimeRecovery: true
-        cascadingDelete: true
-        databases:
-          - name: tiltak
-            envVarPrefix: DB
   tokenx:
     enabled: true
   accessPolicy:
