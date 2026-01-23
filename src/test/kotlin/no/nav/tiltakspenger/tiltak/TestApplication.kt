@@ -7,11 +7,9 @@ import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.tiltak.routes.azureRoutes
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
-import no.nav.tiltakspenger.tiltak.services.RoutesService
 import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
 
 fun Application.setupTestApplication(
-    routesService: RoutesService,
     texasClient: TexasClient,
     tiltakshistorikkService: TiltakshistorikkService,
 ) {
@@ -19,10 +17,10 @@ fun Application.setupTestApplication(
     installAuthentication(texasClient)
     routing {
         authenticate(IdentityProvider.TOKENX.value) {
-            tokenxRoutes(routesService, tiltakshistorikkService)
+            tokenxRoutes(tiltakshistorikkService)
         }
         authenticate(IdentityProvider.AZUREAD.value) {
-            azureRoutes(routesService, tiltakshistorikkService)
+            azureRoutes(tiltakshistorikkService)
         }
     }
 }

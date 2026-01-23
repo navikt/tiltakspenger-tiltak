@@ -10,7 +10,6 @@ val jacksonVersion = "2.20.1"
 val jacksonAnnotationsVersion = "2.20"
 val kotestVersion = "6.0.7"
 val felleslibVersion = "0.0.652"
-val testContainersVersion = "2.0.3"
 
 plugins {
     application
@@ -41,9 +40,6 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:logging:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:texas:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:persistering-infrastruktur:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:kafka:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:json:$felleslibVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
@@ -70,12 +66,6 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonAnnotationsVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
-    // DB
-    implementation("org.flywaydb:flyway-database-postgresql:11.20.2")
-    implementation("com.zaxxer:HikariCP:7.0.2")
-    implementation("org.postgresql:postgresql:42.7.8")
-    implementation("com.github.seratch:kotliquery:1.9.1")
-
     testImplementation(platform("org.junit:junit-bom:6.0.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
@@ -85,9 +75,6 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
-
-    testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
-    testImplementation("org.testcontainers:testcontainers-postgresql:$testContainersVersion")
 
     testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.3.0")

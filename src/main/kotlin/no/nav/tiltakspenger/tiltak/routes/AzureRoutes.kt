@@ -6,25 +6,14 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.libs.logging.Sikkerlogg
-import no.nav.tiltakspenger.tiltak.services.RoutesService
 import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
 
 fun Route.azureRoutes(
-    routesService: RoutesService,
     tiltakshistorikkService: TiltakshistorikkService,
 ) {
     data class RequestBody(
         val ident: String,
     )
-
-    post("/azure/tiltak") {
-        val ident = call.receive<RequestBody>().ident
-        val correlationId = call.request.headers["Nav-Call-Id"]
-
-        val response = routesService.hentTiltakForSaksbehandling(ident, correlationId)
-        Sikkerlogg.info { response }
-        call.respond(message = response, status = HttpStatusCode.OK)
-    }
 
     post("/azure/tiltakshistorikk") {
         val ident = call.receive<RequestBody>().ident

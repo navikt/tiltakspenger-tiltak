@@ -24,13 +24,8 @@ object Configuration {
             "NAIS_TOKEN_ENDPOINT" to System.getenv("NAIS_TOKEN_ENDPOINT"),
             "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT"),
             "NAIS_TOKEN_EXCHANGE_ENDPOINT" to System.getenv("NAIS_TOKEN_EXCHANGE_ENDPOINT"),
-            "DB_JDBC_URL" to System.getenv("DB_JDBC_URL"),
-            "KOMET_URL" to "http://amt-deltaker.amt",
-            "KOMET_SCOPE" to System.getenv("KOMET_SCOPE"),
             "ARENA_URL" to System.getenv("ARENA_URL"),
             "ARENA_SCOPE" to System.getenv("ARENA_SCOPE"),
-            "TILTAKSTYPE_TOPIC" to "team-mulighetsrommet.siste-tiltakstyper-v3",
-            "GJENNOMFORING_TOPIC" to "team-mulighetsrommet.siste-tiltaksgjennomforinger-v1",
             "TILTAKSHISTORIKK_URL" to "http://tiltakshistorikk.team-mulighetsrommet",
             "TILTAKSHISTORIKK_SCOPE" to System.getenv("TILTAKSHISTORIKK_SCOPE"),
         ),
@@ -40,8 +35,6 @@ object Configuration {
         mapOf(
             "application.profile" to Profile.LOCAL.toString(),
             "logback.configurationFile" to "logback.local.xml",
-            "KOMET_URL" to "http://localhost",
-            "KOMET_SCOPE" to "api://localhost/.default",
             "ARENA_URL" to "http://localhost",
             "ARENA_SCOPE" to "api://localhost/.default",
             "KOMET_TESTDATA_URL" to "http://localhost",
@@ -99,18 +92,11 @@ object Configuration {
     val naisTokenEndpoint: String = config()[Key("NAIS_TOKEN_ENDPOINT", stringType)]
     val tokenExchangeEndpoint: String = config()[Key("NAIS_TOKEN_EXCHANGE_ENDPOINT", stringType)]
 
-    val kometUrl: String = config()[Key("KOMET_URL", stringType)]
-    val kometScope: String = config()[Key("KOMET_SCOPE", stringType)]
     val arenaUrl: String = config()[Key("ARENA_URL", stringType)]
     val arenaScope: String = config()[Key("ARENA_SCOPE", stringType)]
     val kometTestdataUrl = config()[Key("KOMET_TESTDATA_URL", stringType)]
     val kometTestdataScope: String = config()[Key("KOMET_TESTDATA_SCOPE", stringType)]
 
-    val tiltakstypeTopic: String = config()[Key("TILTAKSTYPE_TOPIC", stringType)]
-    val gjennomforingTopic: String = config()[Key("GJENNOMFORING_TOPIC", stringType)]
-
     val tiltakshistorikkUrl: String = config()[Key("TILTAKSHISTORIKK_URL", stringType)]
     val tiltakshistorikkScope: String = config()[Key("TILTAKSHISTORIKK_SCOPE", stringType)]
-
-    val jdbcUrl: String = config()[Key("DB_JDBC_URL", stringType)]
 }
