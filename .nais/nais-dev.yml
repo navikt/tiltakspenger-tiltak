@@ -44,6 +44,7 @@ spec:
         tier: db-f1-micro
         diskAutoresize: true
         pointInTimeRecovery: false
+        cascadingDelete: true
         databases:
           - name: tiltak
             envVarPrefix: DB
@@ -59,8 +60,6 @@ spec:
           cluster: dev-gcp
     outbound:
       rules:
-        - application: amt-deltaker
-          namespace: amt
         - application: amt-deltaker-bff
           namespace: amt
         - application: tiltakshistorikk
@@ -70,8 +69,6 @@ spec:
       external:
         - host: tiltakspenger-arena.dev-fss-pub.nais.io
   env:
-    - name: KOMET_SCOPE
-      value: api://dev-gcp.amt.amt-deltaker/.default
     - name: ARENA_URL
       value: https://tiltakspenger-arena.dev-fss-pub.nais.io
     - name: ARENA_SCOPE

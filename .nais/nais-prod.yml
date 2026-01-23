@@ -44,6 +44,7 @@ spec:
         tier: db-custom-1-3840
         diskAutoresize: true
         pointInTimeRecovery: true
+        cascadingDelete: true
         databases:
           - name: tiltak
             envVarPrefix: DB
@@ -56,8 +57,6 @@ spec:
         - application: tiltakspenger-saksbehandling-api
     outbound:
       rules:
-        - application: amt-deltaker
-          namespace: amt
         - application: tiltakshistorikk
           namespace: team-mulighetsrommet
         - application: logging
@@ -65,8 +64,6 @@ spec:
       external:
         - host: tiltakspenger-arena.prod-fss-pub.nais.io
   env:
-    - name: KOMET_SCOPE
-      value: api://prod-gcp.amt.amt-deltaker/.default
     - name: ARENA_URL
       value: https://tiltakspenger-arena.prod-fss-pub.nais.io
     - name: ARENA_SCOPE

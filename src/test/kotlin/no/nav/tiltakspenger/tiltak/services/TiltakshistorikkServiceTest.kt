@@ -7,6 +7,7 @@ import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaDeltakerStatusType
+import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.ARBTREN
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.KURS
@@ -602,3 +603,24 @@ fun tiltakshistorikkKometTiltak(
     deltidsprosent = 100.0f,
     dagerPerUke = 5.0f,
 )
+
+fun arenaTiltak(
+    tiltak: TiltakType,
+    status: ArenaDeltakerStatusType,
+    fom: LocalDate? = LocalDate.of(2023, 1, 1),
+    tom: LocalDate? = LocalDate.of(2023, 3, 31),
+): ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO {
+    return ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO(
+        tiltakType = tiltak,
+        aktivitetId = "solet",
+        tiltakLokaltNavn = "LokaltNavn",
+        arrangoer = "arrangoerNavn",
+        bedriftsnummer = "123",
+        deltakelsePeriode = ArenaTiltaksaktivitetResponsDTO.DeltakelsesPeriodeDTO(fom, tom),
+        deltakelseProsent = 100F,
+        deltakerStatusType = status,
+        statusSistEndret = LocalDate.now(),
+        begrunnelseInnsoeking = "begrunnelse",
+        antallDagerPerUke = 2F,
+    )
+}

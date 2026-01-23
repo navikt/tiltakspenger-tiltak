@@ -22,24 +22,21 @@ import no.nav.tiltakspenger.tiltak.routes.azureRoutes
 import no.nav.tiltakspenger.tiltak.routes.healthRoutes
 import no.nav.tiltakspenger.tiltak.routes.swaggerRoute
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
-import no.nav.tiltakspenger.tiltak.services.RoutesService
 import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
 import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
 import no.nav.tiltakspenger.tiltak.testdata.testdataRoutes
 import java.util.UUID
 
 fun Application.ktorSetup(
-    routesService: RoutesService,
     kometTestdataClient: KometTestdataClient,
     texasClient: TexasClient,
     tiltakshistorikkService: TiltakshistorikkService,
 ) {
     installCallLogging()
-    setupRouting(routesService, kometTestdataClient, texasClient, tiltakshistorikkService)
+    setupRouting(kometTestdataClient, texasClient, tiltakshistorikkService)
 }
 
 fun Application.setupRouting(
-    routesService: RoutesService,
     kometTestdataClient: KometTestdataClient,
     texasClient: TexasClient,
     tiltakshistorikkService: TiltakshistorikkService,
@@ -49,10 +46,10 @@ fun Application.setupRouting(
     routing {
         healthRoutes()
         authenticate(IdentityProvider.TOKENX.value) {
-            tokenxRoutes(routesService, tiltakshistorikkService)
+            tokenxRoutes(tiltakshistorikkService)
         }
         authenticate(IdentityProvider.AZUREAD.value) {
-            azureRoutes(routesService, tiltakshistorikkService)
+            azureRoutes(tiltakshistorikkService)
             if (!Configuration.isProd()) {
                 testdataRoutes(kometTestdataClient)
             }

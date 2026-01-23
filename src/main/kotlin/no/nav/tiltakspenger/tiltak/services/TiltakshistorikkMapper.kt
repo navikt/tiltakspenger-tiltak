@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.tiltak.services
 
+import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO
+import no.nav.tiltakspenger.libs.arena.tiltak.toDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
 import no.nav.tiltakspenger.libs.tiltak.TiltakshistorikkDTO
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
@@ -45,3 +47,23 @@ fun TiltakshistorikkV1Dto.ArenaDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO
         kilde = TiltakshistorikkDTO.Kilde.ARENA,
     )
 }
+
+// Vi får ikke gjennomføringId eller deltidsprosent fra Arena
+// confluenceside for endepunktet vi kaller for å hente Arenatiltak: https://confluence.adeo.no/pages/viewpage.action?pageId=470748287
+fun TiltaksaktivitetDTO.toTiltakshistorikkTilSaksbehandlingDTO(): TiltakshistorikkDTO = TiltakshistorikkDTO(
+    id = aktivitetId,
+    gjennomforing = TiltakshistorikkDTO.GjennomforingDTO(
+        id = "",
+        visningsnavn = arrangoer?.let { "${tiltakType.navn} hos $it" } ?: "Ukjent",
+        arrangornavn = arrangoer ?: "Ukjent",
+        typeNavn = tiltakType.navn,
+        arenaKode = TiltakType.valueOf(tiltakType.name),
+        deltidsprosent = null,
+    ),
+    deltakelseFom = deltakelsePeriode?.fom,
+    deltakelseTom = deltakelsePeriode?.tom,
+    deltakelseStatus = deltakerStatusType.toDTO(deltakelsePeriode?.fom),
+    antallDagerPerUke = antallDagerPerUke,
+    deltakelseProsent = deltakelseProsent,
+    kilde = TiltakshistorikkDTO.Kilde.ARENA,
+)
