@@ -24,11 +24,8 @@ object Configuration {
             "NAIS_TOKEN_ENDPOINT" to System.getenv("NAIS_TOKEN_ENDPOINT"),
             "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT"),
             "NAIS_TOKEN_EXCHANGE_ENDPOINT" to System.getenv("NAIS_TOKEN_EXCHANGE_ENDPOINT"),
-            "DB_JDBC_URL" to System.getenv("DB_JDBC_URL"),
             "ARENA_URL" to System.getenv("ARENA_URL"),
             "ARENA_SCOPE" to System.getenv("ARENA_SCOPE"),
-            "TILTAKSTYPE_TOPIC" to "team-mulighetsrommet.siste-tiltakstyper-v3",
-            "GJENNOMFORING_TOPIC" to "team-mulighetsrommet.siste-tiltaksgjennomforinger-v1",
             "TILTAKSHISTORIKK_URL" to "http://tiltakshistorikk.team-mulighetsrommet",
             "TILTAKSHISTORIKK_SCOPE" to System.getenv("TILTAKSHISTORIKK_SCOPE"),
         ),
@@ -100,11 +97,6 @@ object Configuration {
     val kometTestdataUrl = config()[Key("KOMET_TESTDATA_URL", stringType)]
     val kometTestdataScope: String = config()[Key("KOMET_TESTDATA_SCOPE", stringType)]
 
-    val tiltakstypeTopic: String = config()[Key("TILTAKSTYPE_TOPIC", stringType)]
-    val gjennomforingTopic: String = config()[Key("GJENNOMFORING_TOPIC", stringType)]
-
     val tiltakshistorikkUrl: String = config()[Key("TILTAKSHISTORIKK_URL", stringType)]
     val tiltakshistorikkScope: String = config()[Key("TILTAKSHISTORIKK_SCOPE", stringType)]
-
-    val jdbcUrl: String = config()[Key("DB_JDBC_URL", stringType)]
 }

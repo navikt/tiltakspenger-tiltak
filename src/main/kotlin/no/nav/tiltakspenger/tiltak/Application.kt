@@ -17,7 +17,7 @@ fun main() {
 
 fun start(
     log: KLogger,
-    applicationContext: ApplicationContext = ApplicationContext(log),
+    applicationContext: ApplicationContext = ApplicationContext(),
 ) {
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
         log.error(e) { e.message }
@@ -35,14 +35,6 @@ fun start(
         },
     )
     server.application.attributes.put(isReadyKey, true)
-
-    if (Configuration.isNais()) {
-        val consumers = listOf(
-            applicationContext.tiltakstypeConsumer,
-            applicationContext.gjennomforingConsumer,
-        )
-        consumers.forEach { it.run() }
-    }
 
     Runtime.getRuntime().addShutdownHook(
         Thread {
