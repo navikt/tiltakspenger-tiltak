@@ -8,7 +8,7 @@ val mockkVersion = "1.14.7"
 val ktorVersion = "3.4.0"
 val jacksonVersion = "2.21.0"
 val jacksonAnnotationsVersion = "2.21"
-val kotestVersion = "6.1.0"
+val kotestVersion = "6.1.1"
 val felleslibVersion = "0.0.673"
 
 plugins {
