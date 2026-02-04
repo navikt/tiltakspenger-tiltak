@@ -6,18 +6,14 @@ import io.kotest.matchers.shouldBe
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.tiltakspenger.libs.arena.tiltak.ArenaDeltakerStatusType
-import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
-import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType
-import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.ARBTREN
 import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.KURS
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.DELTAR
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
 import no.nav.tiltakspenger.libs.tiltak.TiltakshistorikkDTO
-import no.nav.tiltakspenger.tiltak.clients.arena.ArenaClient
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.TiltakshistorikkClient
+import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.ArbeidsgiverAvtaleStatusDto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.ArenaDeltakerStatusDto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.KometDeltakerStatusDto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
@@ -30,24 +26,22 @@ import java.util.UUID
 
 class TiltakshistorikkServiceTest {
     private val tiltakshistorikkClient = mockk<TiltakshistorikkClient>()
-    private val arenaClient = mockk<ArenaClient>()
-    private val tiltakshistorikkService = TiltakshistorikkService(tiltakshistorikkClient, arenaClient)
+    private val tiltakshistorikkService = TiltakshistorikkService(tiltakshistorikkClient)
 
     private val fnr = "12345678910"
 
     @BeforeEach
     fun cleanMocks() {
-        clearMocks(tiltakshistorikkClient, arenaClient)
+        clearMocks(tiltakshistorikkClient)
     }
 
     @Test
     fun `tiltakshistorikk inneholder deltakelser fra alle systemer - mappes korrekt`() {
         coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns getRespons().historikk
-        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns emptyList()
 
-        val tiltakshistorikk = tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId")
+        val tiltakshistorikk = tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr)
 
-        tiltakshistorikk.size shouldBe 2
+        tiltakshistorikk.size shouldBe 3
         val tiltakFraKomet = tiltakshistorikk.find { it.kilde == TiltakshistorikkDTO.Kilde.KOMET } ?: throw RuntimeException("Fant ikke komet-tiltak")
         tiltakFraKomet.id shouldBe "6d54228f-534f-4b4b-9160-65eae26a3b06"
         tiltakFraKomet.gjennomforing shouldBe TiltakshistorikkDTO.GjennomforingDTO(
@@ -79,6 +73,22 @@ class TiltakshistorikkServiceTest {
         tiltakFraArena.deltakelseStatus shouldBe DELTAR
         tiltakFraArena.antallDagerPerUke shouldBe 5.0F
         tiltakFraArena.deltakelseProsent shouldBe 100.0F
+
+        val tiltakFraTeamTiltak = tiltakshistorikk.find { it.kilde == TiltakshistorikkDTO.Kilde.TEAM_TILTAK } ?: throw RuntimeException("Fant ikke team tiltak-tiltak")
+        tiltakFraTeamTiltak.id shouldBe "9dea48c1-d494-4664-9427-bdb20a6f265f"
+        tiltakFraTeamTiltak.gjennomforing shouldBe TiltakshistorikkDTO.GjennomforingDTO(
+            id = "",
+            visningsnavn = "Arbeidstrening hos Arbeidsgiver",
+            arrangornavn = "Arbeidsgiver",
+            typeNavn = "Arbeidstrening",
+            arenaKode = TiltakResponsDTO.TiltakType.ARBTREN,
+            deltidsprosent = null,
+        )
+        tiltakFraTeamTiltak.deltakelseFom shouldBe LocalDate.of(2024, 1, 1)
+        tiltakFraTeamTiltak.deltakelseTom shouldBe LocalDate.of(2024, 12, 31)
+        tiltakFraTeamTiltak.deltakelseStatus shouldBe DELTAR
+        tiltakFraTeamTiltak.antallDagerPerUke shouldBe 5.0f
+        tiltakFraTeamTiltak.deltakelseProsent shouldBe 100.0f
     }
 
     @Test
@@ -93,18 +103,29 @@ class TiltakshistorikkServiceTest {
                     type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT,
                 ),
             ),
-        )
-        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
-            arenaTiltak(KURS, ArenaDeltakerStatusType.DELAVB),
+            tiltakshistorikkArenaTiltak(
+                tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
+                    tiltakskode = KURS.name,
+                    navn = KURS.navn,
+                ),
+                status = ArenaDeltakerStatusDto.DELTAKELSE_AVBRUTT,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                tiltakstype = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakstype(
+                    tiltakskode = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.INKLUDERINGSTILSKUDD,
+                    navn = "Inkluderingstilskudd",
+                ),
+                status = ArbeidsgiverAvtaleStatusDto.AVSLUTTET,
+            ),
         )
 
-        val tiltaksdeltakelser = tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId")
+        val tiltaksdeltakelser = tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr)
 
         tiltaksdeltakelser.size shouldBe 0
     }
 
     @Test
-    fun `hentTiltakshistorikkForSoknad - tiltak fra komet og arena som ikke gir rett til å søke er ikke med i listen`() {
+    fun `hentTiltakshistorikkForSoknad - statuser fra komet, arena og team tiltak som ikke gir rett til å søke er ikke med i listen`() {
         coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
             // Disse skal være med...
             tiltakshistorikkKometTiltak(
@@ -121,6 +142,39 @@ class TiltakshistorikkServiceTest {
             ),
             tiltakshistorikkKometTiltak(
                 status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.HAR_SLUTTET),
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.KLAR_FOR_OPPSTART,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.GJENNOMFORES,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.AVSLUTTET,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.AVBRUTT,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.DELTAKELSE_AVBRUTT,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.FULLFORT,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.GJENNOMFORES,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.GJENNOMFORING_AVBRUTT,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.IKKE_MOTT,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.TAKKET_JA_TIL_TILBUD,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.TILBUD,
             ),
             // Disse skal ikke være med
             tiltakshistorikkKometTiltak(
@@ -141,30 +195,44 @@ class TiltakshistorikkServiceTest {
             tiltakshistorikkKometTiltak(
                 status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VENTELISTE),
             ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.PAABEGYNT,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.MANGLER_GODKJENNING,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.ANNULLERT,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.AKTUELL,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.AVSLAG,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.GJENNOMFORING_AVLYST,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.IKKE_AKTUELL,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.INFORMASJONSMOTE,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.TAKKET_NEI_TIL_TILBUD,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.VENTELISTE,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.FEILREGISTRERT,
+            ),
         )
-        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
-            // Disse skal være med
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.DELAVB),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.GJENN),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.GJENN_AVB),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.IKKEM),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.JATAKK),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.TILBUD),
 
-            // Disse skal ikke være med
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.AKTUELL),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.AVSLAG),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.GJENN_AVL),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.IKKAKTUELL),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.INFOMOETE),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.NEITAKK),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.VENTELISTE),
-        )
+        val tiltak = tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr)
 
-        val tiltak = tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId")
-
-        tiltak.size shouldBe 12
+        tiltak.size shouldBe 16
         tiltak.map {
             println(it.deltakelseStatus)
             it.deltakelseStatus
@@ -179,40 +247,7 @@ class TiltakshistorikkServiceTest {
     }
 
     @Test
-    fun `tiltak fra arena med status GJEN gir DELTAR hvis startdato har passert, ellers VENTER_PÅ_OPPSTART`() {
-        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns emptyList()
-        val arenaTiltak1 = arenaTiltak(
-            tiltak = ARBTREN,
-            status = ArenaDeltakerStatusType.GJENN,
-            LocalDate.now().plusDays(10),
-            LocalDate.now().plusDays(20),
-        )
-        val arenaTiltak2 = arenaTiltak(
-            tiltak = TiltakType.INKLUTILS,
-            status = ArenaDeltakerStatusType.GJENN,
-            LocalDate.now().minusDays(20),
-            LocalDate.now().minusDays(10),
-        )
-        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
-            arenaTiltak1,
-            arenaTiltak2,
-        )
-
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId").also { actual ->
-            actual.size shouldBe 2
-            actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
-            actual[1].deltakelseStatus shouldBe DELTAR
-        }
-
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also { actual ->
-            // filtrerer bort INKLUTILS som ikke gir rett
-            actual.size shouldBe 1
-            actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
-        }
-    }
-
-    @Test
-    fun `tiltak fra arena via tiltakshistorikk med status GJENNOMFORES gir DELTAR hvis startdato har passert, ellers VENTER_PÅ_OPPSTART`() {
+    fun `tiltak fra arena med status GJENNOMFORES gir DELTAR hvis startdato har passert, ellers VENTER_PÅ_OPPSTART`() {
         val arenaTiltak1 = tiltakshistorikkArenaTiltak(
             tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
                 tiltakskode = "FORSAMOGRU",
@@ -232,15 +267,14 @@ class TiltakshistorikkServiceTest {
             LocalDate.now().minusDays(10),
         )
         coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(arenaTiltak1, arenaTiltak2)
-        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns emptyList()
 
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId").also { actual ->
+        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also { actual ->
             actual.size shouldBe 2
             actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
             actual[1].deltakelseStatus shouldBe DELTAR
         }
 
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also { actual ->
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also { actual ->
             // filtrerer bort ETAB som ikke gir rett
             actual.size shouldBe 1
             actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
@@ -248,7 +282,7 @@ class TiltakshistorikkServiceTest {
     }
 
     @Test
-    fun `tiltak fra komet og arena som gir rett på tiltakspenger returnerer true`() {
+    fun `tiltak fra komet, arena og team tiltak som gir rett på tiltakspenger returnerer true`() {
         coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
             tiltakshistorikkKometTiltak(
                 tiltak = TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype(
@@ -259,21 +293,26 @@ class TiltakshistorikkServiceTest {
                     type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR,
                 ),
             ),
-        )
-        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.JATAKK),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.GJENNOMFORES,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.GJENNOMFORES,
+            ),
         )
 
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId").also {
-            it.size shouldBe 2
+        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+            it.size shouldBe 3
             it[0].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
             it[1].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+            it[2].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
         }
 
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also {
-            it.size shouldBe 2
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
+            it.size shouldBe 3
             it[0].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
             it[1].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+            it[2].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
         }
     }
 
@@ -289,18 +328,30 @@ class TiltakshistorikkServiceTest {
                     type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR,
                 ),
             ),
-        )
-        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
-            arenaTiltak(TiltakType.MENTOR, ArenaDeltakerStatusType.JATAKK),
+            tiltakshistorikkArenaTiltak(
+                tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
+                    tiltakskode = "ETAB",
+                    navn = "Egenetablering",
+                ),
+                status = ArenaDeltakerStatusDto.GJENNOMFORES,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                tiltakstype = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakstype(
+                    tiltakskode = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.MENTOR,
+                    navn = "Mentor",
+                ),
+                status = ArbeidsgiverAvtaleStatusDto.GJENNOMFORES,
+            ),
         )
 
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId").also {
-            it.size shouldBe 2
+        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+            it.size shouldBe 3
             it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.MENTOR }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
             it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.VASV }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+            it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.ETAB }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
         }
 
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also {
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
             it.size shouldBe 0
         }
     }
@@ -323,25 +374,49 @@ class TiltakshistorikkServiceTest {
             tiltakshistorikkKometTiltak(
                 status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.HAR_SLUTTET),
             ),
-        )
-        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.DELAVB),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.GJENN),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.GJENN_AVB),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.IKKEM),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.JATAKK),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.TILBUD),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.KLAR_FOR_OPPSTART,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.GJENNOMFORES,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.AVSLUTTET,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.AVBRUTT,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.DELTAKELSE_AVBRUTT,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.FULLFORT,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.GJENNOMFORES,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.GJENNOMFORING_AVBRUTT,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.IKKE_MOTT,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.TAKKET_JA_TIL_TILBUD,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.TILBUD,
+            ),
         )
 
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId").also {
-            it.size shouldBe 12
+        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+            it.size shouldBe 16
             it.all { it.deltakelseStatus.rettTilÅSøke }
             it.all { it.gjennomforing.arenaKode.rettPåTiltakspenger }
         }
 
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also {
-            it.size shouldBe 12
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
+            it.size shouldBe 16
             it.all { it.deltakelseStatus.rettTilÅSøke }
             it.all { it.gjennomforing.arenaKode.rettPåTiltakspenger }
         }
@@ -368,23 +443,47 @@ class TiltakshistorikkServiceTest {
             tiltakshistorikkKometTiltak(
                 status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VENTELISTE),
             ),
-        )
-        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.AKTUELL),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.AVSLAG),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.GJENN_AVL),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.IKKAKTUELL),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.INFOMOETE),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.NEITAKK),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.VENTELISTE),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.PAABEGYNT,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.MANGLER_GODKJENNING,
+            ),
+            tiltakshistorikkTeamTiltakTiltak(
+                status = ArbeidsgiverAvtaleStatusDto.ANNULLERT,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.AKTUELL,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.AVSLAG,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.GJENNOMFORING_AVLYST,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.IKKE_AKTUELL,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.INFORMASJONSMOTE,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.TAKKET_NEI_TIL_TILBUD,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.VENTELISTE,
+            ),
+            tiltakshistorikkArenaTiltak(
+                status = ArenaDeltakerStatusDto.FEILREGISTRERT,
+            ),
         )
 
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId").also {
-            it.size shouldBe 13
+        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+            it.size shouldBe 17
             it.all { !it.deltakelseStatus.rettTilÅSøke }
         }
 
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also {
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
             it.size shouldBe 0
         }
     }
@@ -409,19 +508,13 @@ class TiltakshistorikkServiceTest {
                 tom = null,
             ),
         )
-        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF, fom = null),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF, tom = null),
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.FULLF, fom = null, tom = null),
-        )
 
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId").also {
-            it.size shouldBe 8
+        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+            it.size shouldBe 4
         }
 
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also {
-            it.size shouldBe 8
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
+            it.size shouldBe 4
         }
     }
 
@@ -437,22 +530,13 @@ class TiltakshistorikkServiceTest {
                 tom = LocalDate.now().minusDays(1),
             ),
         )
-        coEvery { arenaClient.hentTiltakArena(any(), any()) } returns listOf(
-            arenaTiltak(ARBTREN, ArenaDeltakerStatusType.DELAVB),
-            arenaTiltak(
-                tiltak = ARBTREN,
-                fom = LocalDate.now(),
-                tom = LocalDate.now().minusDays(1),
-                status = ArenaDeltakerStatusType.DELAVB,
-            ),
-        )
 
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr, "correlationId").also {
-            it.size shouldBe 2
+        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+            it.size shouldBe 1
         }
 
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, "correlationId").also {
-            it.size shouldBe 2
+        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
+            it.size shouldBe 1
         }
     }
 
@@ -533,6 +617,8 @@ class TiltakshistorikkServiceTest {
                     "navn": "Arbeidstrening"
                   },
                   "status": "GJENNOMFORES",
+                  "stillingsprosent": 100,
+                  "dagerPerUke": 5,
                   "arbeidsgiver": {
                     "organisasjonsnummer": "876543210",
                     "navn": "Arbeidsgiver"
@@ -549,7 +635,10 @@ class TiltakshistorikkServiceTest {
 }
 
 fun tiltakshistorikkArenaTiltak(
-    tiltak: TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype,
+    tiltak: TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
+        tiltakskode = TiltakResponsDTO.TiltakType.ENKELAMO.name,
+        navn = TiltakResponsDTO.TiltakType.ENKELAMO.navn,
+    ),
     status: ArenaDeltakerStatusDto,
     fom: LocalDate? = LocalDate.of(2023, 1, 1),
     tom: LocalDate? = LocalDate.of(2023, 3, 31),
@@ -604,23 +693,24 @@ fun tiltakshistorikkKometTiltak(
     dagerPerUke = 5.0f,
 )
 
-fun arenaTiltak(
-    tiltak: TiltakType,
-    status: ArenaDeltakerStatusType,
+fun tiltakshistorikkTeamTiltakTiltak(
+    tiltakstype: TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakstype = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakstype(
+        tiltakskode = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.ARBEIDSTRENING,
+        navn = "Arbeidstrening",
+    ),
+    status: ArbeidsgiverAvtaleStatusDto,
     fom: LocalDate? = LocalDate.of(2023, 1, 1),
     tom: LocalDate? = LocalDate.of(2023, 3, 31),
-): ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO {
-    return ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO(
-        tiltakType = tiltak,
-        aktivitetId = "solet",
-        tiltakLokaltNavn = "LokaltNavn",
-        arrangoer = "arrangoerNavn",
-        bedriftsnummer = "123",
-        deltakelsePeriode = ArenaTiltaksaktivitetResponsDTO.DeltakelsesPeriodeDTO(fom, tom),
-        deltakelseProsent = 100F,
-        deltakerStatusType = status,
-        statusSistEndret = LocalDate.now(),
-        begrunnelseInnsoeking = "begrunnelse",
-        antallDagerPerUke = 2F,
-    )
-}
+) = TiltakshistorikkV1Dto.TeamTiltakAvtale(
+    startDato = fom,
+    sluttDato = tom,
+    id = UUID.randomUUID(),
+    tittel = "Tiltak hos arbeidsgiver",
+    tiltakstype = tiltakstype,
+    status = status,
+    stillingsprosent = 100.0f,
+    dagerPerUke = 5.0f,
+    arbeidsgiver = TiltakshistorikkV1Dto.Virksomhet(
+        navn = "Arbeidsgiver",
+    ),
+)

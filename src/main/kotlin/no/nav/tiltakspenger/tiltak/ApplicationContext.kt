@@ -25,7 +25,6 @@ class ApplicationContext {
 
     val tiltakshistorikkService: TiltakshistorikkService = TiltakshistorikkService(
         tiltakshistorikkClient = tiltakshistorikkClient,
-        arenaClient = arenaClient,
     )
     val kometTestdataClient = KometTestdataClient(
         kometTestdataEndpoint = Configuration.kometTestdataUrl,

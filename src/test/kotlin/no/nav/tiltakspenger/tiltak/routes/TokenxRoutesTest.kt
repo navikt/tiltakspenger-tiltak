@@ -65,7 +65,7 @@ class TokenxRoutesTest {
                 "pid" to fnr,
             ),
         )
-        coEvery { mockTiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr, any()) } returns emptyList()
+        coEvery { mockTiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr) } returns emptyList()
         runTest {
             testApplication {
                 application {

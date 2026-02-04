@@ -132,6 +132,8 @@ sealed class TiltakshistorikkV1Dto {
         override val tittel: String,
         val tiltakstype: Tiltakstype,
         val status: ArbeidsgiverAvtaleStatusDto,
+        val stillingsprosent: Float?,
+        val dagerPerUke: Float?,
         val arbeidsgiver: Virksomhet,
     ) : TiltakshistorikkV1Dto() {
         override val opphav = Opphav.TEAM_TILTAK

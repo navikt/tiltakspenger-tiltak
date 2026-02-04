@@ -1,7 +1,5 @@
 package no.nav.tiltakspenger.tiltak.services
 
-import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO
-import no.nav.tiltakspenger.libs.arena.tiltak.toDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
 import no.nav.tiltakspenger.libs.tiltak.TiltakshistorikkDTO
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
@@ -48,22 +46,33 @@ fun TiltakshistorikkV1Dto.ArenaDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO
     )
 }
 
-// Vi får ikke gjennomføringId eller deltidsprosent fra Arena
-// confluenceside for endepunktet vi kaller for å hente Arenatiltak: https://confluence.adeo.no/pages/viewpage.action?pageId=470748287
-fun TiltaksaktivitetDTO.toTiltakshistorikkTilSaksbehandlingDTO(): TiltakshistorikkDTO = TiltakshistorikkDTO(
-    id = aktivitetId,
-    gjennomforing = TiltakshistorikkDTO.GjennomforingDTO(
-        id = "",
-        visningsnavn = arrangoer?.let { "${tiltakType.navn} hos $it" } ?: "Ukjent",
-        arrangornavn = arrangoer ?: "Ukjent",
-        typeNavn = tiltakType.navn,
-        arenaKode = TiltakType.valueOf(tiltakType.name),
-        deltidsprosent = null,
-    ),
-    deltakelseFom = deltakelsePeriode?.fom,
-    deltakelseTom = deltakelsePeriode?.tom,
-    deltakelseStatus = deltakerStatusType.toDTO(deltakelsePeriode?.fom),
-    antallDagerPerUke = antallDagerPerUke,
-    deltakelseProsent = deltakelseProsent,
-    kilde = TiltakshistorikkDTO.Kilde.ARENA,
-)
+fun TiltakshistorikkV1Dto.TeamTiltakAvtale.toTiltakshistorikkTilSaksbehandlingDTO(): TiltakshistorikkDTO {
+    return TiltakshistorikkDTO(
+        id = id.toString(),
+        gjennomforing = TiltakshistorikkDTO.GjennomforingDTO(
+            id = "",
+            visningsnavn = tittel,
+            arrangornavn = arbeidsgiver.navn,
+            typeNavn = tiltakstype.navn,
+            arenaKode = tiltakstype.tiltakskode.toArenaKode(),
+            deltidsprosent = null,
+        ),
+        deltakelseFom = startDato,
+        deltakelseTom = sluttDato,
+        deltakelseStatus = status.toDeltakerStatusDTO(),
+        antallDagerPerUke = dagerPerUke,
+        deltakelseProsent = stillingsprosent,
+        kilde = TiltakshistorikkDTO.Kilde.TEAM_TILTAK,
+    )
+}
+
+fun TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.toArenaKode(): TiltakType =
+    when (this) {
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.ARBEIDSTRENING -> TiltakType.ARBTREN
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.MIDLERTIDIG_LONNSTILSKUDD -> TiltakType.MIDLONTIL
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.VARIG_LONNSTILSKUDD -> TiltakType.VARLONTIL
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.MENTOR -> TiltakType.MENTOR
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.INKLUDERINGSTILSKUDD -> TiltakType.INKLUTILS
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.SOMMERJOBB -> TiltakType.TILSJOBB
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.VTAO -> TiltakType.VATIAROR
+    }

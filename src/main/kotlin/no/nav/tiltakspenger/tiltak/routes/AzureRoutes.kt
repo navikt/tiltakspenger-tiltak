@@ -17,9 +17,7 @@ fun Route.azureRoutes(
 
     post("/azure/tiltakshistorikk") {
         val ident = call.receive<RequestBody>().ident
-        val correlationId = call.request.headers["Nav-Call-Id"]
-
-        val response = tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(ident, correlationId)
+        val response = tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(ident)
         Sikkerlogg.info { response }
         call.respond(message = response, status = HttpStatusCode.OK)
     }
