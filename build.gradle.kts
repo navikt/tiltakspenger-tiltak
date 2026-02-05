@@ -36,7 +36,6 @@ dependencies {
 
     implementation("com.natpryce:konfig:1.6.10.0")
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:logging:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:texas:$felleslibVersion")

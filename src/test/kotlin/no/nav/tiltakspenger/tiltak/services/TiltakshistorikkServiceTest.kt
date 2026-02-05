@@ -6,7 +6,6 @@ import io.kotest.matchers.shouldBe
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO.TiltakType.KURS
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.DELTAR
@@ -105,8 +104,8 @@ class TiltakshistorikkServiceTest {
             ),
             tiltakshistorikkArenaTiltak(
                 tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
-                    tiltakskode = KURS.name,
-                    navn = KURS.navn,
+                    tiltakskode = TiltakResponsDTO.TiltakType.KURS.name,
+                    navn = TiltakResponsDTO.TiltakType.KURS.navn,
                 ),
                 status = ArenaDeltakerStatusDto.DELTAKELSE_AVBRUTT,
             ),

@@ -48,13 +48,7 @@ spec:
           namespace: team-mulighetsrommet
         - application: logging
           namespace: nais-system
-      external:
-        - host: tiltakspenger-arena.prod-fss-pub.nais.io
   env:
-    - name: ARENA_URL
-      value: https://tiltakspenger-arena.prod-fss-pub.nais.io
-    - name: ARENA_SCOPE
-      value: api://prod-fss.tpts.tiltakspenger-arena/.default
     - name: TILTAKSHISTORIKK_SCOPE
       value: api://prod-gcp.team-mulighetsrommet.tiltakshistorikk/.default
   observability:
