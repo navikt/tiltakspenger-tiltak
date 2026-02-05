@@ -7,9 +7,6 @@ import com.natpryce.konfig.Key
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 
-private const val APPLICATION_NAME = "tiltakspenger-tiltak"
-const val KAFKA_CONSUMER_GROUP_ID = "$APPLICATION_NAME-consumer"
-
 enum class Profile {
     LOCAL,
     DEV,
@@ -24,8 +21,6 @@ object Configuration {
             "NAIS_TOKEN_ENDPOINT" to System.getenv("NAIS_TOKEN_ENDPOINT"),
             "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT"),
             "NAIS_TOKEN_EXCHANGE_ENDPOINT" to System.getenv("NAIS_TOKEN_EXCHANGE_ENDPOINT"),
-            "ARENA_URL" to System.getenv("ARENA_URL"),
-            "ARENA_SCOPE" to System.getenv("ARENA_SCOPE"),
             "TILTAKSHISTORIKK_URL" to "http://tiltakshistorikk.team-mulighetsrommet",
             "TILTAKSHISTORIKK_SCOPE" to System.getenv("TILTAKSHISTORIKK_SCOPE"),
         ),
@@ -35,8 +30,6 @@ object Configuration {
         mapOf(
             "application.profile" to Profile.LOCAL.toString(),
             "logback.configurationFile" to "logback.local.xml",
-            "ARENA_URL" to "http://localhost",
-            "ARENA_SCOPE" to "api://localhost/.default",
             "KOMET_TESTDATA_URL" to "http://localhost",
             "KOMET_TESTDATA_SCOPE" to "api://localhost/.default",
             "NAIS_TOKEN_ENDPOINT" to "http://localhost",
@@ -92,8 +85,6 @@ object Configuration {
     val naisTokenEndpoint: String = config()[Key("NAIS_TOKEN_ENDPOINT", stringType)]
     val tokenExchangeEndpoint: String = config()[Key("NAIS_TOKEN_EXCHANGE_ENDPOINT", stringType)]
 
-    val arenaUrl: String = config()[Key("ARENA_URL", stringType)]
-    val arenaScope: String = config()[Key("ARENA_SCOPE", stringType)]
     val kometTestdataUrl = config()[Key("KOMET_TESTDATA_URL", stringType)]
     val kometTestdataScope: String = config()[Key("KOMET_TESTDATA_SCOPE", stringType)]
 
