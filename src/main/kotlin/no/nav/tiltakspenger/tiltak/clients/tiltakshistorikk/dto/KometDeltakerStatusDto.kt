@@ -32,13 +32,21 @@ data class KometDeltakerStatusDto(
         -> DeltakerStatusDTO.IKKE_AKTUELL
 
         DeltakerStatusType.VENTER_PA_OPPSTART -> DeltakerStatusDTO.VENTER_PA_OPPSTART
+
         DeltakerStatusType.DELTAR -> DeltakerStatusDTO.DELTAR
+
         DeltakerStatusType.HAR_SLUTTET -> DeltakerStatusDTO.HAR_SLUTTET
+
         DeltakerStatusType.FEILREGISTRERT -> DeltakerStatusDTO.FEILREGISTRERT
+
         DeltakerStatusType.SOKT_INN -> DeltakerStatusDTO.SOKT_INN
+
         DeltakerStatusType.VURDERES -> DeltakerStatusDTO.VURDERES
+
         DeltakerStatusType.VENTELISTE -> DeltakerStatusDTO.VENTELISTE
+
         DeltakerStatusType.AVBRUTT -> DeltakerStatusDTO.AVBRUTT
+
         DeltakerStatusType.FULLFORT -> DeltakerStatusDTO.FULLFORT
 
         DeltakerStatusType.KLADD -> throw IllegalArgumentException("Kan ikke mappe kladd til intern status")
