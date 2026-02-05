@@ -52,6 +52,7 @@ class TiltakshistorikkClient(
 
         return when (httpResponse.status) {
             HttpStatusCode.OK -> httpResponse.call.response.body<TiltakshistorikkV1Response>().historikk
+
             else -> {
                 val feilmelding = httpResponse.bodyAsText()
                 log.error { "Mottok feilkode ved henting av tiltak fra tiltakshistorikk: ${httpResponse.status.value}, melding: $feilmelding" }

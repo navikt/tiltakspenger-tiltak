@@ -62,7 +62,9 @@ class ArenaClient(
 
         return when (httpResponse.status) {
             HttpStatusCode.OK -> httpResponse.call.response.body()
+
             HttpStatusCode.NotFound -> null
+
             else -> {
                 log.error { "Mottok feilkode ved henting av tiltak fra Tiltakspenger-Arena: ${httpResponse.status.value}" }
                 throw RuntimeException("error (responseCode=${httpResponse.status.value}) fra Tiltakspenger-Arena")
