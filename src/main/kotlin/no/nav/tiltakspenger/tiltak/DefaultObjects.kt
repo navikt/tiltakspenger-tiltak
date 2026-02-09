@@ -1,11 +1,5 @@
 package no.nav.tiltakspenger.tiltak
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -19,8 +13,10 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
-import io.ktor.serialization.jackson.JacksonConverter
+import io.ktor.serialization.jackson3.JacksonConverter
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.logging.Sikkerlogg
+import tools.jackson.databind.json.JsonMapper
 import java.time.Duration
 
 private val LOG = KotlinLogging.logger {}
@@ -29,29 +25,29 @@ private const val SIXTY_SECONDS = 60L
 // engine skal brukes primært i test-øyemed, når man sender med MockEngine.
 // Forøvrig kan man la den være null.
 fun defaultHttpClient(
-    objectMapper: ObjectMapper = defaultObjectMapper(),
+    jsonMapper: JsonMapper = objectMapper,
     engine: HttpClientEngine? = null,
     configBlock: HttpClientConfig<*>.() -> Unit = {},
     engineConfigBlock: CIOEngineConfig.() -> Unit = {},
 ) = engine?.let {
     HttpClient(engine) {
-        apply(defaultSetup(objectMapper))
+        apply(defaultSetup(jsonMapper))
         apply(configBlock)
     }
 } ?: HttpClient(CIO) {
-    apply(defaultSetup(objectMapper))
+    apply(defaultSetup(jsonMapper))
     apply(configBlock)
     engine(engineConfigBlock)
 }
 
 fun httpClientWithRetry(
-    objectMapper: ObjectMapper,
+    jsonMapper: JsonMapper,
     engine: HttpClientEngine? = null,
     configBlock: HttpClientConfig<*>.() -> Unit = {},
     engineConfigBlock: CIOEngineConfig.() -> Unit = {},
 ) =
     defaultHttpClient(
-        objectMapper = objectMapper,
+        jsonMapper = jsonMapper,
         engine = engine,
         configBlock = configBlock,
         engineConfigBlock = engineConfigBlock,
@@ -75,9 +71,9 @@ fun httpClientWithRetry(
             }
         }
 
-private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> Unit = {
+private fun defaultSetup(jsonMapper: JsonMapper): HttpClientConfig<*>.() -> Unit = {
     install(ContentNegotiation) {
-        register(ContentType.Application.Json, JacksonConverter(objectMapper))
+        register(ContentType.Application.Json, JacksonConverter(jsonMapper))
     }
     install(HttpTimeout) {
         connectTimeoutMillis = Duration.ofSeconds(SIXTY_SECONDS).toMillis()
@@ -96,10 +92,3 @@ private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> 
     }
     this.expectSuccess = false
 }
-
-fun defaultObjectMapper(): ObjectMapper = JsonMapper.builder()
-    .addModule(KotlinModule.Builder().build())
-    .addModule(JavaTimeModule())
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-    .build()

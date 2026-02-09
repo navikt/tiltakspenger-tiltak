@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.tiltak.services
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import io.mockk.clearMocks
@@ -20,6 +19,7 @@ import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.Tiltakshistorikk
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakskodeDto
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import tools.jackson.module.kotlin.readValue
 import java.time.LocalDate
 import java.util.UUID
 

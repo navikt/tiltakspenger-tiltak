@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -18,8 +17,8 @@ import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.NorskIdent
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Request
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Response
-import no.nav.tiltakspenger.tiltak.defaultObjectMapper
 import no.nav.tiltakspenger.tiltak.httpClientWithRetry
+import tools.jackson.databind.json.JsonMapper
 
 /**
  * https://github.com/navikt/mulighetsrommet/tree/main/mulighetsrommet-tiltakshistorikk
@@ -27,11 +26,11 @@ import no.nav.tiltakspenger.tiltak.httpClientWithRetry
  */
 class TiltakshistorikkClient(
     private val baseUrl: String,
-    private val objectMapper: ObjectMapper = defaultObjectMapper(),
+    private val objectMapper: JsonMapper = no.nav.tiltakspenger.libs.json.objectMapper,
     private val getToken: suspend () -> AccessToken,
     engine: HttpClientEngine? = null,
     private val httpClient: HttpClient = httpClientWithRetry(
-        objectMapper = objectMapper,
+        jsonMapper = objectMapper,
         engine = engine,
     ),
 ) {
