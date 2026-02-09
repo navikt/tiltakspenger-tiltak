@@ -1,9 +1,6 @@
 package no.nav.tiltakspenger.tiltak
 
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import io.ktor.serialization.jackson.jackson
+import io.ktor.serialization.jackson3.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.authenticate
@@ -25,6 +22,7 @@ import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
 import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
 import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
 import no.nav.tiltakspenger.tiltak.testdata.testdataRoutes
+import tools.jackson.module.kotlin.kotlinModule
 import java.util.UUID
 
 fun Application.ktorSetup(
@@ -88,9 +86,7 @@ fun Application.installAuthentication(texasClient: TexasClient) {
 fun Application.jacksonSerialization() {
     install(ContentNegotiation) {
         jackson {
-            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            registerModule(JavaTimeModule())
-            registerModule(KotlinModule.Builder().build())
+            addModule(kotlinModule())
         }
     }
 }

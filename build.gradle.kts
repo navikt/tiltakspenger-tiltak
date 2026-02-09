@@ -6,10 +6,10 @@ val jvmVersion = JvmTarget.JVM_21
 
 val mockkVersion = "1.14.9"
 val ktorVersion = "3.4.0"
-val jacksonVersion = "2.21.0"
+val jacksonVersion = "3.0.4"
 val jacksonAnnotationsVersion = "2.21"
 val kotestVersion = "6.1.2"
-val felleslibVersion = "0.0.673"
+val felleslibVersion = "0.0.682"
 
 plugins {
     application
@@ -42,7 +42,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:json:$felleslibVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson3:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-call-id:$ktorVersion")
     implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
@@ -59,11 +59,9 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
     implementation("io.ktor:ktor-serialization:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonAnnotationsVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     testImplementation(platform("org.junit:junit-bom:6.0.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
