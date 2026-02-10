@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.tiltak
 
-import io.ktor.serialization.jackson3.jackson
+import io.ktor.http.ContentType
+import io.ktor.serialization.jackson3.JacksonConverter
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.authenticate
@@ -12,6 +13,7 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.path
 import io.ktor.server.routing.routing
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.TexasAuthenticationProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
@@ -22,7 +24,6 @@ import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
 import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
 import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
 import no.nav.tiltakspenger.tiltak.testdata.testdataRoutes
-import tools.jackson.module.kotlin.kotlinModule
 import java.util.UUID
 
 fun Application.ktorSetup(
@@ -85,9 +86,7 @@ fun Application.installAuthentication(texasClient: TexasClient) {
 
 fun Application.jacksonSerialization() {
     install(ContentNegotiation) {
-        jackson {
-            addModule(kotlinModule())
-        }
+        register(ContentType.Application.Json, JacksonConverter(objectMapper))
     }
 }
 
