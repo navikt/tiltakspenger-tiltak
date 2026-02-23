@@ -64,7 +64,7 @@ fun httpClientWithRetry(
                     }
                 }
                 retryOnExceptionIf { request, throwable ->
-                    LOG.warn { "Kastet exception ved http-kall: ${throwable.message}" }
+                    LOG.error(throwable) { "Kastet exception ved http-kall: ${throwable.message}" }
                     true
                 }
                 constantDelay(100, 0, false)
