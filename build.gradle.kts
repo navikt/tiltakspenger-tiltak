@@ -9,7 +9,7 @@ val ktorVersion = "3.4.0"
 val jacksonVersion = "3.0.4"
 val jacksonAnnotationsVersion = "2.21"
 val kotestVersion = "6.1.3"
-val felleslibVersion = "0.0.693"
+val felleslibVersion = "0.0.697"
 
 plugins {
     application
@@ -31,7 +31,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("ch.qos.logback:logback-classic:1.5.32")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.14")
+    implementation("io.github.oshai:kotlin-logging-jvm:8.0.01")
     implementation("org.jetbrains:annotations:26.0.2-1")
 
     implementation("com.natpryce:konfig:1.6.10.0")
