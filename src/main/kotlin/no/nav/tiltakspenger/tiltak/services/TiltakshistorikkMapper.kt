@@ -75,4 +75,5 @@ fun TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.toArenaKode(): TiltakType
         TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.INKLUDERINGSTILSKUDD -> TiltakType.INKLUTILS
         TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.SOMMERJOBB -> TiltakType.TILSJOBB
         TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.VTAO -> TiltakType.VATIAROR
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.FIREARIG_LONNSTILSKUDD -> TiltakType.FIREARIG_LONNSTILSKUDD
     }
