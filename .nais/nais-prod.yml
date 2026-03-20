@@ -48,9 +48,15 @@ spec:
           namespace: team-mulighetsrommet
         - application: logging
           namespace: nais-system
+      external:
+        - host: pdl-api.prod-fss-pub.nais.io
   env:
     - name: TILTAKSHISTORIKK_SCOPE
       value: api://prod-gcp.team-mulighetsrommet.tiltakshistorikk/.default
+    - name: PDL_URL
+      value: https://pdl-api.prod-fss-pub.nais.io
+    - name: PDL_SCOPE
+      value: api://prod-fss.pdl.pdl-api/.default
   observability:
     autoInstrumentation:
       enabled: true
