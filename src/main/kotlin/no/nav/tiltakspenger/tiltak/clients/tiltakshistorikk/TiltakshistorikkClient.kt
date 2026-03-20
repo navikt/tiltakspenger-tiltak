@@ -36,7 +36,7 @@ class TiltakshistorikkClient(
 ) {
     private val log = KotlinLogging.logger {}
 
-    suspend fun hentTiltaksdeltakelser(fnr: String): List<TiltakshistorikkV1Dto> {
+    suspend fun hentTiltaksdeltakelser(fnr: List<String>): List<TiltakshistorikkV1Dto> {
         val httpResponse =
             httpClient.post("$baseUrl/api/v1/historikk") {
                 bearerAuth(getToken().token)
@@ -44,7 +44,7 @@ class TiltakshistorikkClient(
                 contentType(ContentType.Application.Json)
                 setBody(
                     TiltakshistorikkV1Request(
-                        identer = listOf(NorskIdent(fnr)),
+                        identer = fnr.map { NorskIdent(it) },
                     ),
                 )
             }

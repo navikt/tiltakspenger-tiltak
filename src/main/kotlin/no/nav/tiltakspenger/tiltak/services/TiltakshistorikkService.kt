@@ -21,8 +21,9 @@ class TiltakshistorikkService(
     }
 
     private fun hentTiltakshistorikk(fnr: String): List<TiltakshistorikkDTO> {
+        val nåværendePlussHistoriskeFnr = listOf(fnr)
         val tiltakdeltakelser = runBlocking {
-            tiltakshistorikkClient.hentTiltaksdeltakelser(fnr)
+            tiltakshistorikkClient.hentTiltaksdeltakelser(nåværendePlussHistoriskeFnr)
                 .filterNot { it is TiltakshistorikkV1Dto.TeamKometDeltakelse && it.status.type == KometDeltakerStatusDto.DeltakerStatusType.KLADD }
                 .map { deltakelse ->
                     Sikkerlogg.info { "Deltakelser fra tiltakshistorikk: $deltakelse" }
