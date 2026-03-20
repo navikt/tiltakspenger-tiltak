@@ -5,6 +5,8 @@ import io.kotest.matchers.shouldBe
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
+import no.nav.tiltakspenger.journalposthendelser.journalpost.http.pdl.PdlClient
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.DELTAR
@@ -25,7 +27,10 @@ import java.util.UUID
 
 class TiltakshistorikkServiceTest {
     private val tiltakshistorikkClient = mockk<TiltakshistorikkClient>()
-    private val tiltakshistorikkService = TiltakshistorikkService(tiltakshistorikkClient)
+    private val pdlClient = mockk<PdlClient> {
+        coEvery { hentNåværendeOgHistoriskeFødselsnummer(any()) } answers { listOf(firstArg()) }
+    }
+    private val tiltakshistorikkService = TiltakshistorikkService(tiltakshistorikkClient, pdlClient)
 
     private val fnr = "12345678910"
 
@@ -36,506 +41,547 @@ class TiltakshistorikkServiceTest {
 
     @Test
     fun `tiltakshistorikk inneholder deltakelser fra alle systemer - mappes korrekt`() {
-        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns getRespons().historikk
+        runTest {
+            coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns getRespons().historikk
 
-        val tiltakshistorikk = tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr)
+            val tiltakshistorikk = tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr)
 
-        tiltakshistorikk.size shouldBe 3
-        val tiltakFraKomet = tiltakshistorikk.find { it.kilde == TiltakshistorikkDTO.Kilde.KOMET } ?: throw RuntimeException("Fant ikke komet-tiltak")
-        tiltakFraKomet.id shouldBe "6d54228f-534f-4b4b-9160-65eae26a3b06"
-        tiltakFraKomet.gjennomforing shouldBe TiltakshistorikkDTO.GjennomforingDTO(
-            id = "9caf398e-8e38-41fc-af29-b7ee6f62205a",
-            visningsnavn = "Arbeidsforberedende trening hos Arrangør",
-            arrangornavn = "Arrangør",
-            typeNavn = "Arbeidsforberedende trening",
-            arenaKode = TiltakResponsDTO.TiltakType.ARBFORB,
-            deltidsprosent = 100.0,
-        )
-        tiltakFraKomet.deltakelseFom shouldBe LocalDate.of(2024, 4, 4)
-        tiltakFraKomet.deltakelseTom shouldBe LocalDate.of(2024, 4, 5)
-        tiltakFraKomet.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.HAR_SLUTTET
-        tiltakFraKomet.antallDagerPerUke shouldBe 3.0F
-        tiltakFraKomet.deltakelseProsent shouldBe 60.0F
+            tiltakshistorikk.size shouldBe 3
+            val tiltakFraKomet = tiltakshistorikk.find { it.kilde == TiltakshistorikkDTO.Kilde.KOMET }
+                ?: throw RuntimeException("Fant ikke komet-tiltak")
+            tiltakFraKomet.id shouldBe "6d54228f-534f-4b4b-9160-65eae26a3b06"
+            tiltakFraKomet.gjennomforing shouldBe TiltakshistorikkDTO.GjennomforingDTO(
+                id = "9caf398e-8e38-41fc-af29-b7ee6f62205a",
+                visningsnavn = "Arbeidsforberedende trening hos Arrangør",
+                arrangornavn = "Arrangør",
+                typeNavn = "Arbeidsforberedende trening",
+                arenaKode = TiltakResponsDTO.TiltakType.ARBFORB,
+                deltidsprosent = 100.0,
+            )
+            tiltakFraKomet.deltakelseFom shouldBe LocalDate.of(2024, 4, 4)
+            tiltakFraKomet.deltakelseTom shouldBe LocalDate.of(2024, 4, 5)
+            tiltakFraKomet.deltakelseStatus shouldBe TiltakResponsDTO.DeltakerStatusDTO.HAR_SLUTTET
+            tiltakFraKomet.antallDagerPerUke shouldBe 3.0F
+            tiltakFraKomet.deltakelseProsent shouldBe 60.0F
 
-        val tiltakFraArena = tiltakshistorikk.find { it.kilde == TiltakshistorikkDTO.Kilde.ARENA } ?: throw RuntimeException("Fant ikke arena-tiltak")
-        tiltakFraArena.id shouldBe "TA1234567"
-        tiltakFraArena.gjennomforing shouldBe TiltakshistorikkDTO.GjennomforingDTO(
-            id = "",
-            visningsnavn = "Arbeidsmarkedsopplæring (enkeltplass) hos Arrangør",
-            arrangornavn = "Arrangør",
-            typeNavn = "Arbeidsmarkedsopplæring (enkeltplass)",
-            arenaKode = TiltakResponsDTO.TiltakType.ENKELAMO,
-            deltidsprosent = null,
-        )
-        tiltakFraArena.deltakelseFom shouldBe LocalDate.of(2024, 7, 3)
-        tiltakFraArena.deltakelseTom shouldBe LocalDate.of(2024, 10, 31)
-        tiltakFraArena.deltakelseStatus shouldBe DELTAR
-        tiltakFraArena.antallDagerPerUke shouldBe 5.0F
-        tiltakFraArena.deltakelseProsent shouldBe 100.0F
+            val tiltakFraArena = tiltakshistorikk.find { it.kilde == TiltakshistorikkDTO.Kilde.ARENA }
+                ?: throw RuntimeException("Fant ikke arena-tiltak")
+            tiltakFraArena.id shouldBe "TA1234567"
+            tiltakFraArena.gjennomforing shouldBe TiltakshistorikkDTO.GjennomforingDTO(
+                id = "",
+                visningsnavn = "Arbeidsmarkedsopplæring (enkeltplass) hos Arrangør",
+                arrangornavn = "Arrangør",
+                typeNavn = "Arbeidsmarkedsopplæring (enkeltplass)",
+                arenaKode = TiltakResponsDTO.TiltakType.ENKELAMO,
+                deltidsprosent = null,
+            )
+            tiltakFraArena.deltakelseFom shouldBe LocalDate.of(2024, 7, 3)
+            tiltakFraArena.deltakelseTom shouldBe LocalDate.of(2024, 10, 31)
+            tiltakFraArena.deltakelseStatus shouldBe DELTAR
+            tiltakFraArena.antallDagerPerUke shouldBe 5.0F
+            tiltakFraArena.deltakelseProsent shouldBe 100.0F
 
-        val tiltakFraTeamTiltak = tiltakshistorikk.find { it.kilde == TiltakshistorikkDTO.Kilde.TEAM_TILTAK } ?: throw RuntimeException("Fant ikke team tiltak-tiltak")
-        tiltakFraTeamTiltak.id shouldBe "9dea48c1-d494-4664-9427-bdb20a6f265f"
-        tiltakFraTeamTiltak.gjennomforing shouldBe TiltakshistorikkDTO.GjennomforingDTO(
-            id = "",
-            visningsnavn = "Arbeidstrening hos Arbeidsgiver",
-            arrangornavn = "Arbeidsgiver",
-            typeNavn = "Arbeidstrening",
-            arenaKode = TiltakResponsDTO.TiltakType.ARBTREN,
-            deltidsprosent = null,
-        )
-        tiltakFraTeamTiltak.deltakelseFom shouldBe LocalDate.of(2024, 1, 1)
-        tiltakFraTeamTiltak.deltakelseTom shouldBe LocalDate.of(2024, 12, 31)
-        tiltakFraTeamTiltak.deltakelseStatus shouldBe DELTAR
-        tiltakFraTeamTiltak.antallDagerPerUke shouldBe 5.0f
-        tiltakFraTeamTiltak.deltakelseProsent shouldBe 100.0f
+            val tiltakFraTeamTiltak = tiltakshistorikk.find { it.kilde == TiltakshistorikkDTO.Kilde.TEAM_TILTAK }
+                ?: throw RuntimeException("Fant ikke team tiltak-tiltak")
+            tiltakFraTeamTiltak.id shouldBe "9dea48c1-d494-4664-9427-bdb20a6f265f"
+            tiltakFraTeamTiltak.gjennomforing shouldBe TiltakshistorikkDTO.GjennomforingDTO(
+                id = "",
+                visningsnavn = "Arbeidstrening hos Arbeidsgiver",
+                arrangornavn = "Arbeidsgiver",
+                typeNavn = "Arbeidstrening",
+                arenaKode = TiltakResponsDTO.TiltakType.ARBTREN,
+                deltidsprosent = null,
+            )
+            tiltakFraTeamTiltak.deltakelseFom shouldBe LocalDate.of(2024, 1, 1)
+            tiltakFraTeamTiltak.deltakelseTom shouldBe LocalDate.of(2024, 12, 31)
+            tiltakFraTeamTiltak.deltakelseStatus shouldBe DELTAR
+            tiltakFraTeamTiltak.antallDagerPerUke shouldBe 5.0f
+            tiltakFraTeamTiltak.deltakelseProsent shouldBe 100.0f
+        }
     }
 
     @Test
     fun `hentTiltakshistorikkForSoknad - tiltak som ikke gir rett er ikke med i søknaden selv om de har riktig status`() {
-        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
-            tiltakshistorikkKometTiltak(
-                tiltak = TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype(
-                    tiltakskode = TiltakskodeDto.VARIG_TILRETTELAGT_ARBEID_SKJERMET,
-                    navn = "Varig tilrettelagt arbeid",
+        runTest {
+            coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
+                tiltakshistorikkKometTiltak(
+                    tiltak = TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype(
+                        tiltakskode = TiltakskodeDto.VARIG_TILRETTELAGT_ARBEID_SKJERMET,
+                        navn = "Varig tilrettelagt arbeid",
+                    ),
+                    status = KometDeltakerStatusDto(
+                        type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT,
+                    ),
                 ),
-                status = KometDeltakerStatusDto(
-                    type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT,
+                tiltakshistorikkArenaTiltak(
+                    tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
+                        tiltakskode = TiltakResponsDTO.TiltakType.KURS.name,
+                        navn = TiltakResponsDTO.TiltakType.KURS.navn,
+                    ),
+                    status = ArenaDeltakerStatusDto.DELTAKELSE_AVBRUTT,
                 ),
-            ),
-            tiltakshistorikkArenaTiltak(
-                tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
-                    tiltakskode = TiltakResponsDTO.TiltakType.KURS.name,
-                    navn = TiltakResponsDTO.TiltakType.KURS.navn,
+                tiltakshistorikkTeamTiltakTiltak(
+                    tiltakstype = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakstype(
+                        tiltakskode = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.INKLUDERINGSTILSKUDD,
+                        navn = "Inkluderingstilskudd",
+                    ),
+                    status = ArbeidsgiverAvtaleStatusDto.AVSLUTTET,
                 ),
-                status = ArenaDeltakerStatusDto.DELTAKELSE_AVBRUTT,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                tiltakstype = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakstype(
-                    tiltakskode = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.INKLUDERINGSTILSKUDD,
-                    navn = "Inkluderingstilskudd",
-                ),
-                status = ArbeidsgiverAvtaleStatusDto.AVSLUTTET,
-            ),
-        )
+            )
 
-        val tiltaksdeltakelser = tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr)
+            val tiltaksdeltakelser = tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr)
 
-        tiltaksdeltakelser.size shouldBe 0
+            tiltaksdeltakelser.size shouldBe 0
+        }
     }
 
     @Test
     fun `hentTiltakshistorikkForSoknad - statuser fra komet, arena og team tiltak som ikke gir rett til å søke er ikke med i listen`() {
-        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
-            // Disse skal være med...
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.FULLFORT),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VENTER_PA_OPPSTART),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.HAR_SLUTTET),
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.KLAR_FOR_OPPSTART,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.GJENNOMFORES,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.AVSLUTTET,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.AVBRUTT,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.DELTAKELSE_AVBRUTT,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.FULLFORT,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.GJENNOMFORES,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.GJENNOMFORING_AVBRUTT,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.IKKE_MOTT,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.TAKKET_JA_TIL_TILBUD,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.TILBUD,
-            ),
-            // Disse skal ikke være med
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.IKKE_AKTUELL),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VURDERES),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.FEILREGISTRERT),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.PABEGYNT_REGISTRERING),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.SOKT_INN),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VENTELISTE),
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.PAABEGYNT,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.MANGLER_GODKJENNING,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.ANNULLERT,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.AKTUELL,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.AVSLAG,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.GJENNOMFORING_AVLYST,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.IKKE_AKTUELL,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.INFORMASJONSMOTE,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.TAKKET_NEI_TIL_TILBUD,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.VENTELISTE,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.FEILREGISTRERT,
-            ),
-        )
+        runTest {
+            coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
+                // Disse skal være med...
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.FULLFORT),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VENTER_PA_OPPSTART),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.HAR_SLUTTET),
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.KLAR_FOR_OPPSTART,
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.GJENNOMFORES,
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.AVSLUTTET,
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.AVBRUTT,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.DELTAKELSE_AVBRUTT,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.FULLFORT,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.GJENNOMFORES,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.GJENNOMFORING_AVBRUTT,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.IKKE_MOTT,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.TAKKET_JA_TIL_TILBUD,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.TILBUD,
+                ),
+                // Disse skal ikke være med
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.IKKE_AKTUELL),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VURDERES),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.FEILREGISTRERT),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.PABEGYNT_REGISTRERING),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.SOKT_INN),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VENTELISTE),
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.PAABEGYNT,
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.MANGLER_GODKJENNING,
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.ANNULLERT,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.AKTUELL,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.AVSLAG,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.GJENNOMFORING_AVLYST,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.IKKE_AKTUELL,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.INFORMASJONSMOTE,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.TAKKET_NEI_TIL_TILBUD,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.VENTELISTE,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.FEILREGISTRERT,
+                ),
+            )
 
-        val tiltak = tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr)
+            val tiltak = tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr)
 
-        tiltak.size shouldBe 16
-        tiltak.map {
-            println(it.deltakelseStatus)
-            it.deltakelseStatus
-        } shouldNotContain listOf(
-            TiltakResponsDTO.DeltakerStatusDTO.IKKE_AKTUELL,
-            TiltakResponsDTO.DeltakerStatusDTO.FEILREGISTRERT,
-            TiltakResponsDTO.DeltakerStatusDTO.PABEGYNT_REGISTRERING,
-            TiltakResponsDTO.DeltakerStatusDTO.SOKT_INN,
-            TiltakResponsDTO.DeltakerStatusDTO.VENTELISTE,
-            TiltakResponsDTO.DeltakerStatusDTO.VURDERES,
-        )
+            tiltak.size shouldBe 16
+            tiltak.map {
+                it.deltakelseStatus
+            } shouldNotContain listOf(
+                TiltakResponsDTO.DeltakerStatusDTO.IKKE_AKTUELL,
+                TiltakResponsDTO.DeltakerStatusDTO.FEILREGISTRERT,
+                TiltakResponsDTO.DeltakerStatusDTO.PABEGYNT_REGISTRERING,
+                TiltakResponsDTO.DeltakerStatusDTO.SOKT_INN,
+                TiltakResponsDTO.DeltakerStatusDTO.VENTELISTE,
+                TiltakResponsDTO.DeltakerStatusDTO.VURDERES,
+            )
+        }
     }
 
     @Test
     fun `tiltak fra arena med status GJENNOMFORES gir DELTAR hvis startdato har passert, ellers VENTER_PÅ_OPPSTART`() {
-        val arenaTiltak1 = tiltakshistorikkArenaTiltak(
-            tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
-                tiltakskode = "FORSAMOGRU",
-                navn = "Forsøk AMO gruppe",
-            ),
-            status = ArenaDeltakerStatusDto.GJENNOMFORES,
-            LocalDate.now().plusDays(10),
-            LocalDate.now().plusDays(20),
-        )
-        val arenaTiltak2 = tiltakshistorikkArenaTiltak(
-            tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
-                tiltakskode = "ETAB",
-                navn = "Egenetablering",
-            ),
-            status = ArenaDeltakerStatusDto.GJENNOMFORES,
-            LocalDate.now().minusDays(20),
-            LocalDate.now().minusDays(10),
-        )
-        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(arenaTiltak1, arenaTiltak2)
-
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also { actual ->
-            actual.size shouldBe 2
-            actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
-            actual[1].deltakelseStatus shouldBe DELTAR
-        }
-
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also { actual ->
-            // filtrerer bort ETAB som ikke gir rett
-            actual.size shouldBe 1
-            actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
-        }
-    }
-
-    @Test
-    fun `tiltak fra komet, arena og team tiltak som gir rett på tiltakspenger returnerer true`() {
-        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
-            tiltakshistorikkKometTiltak(
-                tiltak = TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype(
-                    tiltakskode = TiltakskodeDto.ARBEIDSFORBEREDENDE_TRENING,
-                    navn = "Arbeidsforberedende trening",
+        runTest {
+            val arenaTiltak1 = tiltakshistorikkArenaTiltak(
+                tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
+                    tiltakskode = "FORSAMOGRU",
+                    navn = "Forsøk AMO gruppe",
                 ),
-                status = KometDeltakerStatusDto(
-                    type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR,
-                ),
-            ),
-            tiltakshistorikkArenaTiltak(
                 status = ArenaDeltakerStatusDto.GJENNOMFORES,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.GJENNOMFORES,
-            ),
-        )
-
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
-            it.size shouldBe 3
-            it[0].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
-            it[1].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
-            it[2].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
-        }
-
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
-            it.size shouldBe 3
-            it[0].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
-            it[1].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
-            it[2].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
-        }
-    }
-
-    @Test
-    fun `tiltak fra komet og arena som ikke gir rett på tiltakspenger returnerer false`() {
-        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
-            tiltakshistorikkKometTiltak(
-                tiltak = TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype(
-                    tiltakskode = TiltakskodeDto.VARIG_TILRETTELAGT_ARBEID_SKJERMET,
-                    navn = "Varig tilrettelagt arbeid",
-                ),
-                status = KometDeltakerStatusDto(
-                    type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR,
-                ),
-            ),
-            tiltakshistorikkArenaTiltak(
+                LocalDate.now().plusDays(10),
+                LocalDate.now().plusDays(20),
+            )
+            val arenaTiltak2 = tiltakshistorikkArenaTiltak(
                 tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
                     tiltakskode = "ETAB",
                     navn = "Egenetablering",
                 ),
                 status = ArenaDeltakerStatusDto.GJENNOMFORES,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                tiltakstype = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakstype(
-                    tiltakskode = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.MENTOR,
-                    navn = "Mentor",
-                ),
-                status = ArbeidsgiverAvtaleStatusDto.GJENNOMFORES,
-            ),
-        )
+                LocalDate.now().minusDays(20),
+                LocalDate.now().minusDays(10),
+            )
+            coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(arenaTiltak1, arenaTiltak2)
 
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
-            it.size shouldBe 3
-            it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.MENTOR }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
-            it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.VASV }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
-            it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.ETAB }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+            tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also { actual ->
+                actual.size shouldBe 2
+                actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
+                actual[1].deltakelseStatus shouldBe DELTAR
+            }
+
+            tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also { actual ->
+                // filtrerer bort ETAB som ikke gir rett
+                actual.size shouldBe 1
+                actual[0].deltakelseStatus shouldBe VENTER_PA_OPPSTART
+            }
         }
+    }
 
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
-            it.size shouldBe 0
+    @Test
+    fun `tiltak fra komet, arena og team tiltak som gir rett på tiltakspenger returnerer true`() {
+        runTest {
+            coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
+                tiltakshistorikkKometTiltak(
+                    tiltak = TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype(
+                        tiltakskode = TiltakskodeDto.ARBEIDSFORBEREDENDE_TRENING,
+                        navn = "Arbeidsforberedende trening",
+                    ),
+                    status = KometDeltakerStatusDto(
+                        type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR,
+                    ),
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.GJENNOMFORES,
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.GJENNOMFORES,
+                ),
+            )
+
+            tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+                it.size shouldBe 3
+                it[0].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+                it[1].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+                it[2].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+            }
+
+            tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
+                it.size shouldBe 3
+                it[0].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+                it[1].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+                it[2].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe true
+            }
+        }
+    }
+
+    @Test
+    fun `tiltak fra komet og arena som ikke gir rett på tiltakspenger returnerer false`() {
+        runTest {
+            coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
+                tiltakshistorikkKometTiltak(
+                    tiltak = TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype(
+                        tiltakskode = TiltakskodeDto.VARIG_TILRETTELAGT_ARBEID_SKJERMET,
+                        navn = "Varig tilrettelagt arbeid",
+                    ),
+                    status = KometDeltakerStatusDto(
+                        type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR,
+                    ),
+                ),
+                tiltakshistorikkArenaTiltak(
+                    tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
+                        tiltakskode = "ETAB",
+                        navn = "Egenetablering",
+                    ),
+                    status = ArenaDeltakerStatusDto.GJENNOMFORES,
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    tiltakstype = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakstype(
+                        tiltakskode = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.MENTOR,
+                        navn = "Mentor",
+                    ),
+                    status = ArbeidsgiverAvtaleStatusDto.GJENNOMFORES,
+                ),
+            )
+
+            tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+                it.size shouldBe 3
+                it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.MENTOR }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+                it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.VASV }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+                it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.ETAB }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+            }
+
+            tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
+                it.size shouldBe 0
+            }
         }
     }
 
     @Test
     fun `tiltak med status som skal dukke opp i søknaden gir rett til å søke`() {
-        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.FULLFORT),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VENTER_PA_OPPSTART),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.HAR_SLUTTET),
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.KLAR_FOR_OPPSTART,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.GJENNOMFORES,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.AVSLUTTET,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.AVBRUTT,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.DELTAKELSE_AVBRUTT,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.FULLFORT,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.GJENNOMFORES,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.GJENNOMFORING_AVBRUTT,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.IKKE_MOTT,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.TAKKET_JA_TIL_TILBUD,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.TILBUD,
-            ),
-        )
+        runTest {
+            coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.FULLFORT),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VENTER_PA_OPPSTART),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.HAR_SLUTTET),
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.KLAR_FOR_OPPSTART,
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.GJENNOMFORES,
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.AVSLUTTET,
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.AVBRUTT,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.DELTAKELSE_AVBRUTT,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.FULLFORT,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.GJENNOMFORES,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.GJENNOMFORING_AVBRUTT,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.IKKE_MOTT,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.TAKKET_JA_TIL_TILBUD,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.TILBUD,
+                ),
+            )
 
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
-            it.size shouldBe 16
-            it.all { it.deltakelseStatus.rettTilÅSøke }
-            it.all { it.gjennomforing.arenaKode.rettPåTiltakspenger }
-        }
+            tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+                it.size shouldBe 16
+                it.all { it.deltakelseStatus.rettTilÅSøke }
+                it.all { it.gjennomforing.arenaKode.rettPåTiltakspenger }
+            }
 
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
-            it.size shouldBe 16
-            it.all { it.deltakelseStatus.rettTilÅSøke }
-            it.all { it.gjennomforing.arenaKode.rettPåTiltakspenger }
+            tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
+                it.size shouldBe 16
+                it.all { it.deltakelseStatus.rettTilÅSøke }
+                it.all { it.gjennomforing.arenaKode.rettPåTiltakspenger }
+            }
         }
     }
 
     @Test
     fun `tiltak med status som ikke skal dukke opp i søknaden gir ikke rett til å søke`() {
-        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.IKKE_AKTUELL),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VURDERES),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.FEILREGISTRERT),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.PABEGYNT_REGISTRERING),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.SOKT_INN),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VENTELISTE),
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.PAABEGYNT,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.MANGLER_GODKJENNING,
-            ),
-            tiltakshistorikkTeamTiltakTiltak(
-                status = ArbeidsgiverAvtaleStatusDto.ANNULLERT,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.AKTUELL,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.AVSLAG,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.GJENNOMFORING_AVLYST,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.IKKE_AKTUELL,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.INFORMASJONSMOTE,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.TAKKET_NEI_TIL_TILBUD,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.VENTELISTE,
-            ),
-            tiltakshistorikkArenaTiltak(
-                status = ArenaDeltakerStatusDto.FEILREGISTRERT,
-            ),
-        )
+        runTest {
+            coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.IKKE_AKTUELL),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VURDERES),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.FEILREGISTRERT),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.PABEGYNT_REGISTRERING),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.SOKT_INN),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.VENTELISTE),
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.PAABEGYNT,
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.MANGLER_GODKJENNING,
+                ),
+                tiltakshistorikkTeamTiltakTiltak(
+                    status = ArbeidsgiverAvtaleStatusDto.ANNULLERT,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.AKTUELL,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.AVSLAG,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.GJENNOMFORING_AVLYST,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.IKKE_AKTUELL,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.INFORMASJONSMOTE,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.TAKKET_NEI_TIL_TILBUD,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.VENTELISTE,
+                ),
+                tiltakshistorikkArenaTiltak(
+                    status = ArenaDeltakerStatusDto.FEILREGISTRERT,
+                ),
+            )
 
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
-            it.size shouldBe 17
-            it.all { !it.deltakelseStatus.rettTilÅSøke }
-        }
+            tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+                it.size shouldBe 17
+                it.all { !it.deltakelseStatus.rettTilÅSøke }
+            }
 
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
-            it.size shouldBe 0
+            tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
+                it.size shouldBe 0
+            }
         }
     }
 
     @Test
     fun `filtrerer ikke bort tiltak som mangler datoer`() {
-        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
-                fom = null,
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
-                tom = null,
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
-                fom = null,
-                tom = null,
-            ),
-        )
+        runTest {
+            coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
+                    fom = null,
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
+                    tom = null,
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
+                    fom = null,
+                    tom = null,
+                ),
+            )
 
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
-            it.size shouldBe 4
-        }
+            tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+                it.size shouldBe 4
+            }
 
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
-            it.size shouldBe 4
+            tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
+                it.size shouldBe 4
+            }
         }
     }
 
     @Test
     fun `tiltak med til og med dato satt etter fra og med dato filtreres bort`() {
-        coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT),
-            ),
-            tiltakshistorikkKometTiltak(
-                status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT),
-                fom = LocalDate.now(),
-                tom = LocalDate.now().minusDays(1),
-            ),
-        )
+        runTest {
+            coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT),
+                ),
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT),
+                    fom = LocalDate.now(),
+                    tom = LocalDate.now().minusDays(1),
+                ),
+            )
 
-        tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
-            it.size shouldBe 1
+            tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+                it.size shouldBe 1
+            }
+
+            tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
+                it.size shouldBe 1
+            }
         }
+    }
 
-        tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
-            it.size shouldBe 1
+    @Test
+    fun `henter tiltakshistorikk for både nåværende og historisk fødselsnummer`() {
+        runTest {
+            val historiskFnr = "11111111111"
+            val capturedFnrs = mutableListOf<List<String>>()
+
+            coEvery { pdlClient.hentNåværendeOgHistoriskeFødselsnummer(fnr) } returns listOf(fnr, historiskFnr)
+            coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(capture(capturedFnrs)) } returns listOf(
+                tiltakshistorikkKometTiltak(
+                    status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR),
+                ),
+            )
+
+            tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr)
+
+            capturedFnrs.first() shouldBe listOf(fnr, historiskFnr)
         }
     }
 
@@ -663,7 +709,7 @@ fun tiltakshistorikkArenaTiltak(
     dagerPerUke = 5.0f,
 )
 
-fun tiltakshistorikkKometTiltak(
+private fun tiltakshistorikkKometTiltak(
     tiltak: TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype = TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype(
         tiltakskode = TiltakskodeDto.ARBEIDSFORBEREDENDE_TRENING,
         navn = "Arbeidsforberedende trening",
@@ -671,28 +717,30 @@ fun tiltakshistorikkKometTiltak(
     status: KometDeltakerStatusDto,
     fom: LocalDate? = LocalDate.of(2023, 1, 1),
     tom: LocalDate? = LocalDate.of(2023, 3, 31),
-) = TiltakshistorikkV1Dto.TeamKometDeltakelse(
-    startDato = fom,
-    sluttDato = tom,
-    id = UUID.randomUUID(),
-    tittel = "Tiltak hos arrangør",
-    status = status,
-    tiltakstype = tiltak,
-    gjennomforing = TiltakshistorikkV1Dto.Gjennomforing(
+): TiltakshistorikkV1Dto.TeamKometDeltakelse {
+    return TiltakshistorikkV1Dto.TeamKometDeltakelse(
+        startDato = fom,
+        sluttDato = tom,
         id = UUID.randomUUID(),
-        deltidsprosent = 100.0f,
-    ),
-    arrangor = TiltakshistorikkV1Dto.Arrangor(
-        hovedenhet = null,
-        underenhet = TiltakshistorikkV1Dto.Virksomhet(
-            navn = "Arrangør",
+        tittel = "Tiltak hos arrangør",
+        status = status,
+        tiltakstype = tiltak,
+        gjennomforing = TiltakshistorikkV1Dto.Gjennomforing(
+            id = UUID.randomUUID(),
+            deltidsprosent = 100.0f,
         ),
-    ),
-    deltidsprosent = 100.0f,
-    dagerPerUke = 5.0f,
-)
+        arrangor = TiltakshistorikkV1Dto.Arrangor(
+            hovedenhet = null,
+            underenhet = TiltakshistorikkV1Dto.Virksomhet(
+                navn = "Arrangør",
+            ),
+        ),
+        deltidsprosent = 100.0f,
+        dagerPerUke = 5.0f,
+    )
+}
 
-fun tiltakshistorikkTeamTiltakTiltak(
+private fun tiltakshistorikkTeamTiltakTiltak(
     tiltakstype: TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakstype = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakstype(
         tiltakskode = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.ARBEIDSTRENING,
         navn = "Arbeidstrening",
@@ -700,16 +748,18 @@ fun tiltakshistorikkTeamTiltakTiltak(
     status: ArbeidsgiverAvtaleStatusDto,
     fom: LocalDate? = LocalDate.of(2023, 1, 1),
     tom: LocalDate? = LocalDate.of(2023, 3, 31),
-) = TiltakshistorikkV1Dto.TeamTiltakAvtale(
-    startDato = fom,
-    sluttDato = tom,
-    id = UUID.randomUUID(),
-    tittel = "Tiltak hos arbeidsgiver",
-    tiltakstype = tiltakstype,
-    status = status,
-    stillingsprosent = 100.0f,
-    dagerPerUke = 5.0f,
-    arbeidsgiver = TiltakshistorikkV1Dto.Virksomhet(
-        navn = "Arbeidsgiver",
-    ),
-)
+): TiltakshistorikkV1Dto.TeamTiltakAvtale {
+    return TiltakshistorikkV1Dto.TeamTiltakAvtale(
+        startDato = fom,
+        sluttDato = tom,
+        id = UUID.randomUUID(),
+        tittel = "Tiltak hos arbeidsgiver",
+        tiltakstype = tiltakstype,
+        status = status,
+        stillingsprosent = 100.0f,
+        dagerPerUke = 5.0f,
+        arbeidsgiver = TiltakshistorikkV1Dto.Virksomhet(
+            navn = "Arbeidsgiver",
+        ),
+    )
+}

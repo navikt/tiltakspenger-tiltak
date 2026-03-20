@@ -14,48 +14,60 @@ enum class Profile {
 }
 
 object Configuration {
-    private val defaultProperties = ConfigurationMap(
-        mapOf(
-            "application.httpPort" to 8080.toString(),
-            "logback.configurationFile" to "logback.xml",
-            "NAIS_TOKEN_ENDPOINT" to System.getenv("NAIS_TOKEN_ENDPOINT"),
-            "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT"),
-            "NAIS_TOKEN_EXCHANGE_ENDPOINT" to System.getenv("NAIS_TOKEN_EXCHANGE_ENDPOINT"),
-            "TILTAKSHISTORIKK_URL" to "http://tiltakshistorikk.team-mulighetsrommet",
-            "TILTAKSHISTORIKK_SCOPE" to System.getenv("TILTAKSHISTORIKK_SCOPE"),
-        ),
-    )
+    private val defaultProperties by lazy {
+        ConfigurationMap(
+            mapOf(
+                "application.httpPort" to 8080.toString(),
+                "logback.configurationFile" to "logback.xml",
+                "NAIS_TOKEN_ENDPOINT" to System.getenv("NAIS_TOKEN_ENDPOINT"),
+                "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to System.getenv("NAIS_TOKEN_INTROSPECTION_ENDPOINT"),
+                "NAIS_TOKEN_EXCHANGE_ENDPOINT" to System.getenv("NAIS_TOKEN_EXCHANGE_ENDPOINT"),
+                "TILTAKSHISTORIKK_URL" to "http://tiltakshistorikk.team-mulighetsrommet",
+                "TILTAKSHISTORIKK_SCOPE" to System.getenv("TILTAKSHISTORIKK_SCOPE"),
+                "PDL_URL" to System.getenv("PDL_URL"),
+                "PDL_SCOPE" to System.getenv("PDL_SCOPE"),
+            ),
+        )
+    }
 
-    private val localProperties = ConfigurationMap(
-        mapOf(
-            "application.profile" to Profile.LOCAL.toString(),
-            "logback.configurationFile" to "logback.local.xml",
-            "KOMET_TESTDATA_URL" to "http://localhost",
-            "KOMET_TESTDATA_SCOPE" to "api://localhost/.default",
-            "NAIS_TOKEN_ENDPOINT" to "http://localhost",
-            "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to "http://localhost",
-            "NAIS_TOKEN_EXCHANGE_ENDPOINT" to "http://localhost",
-            "TILTAKSHISTORIKK_URL" to "http://localhost",
-            "TILTAKSHISTORIKK_SCOPE" to "api://localhost/.default",
-        ),
-    )
-    private val devProperties = ConfigurationMap(
-        mapOf(
-            "application.profile" to Profile.DEV.toString(),
-            "KOMET_TESTDATA_URL" to "http://amt-deltaker-bff.amt",
-            "KOMET_TESTDATA_SCOPE" to "api://dev-gcp.amt.amt-deltaker-bff/.default",
-        ),
-    )
-    private val prodProperties = ConfigurationMap(
-        mapOf(
-            "application.profile" to Profile.PROD.toString(),
-            // testdata-apiet er ikke tilgjengelig i prod
-            "KOMET_TESTDATA_URL" to "http://localhost",
-            "KOMET_TESTDATA_SCOPE" to "api://localhost/.default",
-        ),
-    )
+    private val localProperties by lazy {
+        ConfigurationMap(
+            mapOf(
+                "application.profile" to Profile.LOCAL.toString(),
+                "logback.configurationFile" to "logback.local.xml",
+                "KOMET_TESTDATA_URL" to "http://localhost",
+                "KOMET_TESTDATA_SCOPE" to "api://localhost/.default",
+                "NAIS_TOKEN_ENDPOINT" to "http://localhost",
+                "NAIS_TOKEN_INTROSPECTION_ENDPOINT" to "http://localhost",
+                "NAIS_TOKEN_EXCHANGE_ENDPOINT" to "http://localhost",
+                "TILTAKSHISTORIKK_URL" to "http://localhost",
+                "TILTAKSHISTORIKK_SCOPE" to "api://localhost/.default",
+                "PDL_URL" to "http://localhost",
+                "PDL_SCOPE" to "api://localhost/.default",
+            ),
+        )
+    }
+    private val devProperties by lazy {
+        ConfigurationMap(
+            mapOf(
+                "application.profile" to Profile.DEV.toString(),
+                "KOMET_TESTDATA_URL" to "http://amt-deltaker-bff.amt",
+                "KOMET_TESTDATA_SCOPE" to "api://dev-gcp.amt.amt-deltaker-bff/.default",
+            ),
+        )
+    }
+    private val prodProperties by lazy {
+        ConfigurationMap(
+            mapOf(
+                "application.profile" to Profile.PROD.toString(),
+                // testdata-apiet er ikke tilgjengelig i prod
+                "KOMET_TESTDATA_URL" to "http://localhost",
+                "KOMET_TESTDATA_SCOPE" to "api://localhost/.default",
+            ),
+        )
+    }
 
-    private fun config() = when (System.getenv("NAIS_CLUSTER_NAME") ?: System.getProperty("NAIS_CLUSTER_NAME")) {
+    private fun config(): com.natpryce.konfig.Configuration = when (System.getenv("NAIS_CLUSTER_NAME") ?: System.getProperty("NAIS_CLUSTER_NAME")) {
         "dev-gcp" ->
             systemProperties() overriding EnvironmentVariables overriding devProperties overriding defaultProperties
 
@@ -81,13 +93,16 @@ object Configuration {
 
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
 
-    val naisTokenIntrospectionEndpoint: String = config()[Key("NAIS_TOKEN_INTROSPECTION_ENDPOINT", stringType)]
-    val naisTokenEndpoint: String = config()[Key("NAIS_TOKEN_ENDPOINT", stringType)]
-    val tokenExchangeEndpoint: String = config()[Key("NAIS_TOKEN_EXCHANGE_ENDPOINT", stringType)]
+    val naisTokenIntrospectionEndpoint: String by lazy { config()[Key("NAIS_TOKEN_INTROSPECTION_ENDPOINT", stringType)] }
+    val naisTokenEndpoint: String by lazy { config()[Key("NAIS_TOKEN_ENDPOINT", stringType)] }
+    val tokenExchangeEndpoint: String by lazy { config()[Key("NAIS_TOKEN_EXCHANGE_ENDPOINT", stringType)] }
 
-    val kometTestdataUrl = config()[Key("KOMET_TESTDATA_URL", stringType)]
-    val kometTestdataScope: String = config()[Key("KOMET_TESTDATA_SCOPE", stringType)]
+    val kometTestdataUrl: String by lazy { config()[Key("KOMET_TESTDATA_URL", stringType)] }
+    val kometTestdataScope: String by lazy { config()[Key("KOMET_TESTDATA_SCOPE", stringType)] }
 
-    val tiltakshistorikkUrl: String = config()[Key("TILTAKSHISTORIKK_URL", stringType)]
-    val tiltakshistorikkScope: String = config()[Key("TILTAKSHISTORIKK_SCOPE", stringType)]
+    val tiltakshistorikkUrl: String by lazy { config()[Key("TILTAKSHISTORIKK_URL", stringType)] }
+    val tiltakshistorikkScope: String by lazy { config()[Key("TILTAKSHISTORIKK_SCOPE", stringType)] }
+
+    val pdlUrl: String by lazy { config()[Key("PDL_URL", stringType)] }
+    val pdlScope: String by lazy { config()[Key("PDL_SCOPE", stringType)] }
 }
