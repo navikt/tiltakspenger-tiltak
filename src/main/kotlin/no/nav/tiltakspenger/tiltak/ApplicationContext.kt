@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.tiltak
 
+import no.nav.tiltakspenger.journalposthendelser.journalpost.http.pdl.PdlClient
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.libs.texas.client.TexasHttpClient
@@ -14,16 +15,41 @@ class ApplicationContext {
         tokenExchangeUrl = Configuration.tokenExchangeEndpoint,
     )
 
+    val pdlClient = PdlClient(
+        httpClient = defaultHttpClient(),
+        baseUrl = Configuration.pdlUrl,
+        getToken = {
+            texasClient.getSystemToken(
+                Configuration.pdlScope,
+                IdentityProvider.AZUREAD,
+                rewriteAudienceTarget = false,
+            )
+        },
+    )
+
     val tiltakshistorikkClient: TiltakshistorikkClient = TiltakshistorikkClient(
         baseUrl = Configuration.tiltakshistorikkUrl,
-        getToken = { texasClient.getSystemToken(Configuration.tiltakshistorikkScope, IdentityProvider.AZUREAD, rewriteAudienceTarget = false) },
+        getToken = {
+            texasClient.getSystemToken(
+                Configuration.tiltakshistorikkScope,
+                IdentityProvider.AZUREAD,
+                rewriteAudienceTarget = false,
+            )
+        },
     )
 
     val tiltakshistorikkService: TiltakshistorikkService = TiltakshistorikkService(
         tiltakshistorikkClient = tiltakshistorikkClient,
+        pdlClient = pdlClient,
     )
     val kometTestdataClient = KometTestdataClient(
         kometTestdataEndpoint = Configuration.kometTestdataUrl,
-        getToken = { texasClient.getSystemToken(Configuration.kometTestdataScope, IdentityProvider.AZUREAD, rewriteAudienceTarget = false) },
+        getToken = {
+            texasClient.getSystemToken(
+                Configuration.kometTestdataScope,
+                IdentityProvider.AZUREAD,
+                rewriteAudienceTarget = false,
+            )
+        },
     )
 }

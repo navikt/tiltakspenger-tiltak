@@ -22,7 +22,7 @@ import tools.jackson.module.kotlin.readValue
  */
 class PdlClient(
     private val httpClient: HttpClient,
-    private val basePath: String,
+    private val baseUrl: String,
     private val getToken: suspend () -> AccessToken,
 ) {
     private val log = KotlinLogging.logger {}
@@ -31,7 +31,7 @@ class PdlClient(
      * @return null Dersom oppslaget feiler eller ikke returnerer på noe vis.
      */
     suspend fun hentNåværendeOgHistoriskeFødselsnummer(fnr: String): List<String>? {
-        val httpResponse = httpClient.post("$basePath/graphql") {
+        val httpResponse = httpClient.post("$baseUrl/graphql") {
             bearerAuth(getToken().token)
             accept(ContentType.Application.Json)
             contentType(ContentType.Application.Json)
