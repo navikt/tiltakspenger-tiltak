@@ -24,13 +24,9 @@ class TiltakshistorikkService(
 
     private suspend fun hentTiltakshistorikk(fnr: String): List<TiltakshistorikkDTO> {
         // Kommentar John: I første omgang fallbacker vi bare til innsendt fnr for å få en myk overgang. Lar denne feile ved null når vi har fjernet barnesykdommene. Legg på arrow plix.
-        val nåværendePlussHistoriskeFnr = if (Configuration.isProd()) {
-            listOf(fnr)
-        } else {
-            pdlClient.hentNåværendeOgHistoriskeFødselsnummer(fnr)
-                ?.let { if (fnr in it) it else it + fnr }
-                ?: listOf(fnr)
-        }
+        val nåværendePlussHistoriskeFnr = pdlClient.hentNåværendeOgHistoriskeFødselsnummer(fnr)
+            ?.let { if (fnr in it) it else it + fnr }
+            ?: listOf(fnr)
         val tiltakdeltakelser = tiltakshistorikkClient.hentTiltaksdeltakelser(nåværendePlussHistoriskeFnr)
             .filterNot { it is TiltakshistorikkV1Dto.TeamKometDeltakelse && it.status.type == KometDeltakerStatusDto.DeltakerStatusType.KLADD }
             .map { deltakelse ->
