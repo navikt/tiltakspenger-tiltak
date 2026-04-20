@@ -7,12 +7,14 @@ import no.nav.tiltakspenger.libs.texas.client.TexasHttpClient
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.TiltakshistorikkClient
 import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
 import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
+import java.time.Clock
 
-class ApplicationContext {
+class ApplicationContext(clock: Clock) {
     val texasClient: TexasClient = TexasHttpClient(
         introspectionUrl = Configuration.naisTokenIntrospectionEndpoint,
         tokenUrl = Configuration.naisTokenEndpoint,
         tokenExchangeUrl = Configuration.tokenExchangeEndpoint,
+        clock = clock,
     )
 
     val pdlClient = PdlClient(

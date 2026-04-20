@@ -6,6 +6,8 @@ import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.util.AttributeKey
+import no.nav.tiltakspenger.libs.tid.zoneIdOslo
+import java.time.Clock
 
 fun main() {
     System.setProperty("logback.configurationFile", Configuration.logbackConfigurationFile())
@@ -17,7 +19,8 @@ fun main() {
 
 fun start(
     log: KLogger,
-    applicationContext: ApplicationContext = ApplicationContext(),
+    clock: Clock = Clock.system(zoneIdOslo),
+    applicationContext: ApplicationContext = ApplicationContext(clock),
 ) {
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
         log.error(e) { e.message }

@@ -9,7 +9,7 @@ val ktorVersion = "3.4.2"
 val jacksonVersion = "3.1.1"
 val jacksonAnnotationsVersion = "2.21"
 val kotestVersion = "6.1.11"
-val felleslibVersion = "0.0.737"
+val felleslibVersion = "0.0.758"
 
 plugins {
     application
@@ -40,6 +40,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:logging:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:texas:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:json:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson3:$ktorVersion")
