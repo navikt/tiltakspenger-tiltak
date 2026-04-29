@@ -75,7 +75,7 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
 
     testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.3.20")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.3.21")
     testImplementation("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
 }
 
