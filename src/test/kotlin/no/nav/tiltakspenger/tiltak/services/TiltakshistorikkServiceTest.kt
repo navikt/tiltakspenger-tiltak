@@ -296,6 +296,33 @@ class TiltakshistorikkServiceTest {
     }
 
     @Test
+    fun `tilpasset jobbstotte fra komet mappes til VATIAROR og gir ikke rett`() {
+        runTest {
+            coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
+                tiltakshistorikkKometTiltak(
+                    tiltak = TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype(
+                        tiltakskode = TiltakskodeDto.TILPASSET_JOBBSTOTTE,
+                        navn = "Tilpasset jobbstøtte",
+                    ),
+                    status = KometDeltakerStatusDto(
+                        type = KometDeltakerStatusDto.DeltakerStatusType.DELTAR,
+                    ),
+                ),
+            )
+
+            tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
+                it.size shouldBe 1
+                it[0].gjennomforing.arenaKode shouldBe TiltakResponsDTO.TiltakType.VATIAROR
+                it[0].gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+            }
+
+            tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
+                it.size shouldBe 0
+            }
+        }
+    }
+
+    @Test
     fun `tiltak fra komet, arena og team tiltak som gir rett på tiltakspenger returnerer true`() {
         runTest {
             coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(
