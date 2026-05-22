@@ -21,6 +21,9 @@ enum class TiltakskodeDto {
     STUDIESPESIALISERING,
     FAG_OG_YRKESOPPLAERING,
     HOYERE_YRKESFAGLIG_UTDANNING,
+
+    // Nytt tiltak fra Team Komet, erstatter Varig tilrettelagt arbeid i ordinær virksomhet (VTA-O).
+    TILPASSET_JOBBSTOTTE,
 }
 
 fun TiltakskodeDto.toArenaKode(): TiltakResponsDTO.TiltakType {
@@ -42,5 +45,6 @@ fun TiltakskodeDto.toArenaKode(): TiltakResponsDTO.TiltakType {
         TiltakskodeDto.ENKELTPLASS_ARBEIDSMARKEDSOPPLAERING -> TiltakResponsDTO.TiltakType.ENKELAMO
         TiltakskodeDto.ENKELTPLASS_FAG_OG_YRKESOPPLAERING -> TiltakResponsDTO.TiltakType.ENKFAGYRKE
         TiltakskodeDto.HOYERE_UTDANNING -> TiltakResponsDTO.TiltakType.HOYEREUTD
+        TiltakskodeDto.TILPASSET_JOBBSTOTTE -> TiltakResponsDTO.TiltakType.VATIAROR
     }
 }
