@@ -6,7 +6,6 @@ import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.libs.texas.client.TexasHttpClient
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.TiltakshistorikkClient
 import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
-import no.nav.tiltakspenger.tiltak.testdata.KometTestdataClient
 import java.time.Clock
 
 class ApplicationContext(clock: Clock) {
@@ -43,15 +42,5 @@ class ApplicationContext(clock: Clock) {
     val tiltakshistorikkService: TiltakshistorikkService = TiltakshistorikkService(
         tiltakshistorikkClient = tiltakshistorikkClient,
         pdlClient = pdlClient,
-    )
-    val kometTestdataClient = KometTestdataClient(
-        kometTestdataEndpoint = Configuration.kometTestdataUrl,
-        getToken = {
-            texasClient.getSystemToken(
-                Configuration.kometTestdataScope,
-                IdentityProvider.AZUREAD,
-                rewriteAudienceTarget = false,
-            )
-        },
     )
 }

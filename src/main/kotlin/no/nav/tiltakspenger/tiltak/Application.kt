@@ -31,7 +31,6 @@ fun start(
         port = 8080,
         module = {
             ktorSetup(
-                kometTestdataClient = applicationContext.kometTestdataClient,
                 texasClient = applicationContext.texasClient,
                 tiltakshistorikkService = applicationContext.tiltakshistorikkService,
             )
