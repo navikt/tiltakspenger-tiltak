@@ -22,11 +22,11 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7.0.0
         with:
           persist-credentials: false
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4.36.0
+        uses: github/codeql-action/init@v4.36.2
         with:
           languages: java-kotlin
           build-mode: manual
@@ -37,7 +37,7 @@ jobs:
                   problem.severity:
                     - recommendation
       - name: Set up Java
-        uses: actions/setup-java@v5.2.0
+        uses: actions/setup-java@v5.3.0
         with:
           distribution: 'temurin'
           java-version: 25
@@ -46,6 +46,6 @@ jobs:
       - name: Build
         run: ./gradlew clean classes --no-build-cache --no-configuration-cache
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4.36.0
+        uses: github/codeql-action/analyze@v4.36.2
         with:
           category: "/language:java-kotlin"

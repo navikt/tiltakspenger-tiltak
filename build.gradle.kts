@@ -6,15 +6,15 @@ val jvmVersion = JvmTarget.JVM_25
 
 val mockkVersion = "1.14.11"
 val ktorVersion = "3.4.3"
-val jacksonVersion = "3.1.4"
+val jacksonVersion = "3.2.0"
 val jacksonAnnotationsVersion = "2.22"
-val kotestVersion = "6.1.11"
+val kotestVersion = "6.2.1"
 val felleslibVersion = "0.0.827"
 
 plugins {
     application
     kotlin("jvm") version "2.4.0"
-    id("com.diffplug.spotless") version "8.6.0"
+    id("com.diffplug.spotless") version "8.7.0"
 }
 
 repositories {
