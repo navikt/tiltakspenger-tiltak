@@ -1,8 +1,4 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
-val javaVersion = JavaVersion.VERSION_25
-val jvmVersion = JvmTarget.JVM_25
 
 val mockkVersion = "1.14.11"
 val ktorVersion = "3.4.3"
@@ -83,11 +79,6 @@ application {
     mainClass.set("no.nav.tiltakspenger.tiltak.ApplicationKt")
 }
 
-java {
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-}
-
 spotless {
     kotlin {
         ktlint()
@@ -103,8 +94,8 @@ spotless {
 
 tasks {
     kotlin {
+        jvmToolchain(25)
         compilerOptions {
-            jvmTarget.set(jvmVersion)
             freeCompilerArgs.add("-Xconsistent-data-class-copy-visibility")
         }
     }
