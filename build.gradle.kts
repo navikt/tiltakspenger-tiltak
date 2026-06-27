@@ -121,7 +121,10 @@ tasks {
         }
     }
     register<Copy>("gitHooks") {
-        from(file(".scripts/pre-commit"))
+        group = "git hooks"
+        description = "Installerer git-hooks fra .gitHooks/ til .git/hooks/."
+        from(file(".gitHooks"))
         into(file(".git/hooks"))
+        filePermissions { unix("rwxr-xr-x") }
     }
 }

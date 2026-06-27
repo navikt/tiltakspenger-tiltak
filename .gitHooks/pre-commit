@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# Pre-commit-orkestrator. Kjører navngitte sjekk-skript i .gitHooks/.
+# Hver sjekk VERIFISERER bare – den endrer aldri koden din og gjør ingen
+# `git add`. Formatering skal skje når du BYGGER (./lint_and_build.sh kjører
+# `gradlew spotlessApply build`), ikke når du committer.
+#
+HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Spotless-formatering.
+"$HOOK_DIR/spotless.sh" || exit 1
+
+exit 0
