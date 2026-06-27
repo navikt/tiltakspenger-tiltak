@@ -22,9 +22,14 @@ repositories {
 }
 
 dependencies {
-    // Align versions of all Kotlin components
+    // Lås versjonene på alle Kotlin-komponenter til samme versjon
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
+
+    // Lås alle io.netty:* til samme versjon som forsikring mot fremtidig 4.1/4.2-drift.
+    // ktor-server-netty drar inn netty 4.2.x; en BOM hindrer at en transitiv avhengighet
+    // senere blander inn 4.1.x og legger duplikate baseklasser på classpath (jf. `-cp lib/*`).
+    implementation(platform("io.netty:netty-bom:4.2.12.Final"))
     implementation("ch.qos.logback:logback-classic:1.5.34")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
@@ -79,6 +84,11 @@ application {
     mainClass.set("no.nav.tiltakspenger.tiltak.ApplicationKt")
 }
 
+configurations.all {
+    // ekskluder JUnit 4
+    exclude(group = "junit", module = "junit")
+}
+
 spotless {
     kotlin {
         ktlint()
@@ -100,12 +110,12 @@ tasks {
         }
     }
     test {
-        // JUnit 5 support
+        // JUnit 5-støtte
         useJUnitPlatform()
         // https://phauer.com/2018/best-practices-unit-testing-kotlin/
         systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
         testLogging {
-            // We only want to log failed and skipped tests when running Gradle.
+            // Vi logger bare feilede og hoppede tester når Gradle kjører.
             events("skipped", "failed")
             exceptionFormat = TestExceptionFormat.FULL
         }
