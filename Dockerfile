@@ -6,8 +6,8 @@ ENV LANG='nb_NO.UTF-8'
 
 WORKDIR /app
 
-COPY build/install/tiltakspenger-tiltak/lib/*.jar ./
+COPY --chmod=0755 build/install/tiltakspenger-tiltak/lib/*.jar /app/lib/
 
 USER nobody
 
-CMD ["tiltakspenger-tiltak.jar"]
+ENTRYPOINT ["java", "-cp", "/app/lib/*", "no.nav.tiltakspenger.tiltak.ApplicationKt"]

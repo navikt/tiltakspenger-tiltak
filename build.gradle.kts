@@ -108,16 +108,6 @@ tasks {
             freeCompilerArgs.add("-Xconsistent-data-class-copy-visibility")
         }
     }
-    jar {
-        dependsOn(configurations.runtimeClasspath)
-
-        manifest {
-            attributes["Main-Class"] = "no.nav.tiltakspenger.tiltak.ApplicationKt"
-            attributes["Class-Path"] = configurations.runtimeClasspath
-                .get()
-                .joinToString(separator = " ") { file -> file.name }
-        }
-    }
     test {
         // JUnit 5 support
         useJUnitPlatform()
