@@ -29,7 +29,7 @@ dependencies {
     // Lås alle io.netty:* til samme versjon som forsikring mot fremtidig 4.1/4.2-drift.
     // ktor-server-netty drar inn netty 4.2.x; en BOM hindrer at en transitiv avhengighet
     // senere blander inn 4.1.x og legger duplikate baseklasser på classpath (jf. `-cp lib/*`).
-    implementation(platform("io.netty:netty-bom:4.2.12.Final"))
+    implementation(platform("io.netty:netty-bom:4.2.15.Final"))
     implementation("ch.qos.logback:logback-classic:1.5.34")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
