@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.tiltak.services
 
-import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakType
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakTypeDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakshistorikkDTO
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.toArenaKode
@@ -34,7 +34,7 @@ fun TiltakshistorikkV1Dto.ArenaDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO
             visningsnavn = tittel,
             arrangornavn = arrangor.hovedenhet?.navn ?: arrangor.underenhet.navn,
             typeNavn = tiltakstype.navn,
-            arenaKode = TiltakType.valueOf(tiltakstype.tiltakskode),
+            arenaKode = TiltakTypeDTO.valueOf(tiltakstype.tiltakskode),
             deltidsprosent = null,
         ),
         deltakelseFom = startDato,
@@ -66,14 +66,14 @@ fun TiltakshistorikkV1Dto.TeamTiltakAvtale.toTiltakshistorikkTilSaksbehandlingDT
     )
 }
 
-fun TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.toArenaKode(): TiltakType =
+fun TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.toArenaKode(): TiltakTypeDTO =
     when (this) {
-        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.ARBEIDSTRENING -> TiltakType.ARBTREN
-        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.MIDLERTIDIG_LONNSTILSKUDD -> TiltakType.MIDLONTIL
-        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.VARIG_LONNSTILSKUDD -> TiltakType.VARLONTIL
-        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.MENTOR -> TiltakType.MENTOR
-        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.INKLUDERINGSTILSKUDD -> TiltakType.INKLUTILS
-        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.SOMMERJOBB -> TiltakType.TILSJOBB
-        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.VTAO -> TiltakType.VATIAROR
-        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.FIREARIG_LONNSTILSKUDD -> TiltakType.FIREARIG_LONNSTILSKUDD
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.ARBEIDSTRENING -> TiltakTypeDTO.ARBTREN
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.MIDLERTIDIG_LONNSTILSKUDD -> TiltakTypeDTO.MIDLONTIL
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.VARIG_LONNSTILSKUDD -> TiltakTypeDTO.VARLONTIL
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.MENTOR -> TiltakTypeDTO.MENTOR
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.INKLUDERINGSTILSKUDD -> TiltakTypeDTO.INKLUTILS
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.SOMMERJOBB -> TiltakTypeDTO.TILSJOBB
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.VTAO -> TiltakTypeDTO.VATIAROR
+        TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.FIREARIG_LONNSTILSKUDD -> TiltakTypeDTO.FIREARIG_LONNSTILSKUDD
     }

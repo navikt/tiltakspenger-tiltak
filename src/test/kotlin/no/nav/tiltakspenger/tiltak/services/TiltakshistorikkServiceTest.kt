@@ -55,7 +55,7 @@ class TiltakshistorikkServiceTest {
                 visningsnavn = "Arbeidsforberedende trening hos Arrangør",
                 arrangornavn = "Arrangør",
                 typeNavn = "Arbeidsforberedende trening",
-                arenaKode = TiltakResponsDTO.TiltakType.ARBFORB,
+                arenaKode = TiltakResponsDTO.TiltakTypeDTO.ARBFORB,
                 deltidsprosent = 100.0,
             )
             tiltakFraKomet.deltakelseFom shouldBe LocalDate.of(2024, 4, 4)
@@ -72,7 +72,7 @@ class TiltakshistorikkServiceTest {
                 visningsnavn = "Arbeidsmarkedsopplæring (enkeltplass) hos Arrangør",
                 arrangornavn = "Arrangør",
                 typeNavn = "Arbeidsmarkedsopplæring (enkeltplass)",
-                arenaKode = TiltakResponsDTO.TiltakType.ENKELAMO,
+                arenaKode = TiltakResponsDTO.TiltakTypeDTO.ENKELAMO,
                 deltidsprosent = null,
             )
             tiltakFraArena.deltakelseFom shouldBe LocalDate.of(2024, 7, 3)
@@ -89,7 +89,7 @@ class TiltakshistorikkServiceTest {
                 visningsnavn = "Arbeidstrening hos Arbeidsgiver",
                 arrangornavn = "Arbeidsgiver",
                 typeNavn = "Arbeidstrening",
-                arenaKode = TiltakResponsDTO.TiltakType.ARBTREN,
+                arenaKode = TiltakResponsDTO.TiltakTypeDTO.ARBTREN,
                 deltidsprosent = null,
             )
             tiltakFraTeamTiltak.deltakelseFom shouldBe LocalDate.of(2024, 1, 1)
@@ -115,8 +115,8 @@ class TiltakshistorikkServiceTest {
                 ),
                 tiltakshistorikkArenaTiltak(
                     tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
-                        tiltakskode = TiltakResponsDTO.TiltakType.KURS.name,
-                        navn = TiltakResponsDTO.TiltakType.KURS.navn,
+                        tiltakskode = TiltakResponsDTO.TiltakTypeDTO.KURS.name,
+                        navn = TiltakResponsDTO.TiltakTypeDTO.KURS.navn,
                     ),
                     status = ArenaDeltakerStatusDto.DELTAKELSE_AVBRUTT,
                 ),
@@ -363,9 +363,9 @@ class TiltakshistorikkServiceTest {
 
             tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).also {
                 it.size shouldBe 3
-                it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.MENTOR }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
-                it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.VASV }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
-                it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakType.ETAB }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+                it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakTypeDTO.MENTOR }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+                it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakTypeDTO.VASV }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
+                it.first { it.gjennomforing.arenaKode == TiltakResponsDTO.TiltakTypeDTO.ETAB }.gjennomforing.arenaKode.rettPåTiltakspenger shouldBe false
             }
 
             tiltakshistorikkService.hentTiltakshistorikkForSoknad(fnr).also {
@@ -681,8 +681,8 @@ class TiltakshistorikkServiceTest {
 
 fun tiltakshistorikkArenaTiltak(
     tiltak: TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
-        tiltakskode = TiltakResponsDTO.TiltakType.ENKELAMO.name,
-        navn = TiltakResponsDTO.TiltakType.ENKELAMO.navn,
+        tiltakskode = TiltakResponsDTO.TiltakTypeDTO.ENKELAMO.name,
+        navn = TiltakResponsDTO.TiltakTypeDTO.ENKELAMO.navn,
     ),
     status: ArenaDeltakerStatusDto,
     fom: LocalDate? = LocalDate.of(2023, 1, 1),

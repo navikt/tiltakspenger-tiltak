@@ -23,24 +23,24 @@ enum class TiltakskodeDto {
     HOYERE_YRKESFAGLIG_UTDANNING,
 }
 
-fun TiltakskodeDto.toArenaKode(): TiltakResponsDTO.TiltakType {
+fun TiltakskodeDto.toArenaKode(): TiltakResponsDTO.TiltakTypeDTO {
     return when (this) {
-        TiltakskodeDto.ARBEIDSFORBEREDENDE_TRENING -> TiltakResponsDTO.TiltakType.ARBFORB
-        TiltakskodeDto.ARBEIDSRETTET_REHABILITERING -> TiltakResponsDTO.TiltakType.ARBRRHDAG
-        TiltakskodeDto.AVKLARING -> TiltakResponsDTO.TiltakType.AVKLARAG
-        TiltakskodeDto.DIGITALT_OPPFOLGINGSTILTAK -> TiltakResponsDTO.TiltakType.DIGIOPPARB
-        TiltakskodeDto.GRUPPE_ARBEIDSMARKEDSOPPLAERING -> TiltakResponsDTO.TiltakType.GRUPPEAMO
-        TiltakskodeDto.ARBEIDSMARKEDSOPPLAERING -> TiltakResponsDTO.TiltakType.ARBEIDSMARKEDSOPPLAERING
-        TiltakskodeDto.NORSKOPPLAERING_GRUNNLEGGENDE_FERDIGHETER_FOV -> TiltakResponsDTO.TiltakType.NORSKOPPLAERING_GRUNNLEGGENDE_FERDIGHETER_FOV
-        TiltakskodeDto.STUDIESPESIALISERING -> TiltakResponsDTO.TiltakType.STUDIESPESIALISERING
-        TiltakskodeDto.GRUPPE_FAG_OG_YRKESOPPLAERING -> TiltakResponsDTO.TiltakType.GRUFAGYRKE
-        TiltakskodeDto.FAG_OG_YRKESOPPLAERING -> TiltakResponsDTO.TiltakType.FAG_OG_YRKESOPPLAERING
-        TiltakskodeDto.HOYERE_YRKESFAGLIG_UTDANNING -> TiltakResponsDTO.TiltakType.HOYERE_YRKESFAGLIG_UTDANNING
-        TiltakskodeDto.JOBBKLUBB -> TiltakResponsDTO.TiltakType.JOBBK
-        TiltakskodeDto.OPPFOLGING -> TiltakResponsDTO.TiltakType.INDOPPFAG
-        TiltakskodeDto.VARIG_TILRETTELAGT_ARBEID_SKJERMET -> TiltakResponsDTO.TiltakType.VASV
-        TiltakskodeDto.ENKELTPLASS_ARBEIDSMARKEDSOPPLAERING -> TiltakResponsDTO.TiltakType.ENKELAMO
-        TiltakskodeDto.ENKELTPLASS_FAG_OG_YRKESOPPLAERING -> TiltakResponsDTO.TiltakType.ENKFAGYRKE
-        TiltakskodeDto.HOYERE_UTDANNING -> TiltakResponsDTO.TiltakType.HOYEREUTD
+        TiltakskodeDto.ARBEIDSFORBEREDENDE_TRENING -> TiltakResponsDTO.TiltakTypeDTO.ARBFORB
+        TiltakskodeDto.ARBEIDSRETTET_REHABILITERING -> TiltakResponsDTO.TiltakTypeDTO.ARBRRHDAG
+        TiltakskodeDto.AVKLARING -> TiltakResponsDTO.TiltakTypeDTO.AVKLARAG
+        TiltakskodeDto.DIGITALT_OPPFOLGINGSTILTAK -> TiltakResponsDTO.TiltakTypeDTO.DIGIOPPARB
+        TiltakskodeDto.GRUPPE_ARBEIDSMARKEDSOPPLAERING -> TiltakResponsDTO.TiltakTypeDTO.GRUPPEAMO
+        TiltakskodeDto.ARBEIDSMARKEDSOPPLAERING -> TiltakResponsDTO.TiltakTypeDTO.ARBEIDSMARKEDSOPPLAERING
+        TiltakskodeDto.NORSKOPPLAERING_GRUNNLEGGENDE_FERDIGHETER_FOV -> TiltakResponsDTO.TiltakTypeDTO.NORSKOPPLAERING_GRUNNLEGGENDE_FERDIGHETER_FOV
+        TiltakskodeDto.STUDIESPESIALISERING -> TiltakResponsDTO.TiltakTypeDTO.STUDIESPESIALISERING
+        TiltakskodeDto.GRUPPE_FAG_OG_YRKESOPPLAERING -> TiltakResponsDTO.TiltakTypeDTO.GRUFAGYRKE
+        TiltakskodeDto.FAG_OG_YRKESOPPLAERING -> TiltakResponsDTO.TiltakTypeDTO.FAG_OG_YRKESOPPLAERING
+        TiltakskodeDto.HOYERE_YRKESFAGLIG_UTDANNING -> TiltakResponsDTO.TiltakTypeDTO.HOYERE_YRKESFAGLIG_UTDANNING
+        TiltakskodeDto.JOBBKLUBB -> TiltakResponsDTO.TiltakTypeDTO.JOBBK
+        TiltakskodeDto.OPPFOLGING -> TiltakResponsDTO.TiltakTypeDTO.INDOPPFAG
+        TiltakskodeDto.VARIG_TILRETTELAGT_ARBEID_SKJERMET -> TiltakResponsDTO.TiltakTypeDTO.VASV
+        TiltakskodeDto.ENKELTPLASS_ARBEIDSMARKEDSOPPLAERING -> TiltakResponsDTO.TiltakTypeDTO.ENKELAMO
+        TiltakskodeDto.ENKELTPLASS_FAG_OG_YRKESOPPLAERING -> TiltakResponsDTO.TiltakTypeDTO.ENKFAGYRKE
+        TiltakskodeDto.HOYERE_UTDANNING -> TiltakResponsDTO.TiltakTypeDTO.HOYEREUTD
     }
 }
