@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.tiltak
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tiltakspenger.libs.ktor.common.oppstart.Bakgrunnsprosessoppsett
 import no.nav.tiltakspenger.libs.ktor.common.oppstart.startApp
 import no.nav.tiltakspenger.libs.tid.zoneIdOslo
 import java.time.Clock
@@ -30,11 +29,6 @@ fun start(
         log = log,
         port = port,
         isNais = isNais,
-        oppsett = Bakgrunnsprosessoppsett(
-            mdcCallIdKey = "call-id",
-            electorPath = { error("electorPath brukes ikke - tiltak har ingen bakgrunnsprosesser") },
-            clock = clock,
-        ),
     ) { readiness ->
         ktorSetup(
             texasClient = applicationContext.texasClient,
