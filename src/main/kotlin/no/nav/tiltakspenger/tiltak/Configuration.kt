@@ -93,6 +93,8 @@ object Configuration {
 
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
 
+    fun httpPort() = config()[Key("application.httpPort", stringType)].toInt()
+
     val naisTokenIntrospectionEndpoint: String by lazy { config()[Key("NAIS_TOKEN_INTROSPECTION_ENDPOINT", stringType)] }
     val naisTokenEndpoint: String by lazy { config()[Key("NAIS_TOKEN_ENDPOINT", stringType)] }
     val tokenExchangeEndpoint: String by lazy { config()[Key("NAIS_TOKEN_EXCHANGE_ENDPOINT", stringType)] }

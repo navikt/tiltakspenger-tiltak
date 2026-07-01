@@ -2,10 +2,8 @@ package no.nav.tiltakspenger.tiltak
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.server.application.Application
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.util.AttributeKey
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.Bakgrunnsprosessoppsett
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.startApp
 import no.nav.tiltakspenger.libs.tid.zoneIdOslo
 import java.time.Clock
 
@@ -19,6 +17,8 @@ fun main() {
 
 fun start(
     log: KLogger,
+    port: Int = Configuration.httpPort(),
+    isNais: Boolean = Configuration.isNais(),
     clock: Clock = Clock.system(zoneIdOslo),
     applicationContext: ApplicationContext = ApplicationContext(clock),
 ) {
@@ -26,28 +26,20 @@ fun start(
         log.error(e) { e.message }
     }
 
-    val server = embeddedServer(
-        factory = Netty,
-        port = 8080,
-        module = {
-            ktorSetup(
-                texasClient = applicationContext.texasClient,
-                tiltakshistorikkService = applicationContext.tiltakshistorikkService,
-            )
-        },
-    )
-    server.application.attributes.put(isReadyKey, true)
-
-    Runtime.getRuntime().addShutdownHook(
-        Thread {
-            server.application.attributes.put(isReadyKey, false)
-            server.stop(gracePeriodMillis = 5_000, timeoutMillis = 5_000)
-        },
-    )
-
-    server.start(wait = true)
+    startApp(
+        log = log,
+        port = port,
+        isNais = isNais,
+        oppsett = Bakgrunnsprosessoppsett(
+            mdcCallIdKey = "call-id",
+            electorPath = { error("electorPath brukes ikke - tiltak har ingen bakgrunnsprosesser") },
+            clock = clock,
+        ),
+    ) { readiness ->
+        ktorSetup(
+            texasClient = applicationContext.texasClient,
+            tiltakshistorikkService = applicationContext.tiltakshistorikkService,
+            readiness = readiness,
+        )
+    }
 }
-
-val isReadyKey = AttributeKey<Boolean>("isReady")
-
-fun Application.isReady() = attributes.getOrNull(isReadyKey) == true

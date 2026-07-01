@@ -14,11 +14,12 @@ import io.ktor.server.request.httpMethod
 import io.ktor.server.request.path
 import io.ktor.server.routing.routing
 import no.nav.tiltakspenger.libs.json.objectMapper
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.Readiness
+import no.nav.tiltakspenger.libs.ktor.common.oppstart.healthRoutes
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.TexasAuthenticationProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.tiltak.routes.azureRoutes
-import no.nav.tiltakspenger.tiltak.routes.healthRoutes
 import no.nav.tiltakspenger.tiltak.routes.swaggerRoute
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
 import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
@@ -27,19 +28,21 @@ import java.util.UUID
 fun Application.ktorSetup(
     texasClient: TexasClient,
     tiltakshistorikkService: TiltakshistorikkService,
+    readiness: Readiness,
 ) {
     installCallLogging()
-    setupRouting(texasClient, tiltakshistorikkService)
+    setupRouting(texasClient, tiltakshistorikkService, readiness)
 }
 
 fun Application.setupRouting(
     texasClient: TexasClient,
     tiltakshistorikkService: TiltakshistorikkService,
+    readiness: Readiness,
 ) {
     jacksonSerialization()
     installAuthentication(texasClient)
     routing {
-        healthRoutes()
+        healthRoutes(erKlar = readiness::erKlar)
         authenticate(IdentityProvider.TOKENX.value) {
             tokenxRoutes(tiltakshistorikkService)
         }
