@@ -21,8 +21,13 @@ import no.nav.tiltakspenger.tiltak.httpClientWithRetry
 import tools.jackson.databind.json.JsonMapper
 
 /**
- * https://github.com/navikt/mulighetsrommet/tree/main/mulighetsrommet-tiltakshistorikk
  * Tjeneste som tilbys av Team Valp som leverer tiltaksdeltakelser uavhengig av kildesystem (kan være Arena, Komet eller Team Tiltak)
+ *
+ * Kildekode: https://github.com/navikt/mulighetsrommet/tree/main/mulighetsrommet-tiltakshistorikk
+ * Dokumentasjon: README-en i kildekode-mappa
+ * API-spec: - (ingen OpenAPI-spec; Team Valp tilbyr en typet Kotlin-klient i https://github.com/navikt/mulighetsrommet/tree/main/common/tiltakshistorikk-client)
+ * Slack: #team-valp
+ * Teamkatalog: https://teamkatalogen.nav.no/team/aa730c95-b437-497b-b1ae-0ccf69a10997
  */
 class TiltakshistorikkClient(
     private val baseUrl: String,
