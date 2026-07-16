@@ -14,13 +14,15 @@ jobs:
     if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
     env:
       PR_SHA: ${{ github.event.pull_request.head.sha }}
-      WEBHOOK_URL: ${{ secrets.SLACK_VARSEL_WEBHOOK_URL }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # Ikke la tokenet ligge igjen i .git/config - byggesteget kjører kode fra den bumpede avhengigheten.
+          persist-credentials: false
       - name: Fetch dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@v3
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Notify Slack on new major version
@@ -28,16 +30,17 @@ jobs:
         run: |
           curl -X POST --data-urlencode "payload={ \"attachments\": [{ \"pretext\": \"[${{ github.event.repository.name }}] Ny major dependency versjon!\", \"color\": \"info\", \"fields\": [ { \"title\": \"Commit\", \"value\": \"<https://github.com/${{ github.repository }}/commit/$PR_SHA|$PR_SHA>\", \"short\": false }, { \"title\": \"Dependency\", \"value\": \"$DEPENDENCY_NAME $VERSION_CHANGE\", \"short\": false } ] }] }" $WEBHOOK_URL
         env:
+          WEBHOOK_URL: ${{ secrets.SLACK_VARSEL_WEBHOOK_URL }}
           DEPENDENCY_NAME: ${{ steps.metadata.outputs.dependency-names }}
           VERSION_CHANGE: "${{ steps.metadata.outputs.previous-version }} -> ${{ steps.metadata.outputs.new-version }}"
       - name: Set up Java
-        uses: actions/setup-java@v5.5.0
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
         with:
           distribution: 'temurin'
           java-version: 25
         if: steps.metadata.outputs.package-ecosystem != 'github_actions'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.2.0
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
         if: steps.metadata.outputs.package-ecosystem != 'github_actions'
       - name: Build and run tests
         run: ./gradlew build --configuration-cache
@@ -57,5 +60,6 @@ jobs:
         run: |
           curl -X POST --data-urlencode "payload={ \"attachments\": [{ \"pretext\": \"[${{ github.event.repository.name }}] Dependabot auto-merge feilet :cry:\", \"color\": \"danger\", \"fields\": [ { \"title\": \"Commit\", \"value\": \"<https://github.com/${{ github.repository }}/commit/$PR_SHA|$PR_SHA>\", \"short\": false }, { \"title\": \"Dependency\", \"value\": \"$DEPENDENCY_NAME $VERSION_CHANGE\", \"short\": false } ] }] }" $WEBHOOK_URL
         env:
+          WEBHOOK_URL: ${{ secrets.SLACK_VARSEL_WEBHOOK_URL }}
           DEPENDENCY_NAME: ${{ steps.metadata.outputs.dependency-names }}
           VERSION_CHANGE: "${{ steps.metadata.outputs.previous-version }} -> ${{ steps.metadata.outputs.new-version }}"
