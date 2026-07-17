@@ -18,8 +18,7 @@ sealed class TiltakshistorikkV1Dto {
     /**
      * Id på deltakelse fra kildesystemet.
      *
-     * MERK: Hvis kildesystemet er Arena så vil dette være en id som kun er kjent i `tiltakshistorikk`,
-     * id fra Arena er tilgjengelig i feltet [TiltakshistorikkV1Dto.ArenaDeltakelse.arenaId].
+     * MERK: Hvis kildesystemet er Arena så vil dette være en id som kun er kjent i `tiltakshistorikk`, id fra Arena er tilgjengelig i feltet [TiltakshistorikkV1Dto.ArenaDeltakelse.arenaId].
      */
     abstract val id: UUID
 
@@ -41,11 +40,9 @@ sealed class TiltakshistorikkV1Dto {
     /**
      * Beskrivende tittel/leslig navn for tiltaksdeltakelsen.
      *
-     * Dette vises bl.a. til veileder i Modia og til bruker i aktivitetsplanen (for noen tiltak), og vil typisk være på
-     * formatet "<tiltakstype> hos <arrangør>", f.eks. "Oppfølging hos Arrangør AS".
+     * Dette vises bl.a. til veileder i Modia og til bruker i aktivitetsplanen (for noen tiltak), og vil typisk være på formatet "<tiltakstype> hos <arrangør>", f.eks. "Oppfølging hos Arrangør AS".
      *
-     * Selve innholdet/oppbygning av tittelen kan variere mellom de forskjellige tiltakstypene og det kan komme
-     * endringer i logikken på hvordan dette utledes.
+     * Selve innholdet/oppbygning av tittelen kan variere mellom de forskjellige tiltakstypene og det kan komme endringer i logikken på hvordan dette utledes.
      */
     abstract val tittel: String
 
@@ -57,8 +54,7 @@ sealed class TiltakshistorikkV1Dto {
 
     data class Virksomhet(
         /**
-         * Navn på virksomhet vil stort sett være tilgjenglig, men i noen sjeldne tilfeller så kan det være
-         * at dette er ukjent (typisk for eldre tiltaksdeltakelser).
+         * Navn på virksomhet vil stort sett være tilgjenglig, men i noen sjeldne tilfeller så kan det være at dette er ukjent (typisk for eldre tiltaksdeltakelser).
          */
         val navn: String?,
     )
@@ -78,8 +74,7 @@ sealed class TiltakshistorikkV1Dto {
     data class Gjennomforing(
         val id: UUID,
         /**
-         * Deltidsprosent kan være definert på gjennomføringen og vil i så fall gjelde for alle deltakelser
-         * på tiltaket (med mindre en annen deltidsprosent er definert på deltakelsen).
+         * Deltidsprosent kan være definert på gjennomføringen og vil i så fall gjelde for alle deltakelser på tiltaket (med mindre en annen deltidsprosent er definert på deltakelsen).
          */
         val deltidsprosent: Float?,
     )
