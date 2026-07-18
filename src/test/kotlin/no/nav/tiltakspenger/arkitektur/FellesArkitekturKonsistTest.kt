@@ -2,9 +2,11 @@ package no.nav.tiltakspenger.arkitektur
 
 import com.lemonappdev.konsist.api.Konsist
 import no.nav.tiltakspenger.libs.konsist.EnSetningPerLinje
+import no.nav.tiltakspenger.libs.konsist.IngenClockDefault
 import no.nav.tiltakspenger.libs.konsist.IngenJUnit4
 import no.nav.tiltakspenger.libs.konsist.IngenJackson2
 import no.nav.tiltakspenger.libs.konsist.IngenJupiterAsserts
+import no.nav.tiltakspenger.libs.konsist.IngenLocalDateTimeNow
 import no.nav.tiltakspenger.libs.konsist.IngenLokaleJacksonMappere
 import no.nav.tiltakspenger.libs.konsist.IngenNowUtenClock
 import org.junit.jupiter.api.Test
@@ -37,6 +39,16 @@ class FellesArkitekturKonsistTest {
     @Test
     fun `produksjonskode henter aldri nåtid uten Clock`() {
         IngenNowUtenClock.assert(Konsist.scopeFromProduction())
+    }
+
+    @Test
+    fun `bruk nå fra libs-common, ikke LocalDateTime-now`() {
+        IngenLocalDateTimeNow.assert(Konsist.scopeFromProduction())
+    }
+
+    @Test
+    fun `Clock-parametre har ikke default-verdi i produksjonskode`() {
+        IngenClockDefault.assert(Konsist.scopeFromProduction())
     }
 
     @Test
