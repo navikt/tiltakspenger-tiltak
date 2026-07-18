@@ -29,3 +29,6 @@ jobs:
     with:
       NAIS_ENV: dev
       IMAGE: ${{ needs.build.outputs.IMAGE }}
+      # Repoet har per-miljø nais-manifester og ingen vars-filer, i motsetning til konvensjonens nais.yml + vars/<miljø>.yml.
+      nais-ressurs: .nais/nais-dev.yml
+      nais-vars: ingen
