@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakshistorikkDTO
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.toArenaKode
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.toDeltakerStatusDTO
+import java.time.Clock
 
 fun TiltakshistorikkV1Dto.TeamKometDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO(): TiltakshistorikkDTO {
     return TiltakshistorikkDTO(
@@ -26,7 +27,7 @@ fun TiltakshistorikkV1Dto.TeamKometDeltakelse.toTiltakshistorikkTilSaksbehandlin
     )
 }
 
-fun TiltakshistorikkV1Dto.ArenaDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO(): TiltakshistorikkDTO {
+fun TiltakshistorikkV1Dto.ArenaDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO(clock: Clock): TiltakshistorikkDTO {
     return TiltakshistorikkDTO(
         id = "TA$arenaId",
         gjennomforing = TiltakshistorikkDTO.GjennomforingDTO(
@@ -39,7 +40,7 @@ fun TiltakshistorikkV1Dto.ArenaDeltakelse.toTiltakshistorikkTilSaksbehandlingDTO
         ),
         deltakelseFom = startDato,
         deltakelseTom = sluttDato,
-        deltakelseStatus = status.toDeltakerStatusDTO(startDato),
+        deltakelseStatus = status.toDeltakerStatusDTO(startDato, clock),
         antallDagerPerUke = dagerPerUke,
         deltakelseProsent = deltidsprosent,
         kilde = TiltakshistorikkDTO.Kilde.ARENA,

@@ -42,5 +42,6 @@ class ApplicationContext(clock: Clock) {
     val tiltakshistorikkService: TiltakshistorikkService = TiltakshistorikkService(
         tiltakshistorikkClient = tiltakshistorikkClient,
         pdlClient = pdlClient,
+        clock = clock,
     )
 }

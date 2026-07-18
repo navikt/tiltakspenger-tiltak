@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.libs.konsist.IngenJUnit4
 import no.nav.tiltakspenger.libs.konsist.IngenJackson2
 import no.nav.tiltakspenger.libs.konsist.IngenJupiterAsserts
 import no.nav.tiltakspenger.libs.konsist.IngenLokaleJacksonMappere
+import no.nav.tiltakspenger.libs.konsist.IngenNowUtenClock
 import org.junit.jupiter.api.Test
 import java.nio.file.Path
 
@@ -31,6 +32,11 @@ class FellesArkitekturKonsistTest {
     @Test
     fun `ingen lokale Jackson-mappere — bruk objectMapper fra libs-json`() {
         IngenLokaleJacksonMappere.assert(Konsist.scopeFromProject())
+    }
+
+    @Test
+    fun `produksjonskode henter aldri nåtid uten Clock`() {
+        IngenNowUtenClock.assert(Konsist.scopeFromProduction())
     }
 
     @Test

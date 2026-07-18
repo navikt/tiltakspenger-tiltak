@@ -70,7 +70,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // Delte arkitekturregler; drar inn konsist transitivt (api-avhengighet). Egen versjon inntil felleslibVersion bumpes.
-    testImplementation("com.github.navikt.tiltakspenger-libs:konsist-regler:0.0.895")
+    testImplementation("com.github.navikt.tiltakspenger-libs:konsist-regler:0.0.20260718163611")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
@@ -80,6 +80,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.4.0")
     testImplementation("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
+    testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
 }
 
 application {

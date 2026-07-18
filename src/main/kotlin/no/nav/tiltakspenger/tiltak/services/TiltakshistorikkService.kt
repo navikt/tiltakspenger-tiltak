@@ -7,10 +7,12 @@ import no.nav.tiltakspenger.tiltak.Configuration
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.TiltakshistorikkClient
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.KometDeltakerStatusDto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
+import java.time.Clock
 
 class TiltakshistorikkService(
     private val tiltakshistorikkClient: TiltakshistorikkClient,
     private val pdlClient: PdlClient,
+    private val clock: Clock,
 ) {
     suspend fun hentTiltakshistorikkForSaksbehandling(fnr: String): List<TiltakshistorikkDTO> {
         return hentTiltakshistorikk(fnr = fnr)
@@ -35,7 +37,7 @@ class TiltakshistorikkService(
                 Sikkerlogg.info { "Deltakelser fra tiltakshistorikk: $deltakelse" }
                 when (deltakelse) {
                     is TiltakshistorikkV1Dto.TeamKometDeltakelse -> deltakelse.toTiltakshistorikkTilSaksbehandlingDTO()
-                    is TiltakshistorikkV1Dto.ArenaDeltakelse -> deltakelse.toTiltakshistorikkTilSaksbehandlingDTO()
+                    is TiltakshistorikkV1Dto.ArenaDeltakelse -> deltakelse.toTiltakshistorikkTilSaksbehandlingDTO(clock)
                     is TiltakshistorikkV1Dto.TeamTiltakAvtale -> deltakelse.toTiltakshistorikkTilSaksbehandlingDTO()
                 }
             }

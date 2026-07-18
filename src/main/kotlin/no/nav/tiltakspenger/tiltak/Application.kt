@@ -11,14 +11,14 @@ fun main() {
 
     val log = KotlinLogging.logger {}
     log.info { "starting server" }
-    start(log)
+    start(log, clock = Clock.system(zoneIdOslo))
 }
 
 fun start(
     log: KLogger,
     port: Int = Configuration.httpPort(),
     isNais: Boolean = Configuration.isNais(),
-    clock: Clock = Clock.system(zoneIdOslo),
+    clock: Clock,
     applicationContext: ApplicationContext = ApplicationContext(clock),
 ) {
     Thread.setDefaultUncaughtExceptionHandler { _, e ->

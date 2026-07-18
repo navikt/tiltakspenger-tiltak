@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto
 
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
+import java.time.Clock
 import java.time.LocalDate
 
 enum class ArenaDeltakerStatusDto {
@@ -21,8 +22,8 @@ enum class ArenaDeltakerStatusDto {
     VENTELISTE,
 }
 
-fun ArenaDeltakerStatusDto.toDeltakerStatusDTO(fom: LocalDate?): TiltakResponsDTO.DeltakerStatusDTO {
-    val startdatoErFremITid = fom == null || fom.isAfter(LocalDate.now())
+fun ArenaDeltakerStatusDto.toDeltakerStatusDTO(fom: LocalDate?, clock: Clock): TiltakResponsDTO.DeltakerStatusDTO {
+    val startdatoErFremITid = fom == null || fom.isAfter(LocalDate.now(clock))
 
     return when (this) {
         ArenaDeltakerStatusDto.DELTAKELSE_AVBRUTT -> TiltakResponsDTO.DeltakerStatusDTO.AVBRUTT

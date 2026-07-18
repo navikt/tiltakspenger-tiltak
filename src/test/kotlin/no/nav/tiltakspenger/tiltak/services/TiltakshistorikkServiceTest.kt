@@ -7,6 +7,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.journalposthendelser.journalpost.http.pdl.PdlClient
+import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.DELTAR
@@ -30,7 +31,7 @@ class TiltakshistorikkServiceTest {
     private val pdlClient = mockk<PdlClient> {
         coEvery { hentNåværendeOgHistoriskeFødselsnummer(any()) } answers { listOf(firstArg()) }
     }
-    private val tiltakshistorikkService = TiltakshistorikkService(tiltakshistorikkClient, pdlClient)
+    private val tiltakshistorikkService = TiltakshistorikkService(tiltakshistorikkClient, pdlClient, fixedClock)
 
     private val fnr = "12345678910"
 
@@ -267,8 +268,8 @@ class TiltakshistorikkServiceTest {
                     navn = "Forsøk AMO gruppe",
                 ),
                 status = ArenaDeltakerStatusDto.GJENNOMFORES,
-                LocalDate.now().plusDays(10),
-                LocalDate.now().plusDays(20),
+                LocalDate.now(fixedClock).plusDays(10),
+                LocalDate.now(fixedClock).plusDays(20),
             )
             val arenaTiltak2 = tiltakshistorikkArenaTiltak(
                 tiltak = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
@@ -276,8 +277,8 @@ class TiltakshistorikkServiceTest {
                     navn = "Egenetablering",
                 ),
                 status = ArenaDeltakerStatusDto.GJENNOMFORES,
-                LocalDate.now().minusDays(20),
-                LocalDate.now().minusDays(10),
+                LocalDate.now(fixedClock).minusDays(20),
+                LocalDate.now(fixedClock).minusDays(10),
             )
             coEvery { tiltakshistorikkClient.hentTiltaksdeltakelser(any()) } returns listOf(arenaTiltak1, arenaTiltak2)
 
