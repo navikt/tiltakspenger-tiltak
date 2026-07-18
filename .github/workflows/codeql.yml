@@ -4,48 +4,22 @@ on:
   schedule:
     - cron: '0 7 * * 1'
 
+# Concurrency må stå i calleren - en delt workflow lager ingen egen run.
 concurrency:
   group: codeql-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
+# Minste privilegium: toppnivået nullstiller alle token-rettigheter, hver jobb deklarerer eksplisitt det den trenger.
+permissions: {}
 
 jobs:
   analyze:
-    name: Analyze
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Delt workflow i metarepoet, se https://github.com/navikt/tiltakspenger/blob/main/.github/workflows/README.md
+    # security-events: write for opplasting til code scanning.
     permissions:
       actions: read
       contents: read
       security-events: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          persist-credentials: false
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
-        with:
-          languages: java-kotlin
-          build-mode: manual
-          queries: security-and-quality
-          config: |
-            query-filters:
-              - exclude:
-                  problem.severity:
-                    - recommendation
-      - name: Set up Java
-        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
-        with:
-          distribution: 'temurin'
-          java-version: 25
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
-      - name: Build
-        run: ./gradlew clean classes --no-build-cache --no-configuration-cache
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
-        with:
-          category: "/language:java-kotlin"
+    uses: navikt/tiltakspenger/.github/workflows/codeql-gradle.yml@main
+    with:
+      java-version: '25'
