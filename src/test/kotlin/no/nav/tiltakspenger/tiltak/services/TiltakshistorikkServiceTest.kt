@@ -552,8 +552,8 @@ class TiltakshistorikkServiceTest {
                 ),
                 tiltakshistorikkKometTiltak(
                     status = KometDeltakerStatusDto(type = KometDeltakerStatusDto.DeltakerStatusType.AVBRUTT),
-                    fom = LocalDate.now(),
-                    tom = LocalDate.now().minusDays(1),
+                    fom = LocalDate.now(fixedClock),
+                    tom = LocalDate.now(fixedClock).minusDays(1),
                 ),
             )
 
