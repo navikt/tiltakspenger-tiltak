@@ -10,7 +10,8 @@ import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequest
+import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
+import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.libs.texas.client.TexasIntrospectionResponse
@@ -37,15 +38,14 @@ class TokenxRoutesTest {
                 application {
                     setupTestApplication(texasClient, mockTiltakshistorikkService)
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("/tokenx/tiltakshistorikk")
                     },
-                ).apply {
-                    status shouldBe HttpStatusCode.Unauthorized
-                }
+                    forventet = ForventetRespons(status = HttpStatusCode.Unauthorized),
+                )
             }
         }
     }
@@ -71,15 +71,14 @@ class TokenxRoutesTest {
                 application {
                     setupTestApplication(texasClient, mockTiltakshistorikkService)
                 }
-                defaultRequest(
+                defaultRequestWithAssertions(
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
                         path("/tokenx/tiltakshistorikk")
                     },
-                ).apply {
-                    status shouldBe HttpStatusCode.OK
-                }
+                    forventet = ForventetRespons(status = HttpStatusCode.OK),
+                )
             }
         }
     }
