@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.libs.ktor.common.oppstart.startApp
 import no.nav.tiltakspenger.libs.tid.zoneIdOslo
 import java.time.Clock
 
+// Testendring for å verifisere fork-PR-gaten i de delte workflowene - PR-en skal lukkes umerget.
 fun main() {
     System.setProperty("logback.configurationFile", Configuration.logbackConfigurationFile())
 
