@@ -21,6 +21,13 @@ enum class TiltakskodeDto {
     STUDIESPESIALISERING,
     FAG_OG_YRKESOPPLAERING,
     HOYERE_YRKESFAGLIG_UTDANNING,
+
+    /**
+     * Tilrettelagt arbeid i ordinær virksomhet (VTAO), fra Tiltaksadministrasjon.
+     * Het tidligere TILPASSET_JOBBSTOTTE, deretter VARIG_TILRETTELAGT_ARBEID_ORDINAER.
+     * Gir ikke rett til tiltakspenger.
+     */
+    TILRETTELAGT_ARBEID_ORDINAER,
 }
 
 fun TiltakskodeDto.toArenaKode(): TiltakResponsDTO.TiltakTypeDTO {
@@ -42,5 +49,6 @@ fun TiltakskodeDto.toArenaKode(): TiltakResponsDTO.TiltakTypeDTO {
         TiltakskodeDto.ENKELTPLASS_ARBEIDSMARKEDSOPPLAERING -> TiltakResponsDTO.TiltakTypeDTO.ENKELAMO
         TiltakskodeDto.ENKELTPLASS_FAG_OG_YRKESOPPLAERING -> TiltakResponsDTO.TiltakTypeDTO.ENKFAGYRKE
         TiltakskodeDto.HOYERE_UTDANNING -> TiltakResponsDTO.TiltakTypeDTO.HOYEREUTD
+        TiltakskodeDto.TILRETTELAGT_ARBEID_ORDINAER -> TiltakResponsDTO.TiltakTypeDTO.VATIAROR
     }
 }
