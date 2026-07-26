@@ -11,8 +11,9 @@
     <logger name="org.flywaydb" level="WARN"/>
     <logger name="com.zaxxer" level="WARN"/>
 
+    <!-- team-logs-appenderen finnes kun i nais (logback.xml). Lokalt går sikkerlogg til konsollen, ellers ville linjene forsvunnet i stillhet. -->
     <logger name="team-logs-logger" level="DEBUG" additivity="false">
-        <appender-ref ref="team-logs" />
+        <appender-ref ref="STDOUT"/>
     </logger>
 
 
