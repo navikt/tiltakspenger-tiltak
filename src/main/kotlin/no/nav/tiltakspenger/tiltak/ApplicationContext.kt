@@ -23,7 +23,6 @@ class ApplicationContext(clock: Clock) {
             texasClient.getSystemToken(
                 Configuration.pdlScope,
                 IdentityProvider.AZUREAD,
-                rewriteAudienceTarget = false,
             )
         },
     )
@@ -34,7 +33,6 @@ class ApplicationContext(clock: Clock) {
             texasClient.getSystemToken(
                 Configuration.tiltakshistorikkScope,
                 IdentityProvider.AZUREAD,
-                rewriteAudienceTarget = false,
             )
         },
     )
