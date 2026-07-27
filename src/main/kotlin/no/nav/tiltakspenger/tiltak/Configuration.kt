@@ -95,6 +95,10 @@ object Configuration {
 
     fun httpPort() = config()[Key("application.httpPort", stringType)].toInt()
 
+    /** Settes av nais i sky; null lokalt, og da blir sikkerlogg-henvisningen ren tekst uten lenke. */
+    val naisAppName: String? by lazy { System.getenv("NAIS_APP_NAME") ?: System.getProperty("NAIS_APP_NAME") }
+    val gcpTeamProjectId: String? by lazy { System.getenv("GCP_TEAM_PROJECT_ID") ?: System.getProperty("GCP_TEAM_PROJECT_ID") }
+
     val naisTokenIntrospectionEndpoint: String by lazy { config()[Key("NAIS_TOKEN_INTROSPECTION_ENDPOINT", stringType)] }
     val naisTokenEndpoint: String by lazy { config()[Key("NAIS_TOKEN_ENDPOINT", stringType)] }
     val tokenExchangeEndpoint: String by lazy { config()[Key("NAIS_TOKEN_EXCHANGE_ENDPOINT", stringType)] }

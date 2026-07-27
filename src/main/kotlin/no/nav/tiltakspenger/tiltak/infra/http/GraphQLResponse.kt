@@ -1,8 +1,12 @@
 package no.nav.tiltakspenger.tiltak.infra.http
 
+/**
+ * GraphQL-konvolutten slik tjenestene svarer den.
+ * [data] er nullable fordi PDL svarer `200` med `data: null` når spørringen feiler funksjonelt; feilene ligger da i [errors].
+ */
 data class GraphQLResponse<T>(
-    val data: T,
-    val errors: List<GraphQLResponseError>?,
+    val data: T? = null,
+    val errors: List<GraphQLResponseError>? = null,
 ) {
     data class GraphQLResponseError(
         val message: String?,

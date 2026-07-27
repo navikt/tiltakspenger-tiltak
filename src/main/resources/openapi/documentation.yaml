@@ -62,6 +62,12 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/TiltakshistorikkDTO"
+        "500":
+          description: "Oppslaget mot tiltakshistorikk eller PDL feilet"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorJson"
   /tokenx/tiltakshistorikk:
     get:
       description: "Hente tiltaksdeltakelser for innlogget bruker"
@@ -76,6 +82,12 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/TiltakshistorikkDTO"
+        "500":
+          description: "Oppslaget mot tiltakshistorikk eller PDL feilet"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorJson"
 components:
   schemas:
     HentTiltaksdeltakelserRequest:
@@ -91,6 +103,16 @@ components:
       properties:
         feilmelding:
           type: "string"
+    ErrorJson:
+      type: "object"
+      properties:
+        melding:
+          type: "string"
+        kode:
+          type: "string"
+      required:
+        - "melding"
+        - "kode"
     TiltakshistorikkDTO:
       type: "object"
       properties:

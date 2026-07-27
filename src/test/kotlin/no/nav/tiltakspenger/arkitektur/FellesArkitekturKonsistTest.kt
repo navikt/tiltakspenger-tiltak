@@ -53,20 +53,9 @@ class FellesArkitekturKonsistTest {
         IngenClockDefault.assert(Konsist.scopeFromProduction())
     }
 
-    /**
-     * De tre unntatte filene er appens gjenværende ktor-klienter, som migreres til libs sin httpklient i tiltak#504.
-     * Unntakene skal fjernes når den migreringen lander — regelen er ellers uten unntak i resten av flåten.
-     */
     @Test
     fun `ingen andre http-klienter enn libs httpklient i produksjonskode`() {
-        IngenAndreHttpKlienter.assertIngenKlienterIProduksjonskode(
-            Konsist.scopeFromProduction(),
-            unntatteFilstier = setOf(
-                "tiltak/DefaultObjects.kt",
-                "tiltak/clients/tiltakshistorikk/TiltakshistorikkClient.kt",
-                "tiltak/person/infra/http/pdl/PdlClient.kt",
-            ),
-        )
+        IngenAndreHttpKlienter.assertIngenKlienterIProduksjonskode(Konsist.scopeFromProduction())
     }
 
     /**
@@ -78,13 +67,9 @@ class FellesArkitekturKonsistTest {
         IngenAndreHttpKlienter.assertIngenKlienterITestkode(Konsist.scopeFromTest())
     }
 
-    /**
-     * Byggfila er unntatt så lenge de tre klientene over ikke er migrert: de trenger `ktor-client-core`, `-cio` og `-logging`.
-     * Unntaket fjernes sammen med klientene i tiltak#504, og da er dette repoet på linje med resten av flåten.
-     */
     @Test
     fun `ingen andre http-klienter deklarert i byggfila`() {
-        IngenAndreHttpKlienter.assertIngenKlientavhengigheter(repoRot(), unntatteFilstier = setOf("build.gradle.kts"))
+        IngenAndreHttpKlienter.assertIngenKlientavhengigheter(repoRot())
     }
 
     @Test
