@@ -2,15 +2,9 @@ package no.nav.tiltakspenger.tiltak.routes
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
-import io.ktor.client.request.setBody
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.path
 import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
 import kotlinx.coroutines.test.runTest
-import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.KometDeltakerStatusDto
@@ -44,15 +38,11 @@ class AzureRoutesTest {
                 setupTestApplication(TexasClientFake(navIdent = "Z12345"), kontekst.tiltakshistorikkService)
             }
             defaultRequestWithAssertions(
-                HttpMethod.Post,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("/azure/tiltakshistorikk")
-                },
-                forventet = ForventetRespons(status = HttpStatusCode.OK),
-            ) {
-                setBody("""{"ident": "${kontekst.fnr}"}""")
-            }
+                HttpMethod.POST,
+                "/azure/tiltakshistorikk",
+                body = """{"ident": "${kontekst.fnr}"}""",
+                forventet = ForventetRespons(status = 200),
+            )
         }
         // Historiske identer fra PDL blir med i oppslaget mot tiltakshistorikk.
         kontekst.tiltakshistorikkTransport.mottatteKall.single().bodyTekst shouldContain historiskFnr
@@ -68,15 +58,11 @@ class AzureRoutesTest {
                 setupTestApplication(TexasClientFake(navIdent = "Z12345"), kontekst.tiltakshistorikkService)
             }
             defaultRequestWithAssertions(
-                HttpMethod.Post,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("/azure/tiltakshistorikk")
-                },
-                forventet = ForventetRespons(status = HttpStatusCode.OK, body = ForventetBody.Json("[]")),
-            ) {
-                setBody("""{"ident": "${kontekst.fnr}"}""")
-            }
+                HttpMethod.POST,
+                "/azure/tiltakshistorikk",
+                body = """{"ident": "${kontekst.fnr}"}""",
+                forventet = ForventetRespons.json(200, "[]"),
+            )
         }
     }
 
@@ -91,18 +77,11 @@ class AzureRoutesTest {
                 setupTestApplication(TexasClientFake(navIdent = "Z12345"), kontekst.tiltakshistorikkService)
             }
             defaultRequestWithAssertions(
-                HttpMethod.Post,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("/azure/tiltakshistorikk")
-                },
-                forventet = ForventetRespons(
-                    status = HttpStatusCode.InternalServerError,
-                    body = ForventetBody.Json("""{"melding":"Noe gikk galt på serversiden","kode":"server_feil"}"""),
-                ),
-            ) {
-                setBody("""{"ident": "${kontekst.fnr}"}""")
-            }
+                HttpMethod.POST,
+                "/azure/tiltakshistorikk",
+                body = """{"ident": "${kontekst.fnr}"}""",
+                forventet = ForventetRespons.json(500, """{"melding":"Noe gikk galt på serversiden","kode":"server_feil"}"""),
+            )
         }
         // PDL-feil stopper flyten før tiltakshistorikk kalles.
         kontekst.tiltakshistorikkTransport.mottatteKall.size shouldBe 0

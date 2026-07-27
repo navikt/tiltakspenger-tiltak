@@ -1,13 +1,9 @@
 package no.nav.tiltakspenger.tiltak.routes
 
 import io.kotest.matchers.shouldBe
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.path
 import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
 import kotlinx.coroutines.test.runTest
+import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
@@ -32,12 +28,9 @@ class TokenxRoutesTest {
                 setupTestApplication(TexasClientFake(aktiv = false), kontekst.tiltakshistorikkService)
             }
             defaultRequestWithAssertions(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("/tokenx/tiltakshistorikk")
-                },
-                forventet = ForventetRespons(status = HttpStatusCode.Unauthorized),
+                HttpMethod.GET,
+                "/tokenx/tiltakshistorikk",
+                forventet = ForventetRespons(status = 401),
             )
         }
         // Uten gyldig token skal ingen oppslag gjøres.
@@ -58,12 +51,9 @@ class TokenxRoutesTest {
                 setupTestApplication(TexasClientFake(pid = kontekst.fnr), kontekst.tiltakshistorikkService)
             }
             defaultRequestWithAssertions(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("/tokenx/tiltakshistorikk")
-                },
-                forventet = ForventetRespons(status = HttpStatusCode.OK),
+                HttpMethod.GET,
+                "/tokenx/tiltakshistorikk",
+                forventet = ForventetRespons(status = 200),
             )
         }
         // Oppslaget gikk mot PDL først, deretter tiltakshistorikk med identene PDL ga oss.
@@ -83,15 +73,9 @@ class TokenxRoutesTest {
                 setupTestApplication(TexasClientFake(pid = kontekst.fnr), kontekst.tiltakshistorikkService)
             }
             defaultRequestWithAssertions(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("/tokenx/tiltakshistorikk")
-                },
-                forventet = ForventetRespons(
-                    status = HttpStatusCode.InternalServerError,
-                    body = ForventetBody.Json("""{"melding":"Noe gikk galt på serversiden","kode":"server_feil"}"""),
-                ),
+                HttpMethod.GET,
+                "/tokenx/tiltakshistorikk",
+                forventet = ForventetRespons.json(500, """{"melding":"Noe gikk galt på serversiden","kode":"server_feil"}"""),
             )
         }
     }
