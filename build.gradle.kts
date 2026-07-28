@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 val ktorVersion = "3.4.3"
 val jacksonVersion = "3.2.1"
 val jacksonAnnotationsVersion = "2.22"
-val kotestVersion = "6.2.2"
+val kotestVersion = "6.2.3"
 val felleslibVersion = "0.0.20260727184308"
 
 plugins {
