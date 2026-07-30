@@ -4,7 +4,6 @@ import io.kotest.matchers.shouldBe
 import io.ktor.server.testing.testApplication
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.libs.httpklient.infra.kall.HttpMethod
-import no.nav.tiltakspenger.libs.ktor.test.common.ForventetBody
 import no.nav.tiltakspenger.libs.ktor.test.common.ForventetRespons
 import no.nav.tiltakspenger.libs.ktor.test.common.defaultRequestWithAssertions
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.KometDeltakerStatusDto
