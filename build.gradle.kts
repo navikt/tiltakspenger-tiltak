@@ -87,22 +87,25 @@ dependencies {
 // --- Kover --------------------------------------------------------------------
 // Klientene som er migrert til libs sin `httpklient` skal ha full linjedekning, jf. HTTP-klient-seksjonen i AGENTS-backend.md.
 // Utvid lista når repoet får flere klienter.
+val httpklientKlasserMedDekningskrav =
+    listOf(
+        "no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.TiltakshistorikkClient",
+        "no.nav.tiltakspenger.tiltak.person.infra.http.pdl.PdlClient",
+    )
+
 kover {
+    currentProject {
+        instrumentation {
+            // Instrumenter kun klassene dekningsgaten måler (`*`-suffikset tar med indre klasser og lambdaer).
+            includedClasses.addAll(httpklientKlasserMedDekningskrav.map { "$it*" })
+        }
+    }
     reports {
         total {
             filters {
                 includes {
-                    classes(
-                        "no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.TiltakshistorikkClient",
-                        "no.nav.tiltakspenger.tiltak.person.infra.http.pdl.PdlClient",
-                    )
+                    classes(httpklientKlasserMedDekningskrav)
                 }
-            }
-            html {
-                onCheck = true
-            }
-            xml {
-                onCheck = true
             }
             verify {
                 onCheck = true
