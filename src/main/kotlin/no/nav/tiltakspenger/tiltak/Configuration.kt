@@ -85,8 +85,6 @@ object Configuration {
         else -> Profile.LOCAL
     }
 
-    fun isDev() = applicationProfile() == Profile.DEV
-
     fun isProd() = applicationProfile() == Profile.PROD
 
     fun isNais() = applicationProfile() != Profile.LOCAL

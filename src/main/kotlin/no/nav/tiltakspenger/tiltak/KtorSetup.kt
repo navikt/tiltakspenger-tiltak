@@ -20,7 +20,6 @@ import no.nav.tiltakspenger.libs.texas.IdentityProvider
 import no.nav.tiltakspenger.libs.texas.TexasAuthenticationProvider
 import no.nav.tiltakspenger.libs.texas.client.TexasClient
 import no.nav.tiltakspenger.tiltak.routes.azureRoutes
-import no.nav.tiltakspenger.tiltak.routes.swaggerRoute
 import no.nav.tiltakspenger.tiltak.routes.tokenxRoutes
 import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
 import java.util.UUID
@@ -48,9 +47,6 @@ fun Application.setupRouting(
         }
         authenticate(IdentityProvider.AZUREAD.value) {
             azureRoutes(tiltakshistorikkService)
-        }
-        if (Configuration.isDev()) {
-            swaggerRoute()
         }
     }
 }
