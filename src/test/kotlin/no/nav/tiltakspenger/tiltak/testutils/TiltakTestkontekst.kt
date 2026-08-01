@@ -15,7 +15,7 @@ import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
  * Det er bevisst: køene og opptakene i transportene er muterbar tilstand, og delt muterbar tilstand gjør testene avhengige av rekkefølge og umulige å kjøre parallelt.
  * Testene kjører parallelt (se `build.gradle.kts`), så et delt felt her ville gitt flakiness i stedet for en tydelig feil.
  */
-internal class TiltakTestkontekst(
+class TiltakTestkontekst(
     /** Fødselsnummeret testen bruker; ligger her slik at både køing og assertions kan lene seg på samme verdi. */
     val fnr: String = "12345678910",
 ) {

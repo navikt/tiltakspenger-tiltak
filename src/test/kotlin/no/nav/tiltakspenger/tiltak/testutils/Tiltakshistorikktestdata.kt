@@ -13,7 +13,7 @@ import java.util.UUID
  * Byggere for tiltaksdeltakelser i tester.
  * Rene funksjoner uten tilstand, så de kan kalles fritt fra parallelle tester; hver deltakelse får sin egen [UUID].
  */
-internal fun tiltakshistorikkArenaTiltak(
+fun tiltakshistorikkArenaTiltak(
     tiltak: TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype = TiltakshistorikkV1Dto.ArenaDeltakelse.Tiltakstype(
         tiltakskode = TiltakResponsDTO.TiltakTypeDTO.ENKELAMO.name,
         navn = TiltakResponsDTO.TiltakTypeDTO.ENKELAMO.navn,
@@ -43,7 +43,7 @@ internal fun tiltakshistorikkArenaTiltak(
     dagerPerUke = 5.0f,
 )
 
-internal fun tiltakshistorikkKometTiltak(
+fun tiltakshistorikkKometTiltak(
     tiltak: TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype = TiltakshistorikkV1Dto.TeamKometDeltakelse.Tiltakstype(
         tiltakskode = TiltakskodeDto.ARBEIDSFORBEREDENDE_TRENING,
         navn = "Arbeidsforberedende trening",
@@ -72,7 +72,7 @@ internal fun tiltakshistorikkKometTiltak(
     dagerPerUke = 5.0f,
 )
 
-internal fun tiltakshistorikkTeamTiltakTiltak(
+fun tiltakshistorikkTeamTiltakTiltak(
     tiltakstype: TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakstype = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakstype(
         tiltakskode = TiltakshistorikkV1Dto.TeamTiltakAvtale.Tiltakskode.ARBEIDSTRENING,
         navn = "Arbeidstrening",

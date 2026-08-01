@@ -19,7 +19,7 @@ import java.net.http.HttpTimeoutException
 import java.time.LocalDate
 import java.util.UUID
 
-internal class TiltakshistorikkClientTest {
+class TiltakshistorikkClientTest {
     private val baseUrl = "http://tiltakshistorikk.test"
     private val fnr = "12345678910"
 

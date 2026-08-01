@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.tiltak.testutils.testTokenProvider
 import org.junit.jupiter.api.Test
 import java.io.IOException
 
-internal class PdlClientTest {
+class PdlClientTest {
     private val baseUrl = "http://pdl.test"
     private val fnr = "12345678910"
     private val historiskFnr = "10987654321"

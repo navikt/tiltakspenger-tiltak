@@ -82,7 +82,7 @@ fun Application.jacksonSerialization() {
     }
 }
 
-internal fun Application.installCallLogging() {
+fun Application.installCallLogging() {
     install(CallId) {
         generate { UUID.randomUUID().toString() }
     }
