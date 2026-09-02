@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.KometDeltakerSta
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakskodeDto
 import no.nav.tiltakspenger.tiltak.testutils.TiltakTestkontekst
+import no.nav.tiltakspenger.tiltak.testutils.genererFnr
 import no.nav.tiltakspenger.tiltak.testutils.tiltakshistorikkArenaTiltak
 import no.nav.tiltakspenger.tiltak.testutils.tiltakshistorikkKometTiltak
 import no.nav.tiltakspenger.tiltak.testutils.tiltakshistorikkTeamTiltakTiltak
@@ -386,7 +387,7 @@ class TiltakshistorikkServiceTest {
 
     @Test
     fun `henter tiltakshistorikk for både nåværende og historisk fødselsnummer`() = medKontekst {
-        val historiskFnr = "11111111111"
+        val historiskFnr = genererFnr()
         køOppslag(
             listOf(
                 tiltakshistorikkKometTiltak(
@@ -405,7 +406,7 @@ class TiltakshistorikkServiceTest {
 
     @Test
     fun `legger på innsendt fnr når PDL ikke returnerer det`() = medKontekst {
-        val historiskFnr = "11111111111"
+        val historiskFnr = genererFnr()
         køOppslag(identer = listOf(historiskFnr))
 
         tiltakshistorikkService.hentTiltakshistorikkForSaksbehandling(fnr).getOrFail()
@@ -506,7 +507,7 @@ private val responsJson = """
       "historikk": [
         {
           "type": "ArenaDeltakelse",
-          "norskIdent": "12345678910",
+          "norskIdent": "12845678910",
           "startDato": "2024-07-03",
           "sluttDato": "2024-10-31",
           "id": "ddb13a2b-cd65-432d-965c-9167938a26a4",
@@ -535,7 +536,7 @@ private val responsJson = """
         },
         {
           "type": "TeamKometDeltakelse",
-          "norskIdent": "12345678910",
+          "norskIdent": "12845678910",
           "startDato": "2024-04-04",
           "sluttDato": "2024-04-05",
           "id": "6d54228f-534f-4b4b-9160-65eae26a3b06",
@@ -567,7 +568,7 @@ private val responsJson = """
         },
         {
           "type": "TeamTiltakAvtale",
-          "norskIdent": "12345678910",
+          "norskIdent": "12845678910",
           "startDato": "2024-01-01",
           "sluttDato": "2024-12-31",
           "id": "9dea48c1-d494-4664-9427-bdb20a6f265f",

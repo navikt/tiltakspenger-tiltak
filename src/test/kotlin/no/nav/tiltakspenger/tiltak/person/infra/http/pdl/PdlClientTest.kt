@@ -9,14 +9,15 @@ import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.common.getOrFail
 import no.nav.tiltakspenger.libs.httpklient.HttpKlientError
 import no.nav.tiltakspenger.libs.httpklient.infra.transport.FakeHttpTransport
+import no.nav.tiltakspenger.tiltak.testutils.genererFnr
 import no.nav.tiltakspenger.tiltak.testutils.testTokenProvider
 import org.junit.jupiter.api.Test
 import java.io.IOException
 
 class PdlClientTest {
     private val baseUrl = "http://pdl.test"
-    private val fnr = "12345678910"
-    private val historiskFnr = "10987654321"
+    private val fnr = genererFnr()
+    private val historiskFnr = genererFnr()
 
     private fun klient(transport: FakeHttpTransport) = PdlClient(
         baseUrl = baseUrl,

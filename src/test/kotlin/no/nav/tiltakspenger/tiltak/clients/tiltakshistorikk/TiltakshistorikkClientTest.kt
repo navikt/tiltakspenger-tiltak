@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.libs.httpklient.infra.transport.FakeHttpTransport
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.ArenaDeltakerStatusDto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Dto
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Response
+import no.nav.tiltakspenger.tiltak.testutils.genererFnr
 import no.nav.tiltakspenger.tiltak.testutils.testTokenProvider
 import org.junit.jupiter.api.Test
 import java.io.IOException
@@ -21,7 +22,7 @@ import java.util.UUID
 
 class TiltakshistorikkClientTest {
     private val baseUrl = "http://tiltakshistorikk.test"
-    private val fnr = "12345678910"
+    private val fnr = genererFnr()
 
     private fun klient(transport: FakeHttpTransport) = TiltakshistorikkClient(
         baseUrl = baseUrl,

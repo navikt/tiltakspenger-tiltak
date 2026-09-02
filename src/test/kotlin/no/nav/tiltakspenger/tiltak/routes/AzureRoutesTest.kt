@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.KometDeltakerSta
 import no.nav.tiltakspenger.tiltak.setupTestApplication
 import no.nav.tiltakspenger.tiltak.testutils.TexasClientFake
 import no.nav.tiltakspenger.tiltak.testutils.TiltakTestkontekst
+import no.nav.tiltakspenger.tiltak.testutils.genererFnr
 import no.nav.tiltakspenger.tiltak.testutils.tiltakshistorikkKometTiltak
 import org.junit.jupiter.api.Test
 
@@ -23,7 +24,7 @@ class AzureRoutesTest {
     @Test
     fun `post tiltakshistorikk azure - gyldig token - returnerer tiltakene`() = runTest {
         val kontekst = TiltakTestkontekst()
-        val historiskFnr = "11111111111"
+        val historiskFnr = genererFnr()
         kontekst.køOppslag(
             deltakelser = listOf(
                 tiltakshistorikkKometTiltak(

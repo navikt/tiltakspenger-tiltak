@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.tiltak.testutils
 
+import no.nav.tiltakspenger.libs.common.FnrGenerator
 import no.nav.tiltakspenger.libs.common.fixedClock
 import no.nav.tiltakspenger.libs.httpklient.infra.transport.FakeHttpTransport
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.TiltakshistorikkClient
@@ -7,6 +8,12 @@ import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.Tiltakshistorikk
 import no.nav.tiltakspenger.tiltak.clients.tiltakshistorikk.dto.TiltakshistorikkV1Response
 import no.nav.tiltakspenger.tiltak.person.infra.http.pdl.PdlClient
 import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
+
+/** Trådsikker, delt på tvers av tester: hvert kall gir et nytt, unikt syntetisk fnr. */
+private val fnrGenerator = FnrGenerator()
+
+/** Nytt, unikt syntetisk fødselsnummer til bruk i tester som ikke bryr seg om selve verdien. */
+fun genererFnr(): String = fnrGenerator.generer().verdi
 
 /**
  * Én komplett, isolert app-kontekst: ekte klienter og service over hver sin [FakeHttpTransport].
@@ -17,7 +24,7 @@ import no.nav.tiltakspenger.tiltak.services.TiltakshistorikkService
  */
 class TiltakTestkontekst(
     /** Fødselsnummeret testen bruker; ligger her slik at både køing og assertions kan lene seg på samme verdi. */
-    val fnr: String = "12345678910",
+    val fnr: String = genererFnr(),
 ) {
     val pdlTransport = FakeHttpTransport()
     val tiltakshistorikkTransport = FakeHttpTransport()
