@@ -6,7 +6,7 @@ val ktorVersion = "3.4.3"
 val jacksonVersion = "3.2.2"
 val jacksonAnnotationsVersion = "2.22"
 val kotestVersion = "6.2.4"
-val felleslibVersion = "0.0.20260902171610"
+val felleslibVersion = "0.0.20260904123939"
 
 plugins {
     application
@@ -24,7 +24,7 @@ dependencies {
     // ktor-server-netty drar inn netty 4.2.x; en BOM hindrer at en transitiv avhengighet
     // senere blander inn 4.1.x og legger duplikate baseklasser på classpath (jf. `-cp lib/*`).
     implementation(platform("io.netty:netty-bom:4.2.17.Final"))
-    implementation("ch.qos.logback:logback-classic:1.5.38")
+    implementation("ch.qos.logback:logback-classic:1.6.3")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
     implementation("org.jetbrains:annotations:26.1.0")
@@ -58,7 +58,7 @@ dependencies {
     implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonAnnotationsVersion")
 
-    // Delte arkitekturregler; drar inn konsist transitivt (api-avhengighet). Egen versjon inntil felleslibVersion bumpes.
+    // Delte arkitekturregler; drar inn konsist transitivt (api-avhengighet).
     testImplementation("com.github.navikt.tiltakspenger-libs:konsist-regler:$felleslibVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
