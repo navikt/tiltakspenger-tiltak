@@ -8,10 +8,18 @@ val jacksonAnnotationsVersion = "2.22"
 val kotestVersion = "6.2.4"
 val felleslibVersion = "0.0.20260908135317"
 
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return isStable.not()
+}
+
 plugins {
     application
     id("tiltakspenger.kotlin")
     id("tiltakspenger.githooks")
+    id("io.github.ben-manes.versions") version "0.61.0"
     id("org.jetbrains.kotlinx.kover") version "0.9.9"
 }
 
@@ -129,6 +137,12 @@ application {
 
 
 tasks {
+    dependencyUpdates.configure {
+        rejectVersionIf {
+            isNonStable(candidate.version)
+        }
+    }
+
     test {
         // JUnit 5-støtte
         useJUnitPlatform()
