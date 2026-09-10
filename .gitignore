@@ -100,3 +100,8 @@ gradle-app.setting
 # Ignore Gradle build output directory
 build
 /.env
+
+# Arbeidstrær (git worktree add) uansett navn og nivå
+.worktrees/
+.worktree/
+worktrees/
