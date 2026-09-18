@@ -6,7 +6,7 @@ val ktorVersion = "3.4.3"
 val jacksonVersion = "3.2.2"
 val jacksonAnnotationsVersion = "2.22"
 val kotestVersion = "6.2.4"
-val felleslibVersion = "0.0.20260915191550"
+val felleslibVersion = "0.0.20260918145841"
 
 fun isNonStable(version: String): Boolean {
     val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
