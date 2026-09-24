@@ -1,3 +1,6 @@
+Appen er avviklet og erstattet med klient for å hente tiltakshistorikk i tiltakspenger-libs.
+
+
 tiltakspenger
 ================
 Dette er en tiltaks-tjeneste som sammenstiller alle kilder til tiltak (komet, valp, team tiltak og arena)
